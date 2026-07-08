@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+<div class="card shadow">
+
+<div class="card-header bg-warning text-dark">
+
+<h3>
+
+<i class="fa-solid fa-user-doctor"></i>
+
+Edit Doctor
+
+</h3>
+
+</div>
+
+<div class="card-body">
+
+<form method="POST">
+
+<div class="row">
+
+<div class="col-md-6 mb-3">
+
+<label class="form-label">
+
+Doctor Name
+
+</label>
+
+<input
+type="text"
+name="name"
+class="form-control"
+value="{{ doctor.name }}"
+required>
+
+</div>
+
+<div class="col-md-6 mb-3">
+
+<label class="form-label">
+
+Specialization
+
+</label>
+
+<input
+type="text"
+name="specialization"
+class="form-control"
+value="{{ doctor.specialization }}"
+required>
+
+</div>
+
+<div class="col-md-6 mb-3">
+
+<label class="form-label">
+
+Phone Number
+
+</label>
+
+<input
+type="text"
+name="phone"
+class="form-control"
+value="{{ doctor.phone }}"
+required>
+
+</div>
+
+<div class="col-md-6 mb-3">
+
+<label class="form-label">
+
+Email Address
+
+</label>
+
+<input
+type="email"
+name="email"
+class="form-control"
+value="{{ doctor.email }}">
+
+</div>
+
+<div class="col-md-6 mb-3">
+
+<label class="form-label">
+
+Doctor Status
+
+</label>
+
+<select
+name="status"
+class="form-control">
+
+<option value="Available"
+{% if doctor.status=="Available" %}selected{% endif %}>
+Available
+</option>
+
+<option value="Busy"
+{% if doctor.status=="Busy" %}selected{% endif %}>
+Busy
+</option>
+
+<option value="On Leave"
+{% if doctor.status=="On Leave" %}selected{% endif %}>
+On Leave
+</option>
+
+</select>
+
+</div>
+
+</div>
+
+<button
+type="submit"
+class="btn btn-success">
+
+<i class="fa-solid fa-floppy-disk"></i>
+
+Update Doctor
+
+</button>
+
+<a
+href="{{ url_for('doctors') }}"
+class="btn btn-secondary">
+
+<i class="fa-solid fa-arrow-left"></i>
+
+Cancel
+
+</a>
+
+</form>
+
+</div>
+
+</div>
+
+</div>
+
+{% endblock %}

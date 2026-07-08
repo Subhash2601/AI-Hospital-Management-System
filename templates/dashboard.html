@@ -1,0 +1,285 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+<div class="text-center mb-4">
+
+<h2>
+<i class="fa-solid fa-hospital"></i>
+Admin Dashboard
+</h2>
+
+<p class="text-muted">
+Welcome, {{ current_user.fullname }}
+</p>
+
+</div>
+
+<div class="row">
+
+<div class="col-md-3 mb-4">
+<div class="card bg-primary text-white shadow">
+<div class="card-body text-center">
+<i class="fa-solid fa-users fa-3x"></i>
+<h2>{{ total_patients }}</h2>
+<h5>Total Patients</h5>
+</div>
+</div>
+</div>
+
+<div class="col-md-3 mb-4">
+<div class="card bg-success text-white shadow">
+<div class="card-body text-center">
+<i class="fa-solid fa-user-doctor fa-3x"></i>
+<h2>{{ total_doctors }}</h2>
+<h5>Total Doctors</h5>
+</div>
+</div>
+</div>
+
+<div class="col-md-3 mb-4">
+<div class="card bg-warning shadow">
+<div class="card-body text-center">
+<i class="fa-solid fa-calendar-check fa-3x"></i>
+<h2>{{ total_appointments }}</h2>
+<h5>Appointments</h5>
+</div>
+</div>
+</div>
+
+<div class="col-md-3 mb-4">
+<div class="card bg-danger text-white shadow">
+<div class="card-body text-center">
+<i class="fa-solid fa-file-invoice-dollar fa-3x"></i>
+<h2>{{ total_bills }}</h2>
+<h5>Bills</h5>
+</div>
+</div>
+</div>
+
+</div>
+
+<div class="row">
+
+<div class="col-md-4 mb-4">
+
+<div class="card bg-info text-white shadow">
+
+<div class="card-body text-center">
+
+<i class="fa-solid fa-indian-rupee-sign fa-3x"></i>
+
+<h2>₹ {{ total_revenue }}</h2>
+
+<h5>Total Revenue</h5>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="col-md-4 mb-4">
+
+<div class="card bg-secondary text-white shadow">
+
+<div class="card-body text-center">
+
+<i class="fa-solid fa-ticket fa-3x"></i>
+
+<h2>{{ waiting_tokens }}</h2>
+
+<h5>Waiting Tokens</h5>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="col-md-4 mb-4">
+
+<div class="card bg-dark text-white shadow">
+
+<div class="card-body text-center">
+
+<i class="fa-solid fa-circle-check fa-3x"></i>
+
+<h2>{{ completed_tokens }}</h2>
+
+<h5>Completed Tokens</h5>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<hr>
+
+<div class="row">
+
+<div class="col-md-6">
+
+<div class="card shadow">
+
+<div class="card-header bg-primary text-white">
+
+Hospital Statistics
+
+</div>
+
+<div class="card-body">
+
+<canvas id="barChart"></canvas>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="col-md-6">
+
+<div class="card shadow">
+
+<div class="card-header bg-success text-white">
+
+Token Status
+
+</div>
+
+<div class="card-body">
+
+<canvas id="pieChart"></canvas>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<br>
+
+<div class="card shadow">
+
+<div class="card-header bg-dark text-white">
+
+<h4>
+
+Quick Actions
+
+</h4>
+
+</div>
+
+<div class="card-body text-center">
+
+<a href="/patients" class="btn btn-primary m-2">
+<i class="fa-solid fa-users"></i>
+Patients
+</a>
+
+<a href="/doctors" class="btn btn-success m-2">
+<i class="fa-solid fa-user-doctor"></i>
+Doctors
+</a>
+
+<a href="/appointments" class="btn btn-warning m-2">
+<i class="fa-solid fa-calendar-check"></i>
+Appointments
+</a>
+
+<a href="/billing" class="btn btn-danger m-2">
+<i class="fa-solid fa-file-invoice-dollar"></i>
+Billing
+</a>
+
+<a href="/tokens" class="btn btn-info m-2">
+<i class="fa-solid fa-ticket"></i>
+Tokens
+</a>
+
+<a href="/prescriptions" class="btn btn-secondary m-2">
+<i class="fa-solid fa-file-prescription"></i>
+Prescriptions
+</a>
+
+<a href="/lab_reports" class="btn btn-dark m-2">
+<i class="fa-solid fa-flask"></i>
+Lab Reports
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+
+new Chart(document.getElementById("barChart"),{
+
+type:'bar',
+
+data:{
+
+labels:[
+'Patients',
+'Doctors',
+'Appointments',
+'Bills'
+],
+
+datasets:[{
+
+label:'Hospital Data',
+
+data:[
+{{ total_patients }},
+{{ total_doctors }},
+{{ total_appointments }},
+{{ total_bills }}
+]
+
+}]
+
+}
+
+});
+
+new Chart(document.getElementById("pieChart"),{
+
+type:'pie',
+
+data:{
+
+labels:[
+'Waiting',
+'Completed'
+],
+
+datasets:[{
+
+data:[
+{{ waiting_tokens }},
+{{ completed_tokens }}
+]
+
+}]
+
+}
+
+});
+
+</script>
+
+{% endblock %}

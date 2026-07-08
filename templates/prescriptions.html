@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <div class="card shadow">
+
+        <div class="card-header bg-primary text-white">
+
+            <h2>
+                <i class="fa-solid fa-prescription"></i>
+                Prescription Management
+            </h2>
+
+        </div>
+
+        <div class="card-body">
+
+            <form method="POST">
+
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+
+                        <label>Patient</label>
+
+                        <select name="patient_id" class="form-control" required>
+
+                            {% for patient in patients %}
+
+                            <option value="{{ patient.id }}">
+                                {{ patient.name }}
+                            </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+
+                        <label>Doctor</label>
+
+                        <select name="doctor_id" class="form-control" required>
+
+                            {% for doctor in doctors %}
+
+                            <option value="{{ doctor.id }}">
+                                Dr. {{ doctor.name }}
+                            </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+                    <div class="col-md-12 mb-3">
+
+                        <label>Diagnosis</label>
+
+                        <textarea
+                            name="diagnosis"
+                            class="form-control"
+                            rows="2"
+                            required></textarea>
+
+                    </div>
+
+                    <div class="col-md-12 mb-3">
+
+                        <label>Medicines</label>
+
+                        <textarea
+                            name="medicines"
+                            class="form-control"
+                            rows="3"
+                            required></textarea>
+
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+
+                        <label>Dosage</label>
+
+                        <input
+                            type="text"
+                            name="dosage"
+                            class="form-control">
+
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+
+                        <label>Advice</label>
+
+                        <input
+                            type="text"
+                            name="advice"
+                            class="form-control">
+
+                    </div>
+
+                </div>
+
+                <button class="btn btn-success">
+
+                    <i class="fa-solid fa-plus"></i>
+
+                    Save Prescription
+
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    <br>
+
+    <div class="card shadow">
+
+        <div class="card-header bg-dark text-white">
+
+            <h4>Prescription Records</h4>
+
+        </div>
+
+        <div class="card-body">
+
+            <table class="table table-bordered table-hover">
+
+                <thead class="table-primary">
+
+                    <tr>
+
+                        <th>ID</th>
+                        <th>Patient</th>
+                        <th>Doctor</th>
+                        <th>Diagnosis</th>
+                        <th>Medicines</th>
+                        <th>Dosage</th>
+                        <th>Advice</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for p in prescriptions %}
+
+                    <tr>
+
+                        <td>PR{{ "%03d"|format(p.id) }}</td>
+
+                        <td>{{ p.patient.name }}</td>
+
+                        <td>Dr. {{ p.doctor.name }}</td>
+
+                        <td>{{ p.diagnosis }}</td>
+
+                        <td>{{ p.medicines }}</td>
+
+                        <td>{{ p.dosage }}</td>
+
+                        <td>{{ p.advice }}</td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

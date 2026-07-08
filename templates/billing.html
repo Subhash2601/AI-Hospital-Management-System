@@ -1,0 +1,273 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+<h2 class="text-center mb-4">
+<i class="fa-solid fa-file-invoice-dollar"></i>
+Billing Management
+</h2>
+
+<!-- Generate Bill -->
+
+<div class="card shadow mb-4">
+
+<div class="card-header bg-primary text-white">
+
+<h4>Generate Bill</h4>
+
+</div>
+
+<div class="card-body">
+
+<form method="POST">
+
+<div class="row">
+
+<div class="col-md-6 mb-3">
+
+<label class="form-label">Patient</label>
+
+<select
+name="patient"
+class="form-control"
+required>
+
+<option value="">Select Patient</option>
+
+{% for patient in patients %}
+
+<option value="{{ patient.id }}">
+PAT{{ "%03d"|format(patient.id) }} - {{ patient.name }}
+</option>
+
+{% endfor %}
+
+</select>
+
+</div>
+
+<div class="col-md-6 mb-3">
+
+<label class="form-label">Consultation Fee (₹)</label>
+
+<input
+type="number"
+name="consultation_fee"
+class="form-control"
+required>
+
+</div>
+
+<div class="col-md-6 mb-3">
+
+<label class="form-label">Medicine Fee (₹)</label>
+
+<input
+type="number"
+name="medicine_fee"
+class="form-control"
+required>
+
+</div>
+
+<div class="col-md-6 mb-3">
+
+<label class="form-label">Lab Fee (₹)</label>
+
+<input
+type="number"
+name="lab_fee"
+class="form-control"
+required>
+
+</div>
+
+<div class="col-md-6 mb-3">
+
+<label class="form-label">Payment Status</label>
+
+<select
+name="payment_status"
+class="form-control">
+
+<option value="Paid">Paid</option>
+<option value="Pending">Pending</option>
+
+</select>
+
+</div>
+
+</div>
+
+<button class="btn btn-success">
+
+<i class="fa-solid fa-money-bill-wave"></i>
+
+Generate Bill
+
+</button>
+
+</form>
+
+</div>
+
+</div>
+
+<!-- Bill List -->
+
+<div class="card shadow">
+
+<div class="card-header bg-dark text-white">
+
+<h4>Bill Records</h4>
+
+</div>
+
+<div class="card-body">
+
+<table class="table table-bordered table-hover">
+
+<thead class="table-primary">
+
+<tr>
+
+<th>Bill ID</th>
+<th>Patient</th>
+<th>Consultation</th>
+<th>Medicine</th>
+<th>Lab</th>
+<th>Total</th>
+<th>Status</th>
+<th>PDF</th>
+<th>Delete</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for bill in bills %}
+
+<tr>
+
+<td>
+
+BILL{{ "%03d"|format(bill.id) }}
+
+</td>
+
+<td>
+
+{{ bill.patient.name }}
+
+</td>
+
+<td>
+
+₹ {{ bill.consultation_fee }}
+
+</td>
+
+<td>
+
+₹ {{ bill.medicine_fee }}
+
+</td>
+
+<td>
+
+₹ {{ bill.lab_fee }}
+
+</td>
+
+<td>
+
+<b>
+
+₹ {{ bill.total }}
+
+</b>
+
+</td>
+
+<td>
+
+{% if bill.payment_status=="Paid" %}
+
+<span class="badge bg-success">
+
+Paid
+
+</span>
+
+{% else %}
+
+<span class="badge bg-warning">
+
+Pending
+
+</span>
+
+{% endif %}
+
+</td>
+
+<td>
+
+<a
+href="{{ url_for('bill_pdf', id=bill.id) }}"
+class="btn btn-primary btn-sm">
+
+<i class="fa-solid fa-file-pdf"></i>
+
+PDF
+
+</a>
+
+</td>
+
+<td>
+
+<a
+href="{{ url_for('delete_bill', id=bill.id) }}"
+class="btn btn-danger btn-sm"
+onclick="return confirm('Delete this bill?')">
+
+<i class="fa-solid fa-trash"></i>
+
+Delete
+
+</a>
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+<br>
+
+<a
+href="/dashboard"
+class="btn btn-secondary">
+
+<i class="fa-solid fa-arrow-left"></i>
+
+Back to Dashboard
+
+</a>
+
+</div>
+
+{% endblock %}

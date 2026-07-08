@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+<div class="card shadow">
+
+<div class="card-header bg-success text-white">
+
+<h2>
+
+<i class="fa-solid fa-file-invoice-dollar"></i>
+
+My Bills
+
+</h2>
+
+</div>
+
+<div class="card-body">
+
+{% if bills %}
+
+<table class="table table-bordered">
+
+<thead class="table-dark">
+
+<tr>
+
+<th>ID</th>
+<th>Amount</th>
+<th>Status</th>
+<th>Date</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for bill in bills %}
+
+<tr>
+
+<td>{{ bill.id }}</td>
+
+<td>₹ {{ bill.amount }}</td>
+
+<td>{{ bill.status }}</td>
+
+<td>{{ bill.date }}</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+{% else %}
+
+<div class="alert alert-warning text-center">
+
+No Bills Found.
+
+</div>
+
+{% endif %}
+
+</div>
+
+</div>
+
+<br>
+
+<a href="{{ url_for('patient_dashboard') }}"
+class="btn btn-secondary">
+
+Back
+
+</a>
+
+</div>
+
+{% endblock %}

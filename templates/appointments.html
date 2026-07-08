@@ -1,0 +1,248 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <h2 class="mb-4">
+        <i class="fa-solid fa-calendar-check"></i>
+        Appointment Management
+    </h2>
+
+    <!-- Appointment Form -->
+
+    <div class="card shadow mb-4">
+
+        <div class="card-header bg-primary text-white">
+
+            <h4>Book New Appointment</h4>
+
+        </div>
+
+        <div class="card-body">
+
+            <form method="POST">
+
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">
+                            Patient
+                        </label>
+
+                        <select
+                        name="patient"
+                        class="form-control"
+                        required>
+
+                        <option value="">
+                            Select Patient
+                        </option>
+
+                        {% for p in patients %}
+
+                        <option value="{{ p.id }}">
+                            PAT{{ "%03d"|format(p.id) }} - {{ p.name }}
+                        </option>
+
+                        {% endfor %}
+
+                        </select>
+
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">
+                            Doctor
+                        </label>
+
+                        <select
+                        name="doctor"
+                        class="form-control"
+                        required>
+
+                        <option value="">
+                            Select Doctor
+                        </option>
+
+                        {% for d in doctors %}
+
+                        <option value="{{ d.id }}">
+                            Dr. {{ d.name }} ({{ d.specialization }})
+                        </option>
+
+                        {% endfor %}
+
+                        </select>
+
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">
+                            Appointment Date
+                        </label>
+
+                        <input
+                        type="date"
+                        name="date"
+                        class="form-control"
+                        required>
+
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label">
+                            Appointment Time
+                        </label>
+
+                        <input
+                        type="time"
+                        name="time"
+                        class="form-control"
+                        required>
+
+                    </div>
+
+                </div>
+
+                <button
+                class="btn btn-success">
+
+                    <i class="fa-solid fa-calendar-plus"></i>
+
+                    Book Appointment
+
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    <!-- Appointment List -->
+
+    <div class="card shadow">
+
+        <div class="card-header bg-dark text-white">
+
+            <h4>Appointment List</h4>
+
+        </div>
+
+        <div class="card-body">
+
+            <table class="table table-bordered table-hover">
+
+                <thead class="table-primary">
+
+                <tr>
+
+                    <th>ID</th>
+                    <th>Patient</th>
+                    <th>Doctor</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Status</th>
+                    <th>Action</th>
+
+                </tr>
+
+                </thead>
+
+                <tbody>
+
+                {% for a in appointments %}
+
+                <tr>
+
+                    <td>
+                        APT{{ "%03d"|format(a.id) }}
+                    </td>
+
+                    <td>
+                        {{ a.patient.name }}
+                    </td>
+
+                    <td>
+                        Dr. {{ a.doctor.name }}
+                    </td>
+
+                    <td>
+                        {{ a.appointment_date }}
+                    </td>
+
+                    <td>
+                        {{ a.appointment_time }}
+                    </td>
+
+                    <td>
+
+                        {% if a.status=="Pending" %}
+
+                        <span class="badge bg-warning">
+                            Pending
+                        </span>
+
+                        {% elif a.status=="Completed" %}
+
+                        <span class="badge bg-success">
+                            Completed
+                        </span>
+
+                        {% else %}
+
+                        <span class="badge bg-secondary">
+                            {{ a.status }}
+                        </span>
+
+                        {% endif %}
+
+                    </td>
+
+                    <td>
+
+                        <a
+                        href="{{ url_for('delete_appointment', id=a.id) }}"
+                        class="btn btn-danger btn-sm"
+                        onclick="return confirm('Delete Appointment?')">
+
+                            <i class="fa-solid fa-trash"></i>
+
+                            Delete
+
+                        </a>
+
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+    <br>
+
+    <a
+    href="{{ url_for('dashboard') }}"
+    class="btn btn-secondary">
+
+        <i class="fa-solid fa-arrow-left"></i>
+
+        Back to Dashboard
+
+    </a>
+
+</div>
+
+{% endblock %}

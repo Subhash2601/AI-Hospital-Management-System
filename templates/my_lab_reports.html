@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <div class="card shadow">
+
+        <div class="card-header bg-info text-white">
+
+            <h2>
+
+                <i class="fa-solid fa-flask"></i>
+
+                My Lab Reports
+
+            </h2>
+
+        </div>
+
+        <div class="card-body">
+
+            {% if reports %}
+
+            <table class="table table-bordered table-hover">
+
+                <thead class="table-primary">
+
+                    <tr>
+
+                        <th>ID</th>
+                        <th>Report Name</th>
+                        <th>Date</th>
+                        <th>Report File</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for report in reports %}
+
+                    <tr>
+
+                        <td>LAB{{ "%03d"|format(report.id) }}</td>
+
+                        <td>{{ report.report_name }}</td>
+
+                        <td>{{ report.report_date.strftime("%d-%m-%Y") }}</td>
+
+                        <td>
+
+                            {% if report.report_file %}
+
+                            <a
+                                href="{{ url_for('static', filename='uploads/' + report.report_file) }}"
+                                target="_blank"
+                                class="btn btn-success btn-sm">
+
+                                <i class="fa-solid fa-download"></i>
+
+                                View Report
+
+                            </a>
+
+                            {% else %}
+
+                            <span class="text-danger">
+
+                                No File
+
+                            </span>
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+            {% else %}
+
+            <div class="alert alert-warning text-center">
+
+                <h5>
+
+                    <i class="fa-solid fa-circle-info"></i>
+
+                    No Lab Reports Available.
+
+                </h5>
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+    <br>
+
+    <div class="text-center">
+
+        <a
+        href="{{ url_for('patient_dashboard') }}"
+        class="btn btn-secondary">
+
+            <i class="fa-solid fa-arrow-left"></i>
+
+            Back to Dashboard
+
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}

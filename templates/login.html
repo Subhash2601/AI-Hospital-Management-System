@@ -1,0 +1,194 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+<div class="row justify-content-center">
+
+<div class="col-md-5">
+
+<div class="card shadow-lg">
+
+<div class="card-header bg-primary text-white text-center">
+
+<h3>
+
+<i class="fa-solid fa-hospital"></i>
+
+AI Hospital Management System
+
+</h3>
+
+<p class="mb-0">
+
+Secure Login
+
+</p>
+
+</div>
+
+<div class="card-body">
+
+<form method="POST">
+
+<div class="mb-3">
+
+<label class="form-label">
+
+Username
+
+</label>
+
+<div class="input-group">
+
+<span class="input-group-text">
+
+<i class="fa-solid fa-user"></i>
+
+</span>
+
+<input
+type="text"
+name="username"
+class="form-control"
+placeholder="Enter Username"
+required>
+
+</div>
+
+</div>
+
+<div class="mb-3">
+
+<label class="form-label">
+
+Password
+
+</label>
+
+<div class="input-group">
+
+<span class="input-group-text">
+
+<i class="fa-solid fa-lock"></i>
+
+</span>
+
+<input
+type="password"
+name="password"
+id="password"
+class="form-control"
+placeholder="Enter Password"
+required>
+
+<button
+type="button"
+class="btn btn-outline-secondary"
+onclick="togglePassword()">
+
+<i class="fa-solid fa-eye"></i>
+
+</button>
+
+</div>
+
+</div>
+
+<button
+class="btn btn-primary w-100">
+
+<i class="fa-solid fa-right-to-bracket"></i>
+
+Login
+
+</button>
+
+</form>
+
+{% with messages=get_flashed_messages() %}
+{% if messages %}
+
+<div class="alert alert-danger mt-3">
+
+{{ messages[0] }}
+
+</div>
+
+{% endif %}
+{% endwith %}
+
+<hr>
+
+<div class="text-center">
+
+<h6>
+
+Available Roles
+
+</h6>
+
+<span class="badge bg-danger">
+
+Admin
+
+</span>
+
+<span class="badge bg-success">
+
+Doctor
+
+</span>
+
+<span class="badge bg-warning text-dark">
+
+Receptionist
+
+</span>
+
+<span class="badge bg-primary">
+
+Patient
+
+</span>
+
+</div>
+
+</div>
+
+<div class="card-footer text-center">
+
+© 2026 AI Hospital Management System
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+function togglePassword(){
+
+let p=document.getElementById("password");
+
+if(p.type==="password"){
+
+p.type="text";
+
+}else{
+
+p.type="password";
+
+}
+
+}
+
+</script>
+
+{% endblock %}

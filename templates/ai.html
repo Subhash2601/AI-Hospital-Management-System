@@ -1,0 +1,284 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+<div class="card shadow">
+
+<div class="card-header bg-dark text-white text-center">
+
+<h2>
+
+<i class="fa-solid fa-robot"></i>
+
+AI Disease Prediction
+
+</h2>
+
+<p class="mb-0">
+
+Predict possible diseases using patient symptoms
+
+</p>
+
+</div>
+
+<div class="card-body">
+
+<form method="POST">
+
+<div class="row">
+
+<div class="col-md-6 mb-3">
+
+<label class="form-label"><b>🌡 Fever</b></label>
+
+<select name="fever" class="form-control">
+
+<option>No</option>
+<option>Yes</option>
+
+</select>
+
+</div>
+
+<div class="col-md-6 mb-3">
+
+<label class="form-label"><b>🤧 Cough</b></label>
+
+<select name="cough" class="form-control">
+
+<option>No</option>
+<option>Yes</option>
+
+</select>
+
+</div>
+
+<div class="col-md-6 mb-3">
+
+<label class="form-label"><b>🤕 Headache</b></label>
+
+<select name="headache" class="form-control">
+
+<option>No</option>
+<option>Yes</option>
+
+</select>
+
+</div>
+
+<div class="col-md-6 mb-3">
+
+<label class="form-label"><b>💪 Body Pain</b></label>
+
+<select name="bodypain" class="form-control">
+
+<option>No</option>
+<option>Yes</option>
+
+</select>
+
+</div>
+
+</div>
+
+<div class="text-center">
+
+<button class="btn btn-primary btn-lg">
+
+<i class="fa-solid fa-magnifying-glass"></i>
+
+Predict Disease
+
+</button>
+
+</div>
+
+</form>
+
+<hr>
+
+{% if prediction %}
+
+<div class="alert alert-success text-center">
+
+<h3>{{ prediction }}</h3>
+
+</div>
+
+<div class="card border-success mb-3">
+
+<div class="card-header bg-success text-white">
+
+AI Recommendation
+
+</div>
+
+<div class="card-body">
+
+{% if prediction=="Possible Disease: Flu" %}
+
+<ul>
+
+<li>Drink plenty of water.</li>
+<li>Take proper rest.</li>
+<li>Use medicines prescribed by your doctor.</li>
+<li>Monitor body temperature.</li>
+
+</ul>
+
+{% elif prediction=="Possible Disease: Malaria" %}
+
+<ul>
+
+<li>Take a blood test immediately.</li>
+<li>Drink more fluids.</li>
+<li>Visit a physician.</li>
+<li>Complete the prescribed medication.</li>
+
+</ul>
+
+{% elif prediction=="Possible Disease: Viral Fever" %}
+
+<ul>
+
+<li>Take enough rest.</li>
+<li>Drink warm water.</li>
+<li>Eat nutritious food.</li>
+<li>Consult a doctor if symptoms worsen.</li>
+
+</ul>
+
+{% elif prediction=="Possible Disease: Common Cold" %}
+
+<ul>
+
+<li>Steam inhalation.</li>
+<li>Warm fluids.</li>
+<li>Vitamin C rich food.</li>
+<li>Sleep well.</li>
+
+</ul>
+
+{% else %}
+
+<ul>
+
+<li>No serious symptoms detected.</li>
+<li>Maintain a healthy lifestyle.</li>
+<li>Exercise regularly.</li>
+<li>Annual health check-up recommended.</li>
+
+</ul>
+
+{% endif %}
+
+</div>
+
+</div>
+
+{% endif %}
+
+</div>
+
+</div>
+
+<br>
+
+<div class="row">
+
+<div class="col-md-6">
+
+<div class="card shadow">
+
+<div class="card-header bg-primary text-white">
+
+General Health Tips
+
+</div>
+
+<div class="card-body">
+
+<ul>
+
+<li>🥗 Balanced Diet</li>
+
+<li>💧 Drink 2-3 Liters of Water</li>
+
+<li>🏃 Exercise Daily</li>
+
+<li>😴 Sleep 7-8 Hours</li>
+
+<li>🩺 Regular Health Checkups</li>
+
+</ul>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="col-md-6">
+
+<div class="card shadow">
+
+<div class="card-header bg-warning">
+
+Emergency Symptoms
+
+</div>
+
+<div class="card-body">
+
+<ul>
+
+<li>Chest Pain</li>
+
+<li>Difficulty Breathing</li>
+
+<li>High Fever (Above 103°F)</li>
+
+<li>Continuous Vomiting</li>
+
+<li>Severe Bleeding</li>
+
+</ul>
+
+<p class="text-danger">
+
+<strong>
+
+Seek immediate medical attention if these symptoms occur.
+
+</strong>
+
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<br>
+
+<div class="text-center">
+
+<a href="/dashboard" class="btn btn-secondary">
+
+<i class="fa-solid fa-arrow-left"></i>
+
+Back to Dashboard
+
+</a>
+
+</div>
+
+</div>
+
+{% endblock %}

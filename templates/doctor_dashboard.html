@@ -1,0 +1,277 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <!-- Welcome -->
+
+    <div class="alert alert-success text-center shadow">
+
+        <h2>
+
+            <i class="fa-solid fa-user-doctor"></i>
+
+            Doctor Dashboard
+
+        </h2>
+
+        <p>Welcome Doctor</p>
+
+        <h5>
+
+            Current Time :
+            <span id="clock"></span>
+
+        </h5>
+
+    </div>
+
+    <!-- Dashboard Cards -->
+
+    <div class="row">
+
+        <!-- Patients -->
+
+        <div class="col-md-3 mb-4">
+
+            <div class="card bg-primary text-white shadow">
+
+                <div class="card-body text-center">
+
+                    <i class="fa-solid fa-users fa-3x"></i>
+
+                    <h2>{{ patients }}</h2>
+
+                    <h5>Patients</h5>
+
+                    <a href="/patients" class="btn btn-light">
+
+                        View
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Appointments -->
+
+        <div class="col-md-3 mb-4">
+
+            <div class="card bg-warning shadow">
+
+                <div class="card-body text-center">
+
+                    <i class="fa-solid fa-calendar-check fa-3x"></i>
+
+                    <h2>{{ appointments }}</h2>
+
+                    <h5>Appointments</h5>
+
+                    <a href="/appointments" class="btn btn-dark">
+
+                        View
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Smart Tokens -->
+
+        <div class="col-md-3 mb-4">
+
+            <div class="card bg-danger text-white shadow">
+
+                <div class="card-body text-center">
+
+                    <i class="fa-solid fa-ticket fa-3x"></i>
+
+                    <h2>{{ tokens }}</h2>
+
+                    <h5>Waiting Tokens</h5>
+
+                    <a href="/tokens" class="btn btn-light">
+
+                        Open
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- AI -->
+
+        <div class="col-md-3 mb-4">
+
+            <div class="card bg-success text-white shadow">
+
+                <div class="card-body text-center">
+
+                    <i class="fa-solid fa-robot fa-3x"></i>
+
+                    <h2>AI</h2>
+
+                    <h5>Prediction</h5>
+
+                    <a href="/ai" class="btn btn-light">
+
+                        Open
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Today's Summary -->
+
+    <div class="card shadow mb-4">
+
+        <div class="card-header bg-dark text-white">
+
+            <h4>
+
+                Today's Summary
+
+            </h4>
+
+        </div>
+
+        <div class="card-body">
+
+            <table class="table table-bordered">
+
+                <tr>
+
+                    <th>Total Patients</th>
+
+                    <td>{{ patients }}</td>
+
+                </tr>
+
+                <tr>
+
+                    <th>Today's Appointments</th>
+
+                    <td>{{ appointments }}</td>
+
+                </tr>
+
+                <tr>
+
+                    <th>Waiting Tokens</th>
+
+                    <td>{{ tokens }}</td>
+
+                </tr>
+
+            </table>
+
+        </div>
+
+    </div>
+
+    <!-- Quick Actions -->
+
+    <div class="card shadow">
+
+        <div class="card-header bg-primary text-white">
+
+            <h4>
+
+                Quick Actions
+
+            </h4>
+
+        </div>
+
+        <div class="card-body text-center">
+
+            <a href="/patients" class="btn btn-primary m-2">
+
+                <i class="fa-solid fa-users"></i>
+
+                Patients
+
+            </a>
+
+            <a href="/appointments" class="btn btn-warning m-2">
+
+                <i class="fa-solid fa-calendar-check"></i>
+
+                Appointments
+
+            </a>
+
+            <a href="/prescriptions" class="btn btn-success m-2">
+
+                <i class="fa-solid fa-file-prescription"></i>
+
+                Prescriptions
+
+            </a>
+
+            <a href="/lab_reports" class="btn btn-info m-2">
+
+                <i class="fa-solid fa-flask"></i>
+
+                Lab Reports
+
+            </a>
+
+            <a href="/tokens" class="btn btn-danger m-2">
+
+                <i class="fa-solid fa-ticket"></i>
+
+                Smart Tokens
+
+            </a>
+
+            <a href="/ai" class="btn btn-dark m-2">
+
+                <i class="fa-solid fa-robot"></i>
+
+                AI Prediction
+
+            </a>
+
+            <a href="/logout" class="btn btn-secondary m-2">
+
+                <i class="fa-solid fa-right-from-bracket"></i>
+
+                Logout
+
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+setInterval(function(){
+
+document.getElementById("clock").innerHTML =
+new Date().toLocaleString();
+
+},1000);
+
+</script>
+
+{% endblock %}

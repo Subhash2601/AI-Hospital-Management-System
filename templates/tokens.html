@@ -1,0 +1,325 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+<div class="card shadow">
+
+<div class="card-header bg-danger text-white">
+
+<h2>
+
+<i class="fa-solid fa-ticket"></i>
+
+Smart Token Management
+
+</h2>
+
+</div>
+
+<div class="card-body">
+
+<form method="POST">
+
+<div class="row">
+
+<div class="col-md-4 mb-3">
+
+<label>Patient</label>
+
+<select
+name="patient_id"
+class="form-control"
+required>
+
+{% for patient in patients %}
+
+<option value="{{ patient.id }}">
+
+{{ patient.name }}
+
+</option>
+
+{% endfor %}
+
+</select>
+
+</div>
+
+<div class="col-md-4 mb-3">
+
+<label>Doctor</label>
+
+<select
+name="doctor_id"
+class="form-control"
+required>
+
+{% for doctor in doctors %}
+
+<option value="{{ doctor.id }}">
+
+{{ doctor.name }}
+
+</option>
+
+{% endfor %}
+
+</select>
+
+</div>
+
+<div class="col-md-4 mb-3">
+
+<label>Priority</label>
+
+<select
+name="priority"
+class="form-control">
+
+<option value="Normal">Normal</option>
+
+<option value="Emergency">Emergency</option>
+
+<option value="VIP">VIP</option>
+
+</select>
+
+</div>
+
+</div>
+
+<button
+class="btn btn-danger">
+
+<i class="fa-solid fa-ticket"></i>
+
+Generate Token
+
+</button>
+
+</form>
+
+</div>
+
+</div>
+
+<br>
+
+<div class="card shadow">
+
+<div class="card-header bg-dark text-white">
+
+<h4>
+
+Today's Token Queue
+
+</h4>
+
+</div>
+
+<div class="card-body">
+
+<table class="table table-bordered table-hover">
+
+<thead class="table-primary">
+
+<tr>
+
+<th>Token</th>
+
+<th>Patient</th>
+
+<th>Doctor</th>
+
+<th>Priority</th>
+
+<th>Status</th>
+
+<th>Queue</th>
+
+<th>Wait (Min)</th>
+
+<th>Actions</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for token in tokens %}
+
+<tr>
+
+<td>
+
+<b>
+
+{{ token.token_number }}
+
+</b>
+
+</td>
+
+<td>
+
+{{ token.patient.name }}
+
+</td>
+
+<td>
+
+{{ token.doctor.name }}
+
+</td>
+
+<td>
+
+{% if token.priority=="Emergency" %}
+
+<span class="badge bg-danger">
+
+Emergency
+
+</span>
+
+{% elif token.priority=="VIP" %}
+
+<span class="badge bg-warning text-dark">
+
+VIP
+
+</span>
+
+{% else %}
+
+<span class="badge bg-primary">
+
+Normal
+
+</span>
+
+{% endif %}
+
+</td>
+
+<td>
+
+{% if token.status=="Waiting" %}
+
+<span class="badge bg-secondary">
+
+Waiting
+
+</span>
+
+{% elif token.status=="Called" %}
+
+<span class="badge bg-warning text-dark">
+
+Called
+
+</span>
+
+{% elif token.status=="In Consultation" %}
+
+<span class="badge bg-info">
+
+Consultation
+
+</span>
+
+{% elif token.status=="Completed" %}
+
+<span class="badge bg-success">
+
+Completed
+
+</span>
+
+{% else %}
+
+<span class="badge bg-dark">
+
+Cancelled
+
+</span>
+
+{% endif %}
+
+</td>
+
+<td>
+
+{{ token.queue_position }}
+
+</td>
+
+<td>
+
+{{ token.estimated_wait }}
+
+</td>
+
+<td>
+
+<a
+href="/call_token/{{ token.id }}"
+class="btn btn-warning btn-sm">
+
+Call
+
+</a>
+
+<a
+href="/complete_token/{{ token.id }}"
+class="btn btn-success btn-sm">
+
+Done
+
+</a>
+
+<a
+href="/delete_token/{{ token.id }}"
+class="btn btn-danger btn-sm"
+onclick="return confirm('Delete Token?')">
+
+Delete
+
+</a>
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+<br>
+
+<div class="text-center">
+
+<a
+href="/dashboard"
+class="btn btn-secondary">
+
+<i class="fa-solid fa-arrow-left"></i>
+
+Back to Dashboard
+
+</a>
+
+</div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+<div class="card shadow">
+
+<div class="card-header bg-primary text-white">
+
+<h2>
+<i class="fa-solid fa-calendar-check"></i>
+My Appointments
+</h2>
+
+</div>
+
+<div class="card-body">
+
+{% if appointments %}
+
+<table class="table table-bordered">
+
+<thead class="table-dark">
+
+<tr>
+
+<th>ID</th>
+<th>Doctor</th>
+<th>Date</th>
+<th>Time</th>
+<th>Status</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for appointment in appointments %}
+
+<tr>
+
+<td>{{ appointment.id }}</td>
+
+<td>{{ appointment.doctor.name }}</td>
+
+<td>{{ appointment.appointment_date }}</td>
+
+<td>{{ appointment.appointment_time }}</td>
+
+<td>{{ appointment.status }}</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+{% else %}
+
+<div class="alert alert-warning text-center">
+
+No Appointments Found.
+
+</div>
+
+{% endif %}
+
+</div>
+
+</div>
+
+<br>
+
+<a href="{{ url_for('patient_dashboard') }}"
+class="btn btn-secondary">
+
+Back
+
+</a>
+
+</div>
+
+{% endblock %}

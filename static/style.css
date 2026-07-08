@@ -1,0 +1,110 @@
+body{
+
+background:#f4f7fc;
+
+font-family:Arial,Helvetica,sans-serif;
+
+}
+
+.dashboard-card{
+
+transition:0.4s;
+
+border:none;
+
+border-radius:15px;
+
+box-shadow:0px 5px 15px rgba(0,0,0,.2);
+
+}
+
+.dashboard-card:hover{
+
+transform:scale(1.05);
+
+}
+
+table{
+
+background:white;
+
+}
+
+form{
+
+background:rgba(77, 157, 61, 0.473);
+
+padding:20px;
+
+border-radius:10px;
+
+box-shadow:0px 5px 10px rgba(0,0,0,.2);
+
+}
+
+.navbar{
+
+box-shadow:0px 3px 10px rgba(0,0,0,.3);
+
+}
+/* ==========================
+   Dark Mode
+========================== */
+
+.dark-mode{
+
+background:#121212 !important;
+
+color:white !important;
+
+}
+
+.dark-mode .card{
+
+background:#1e1e1e;
+
+color:white;
+
+}
+
+.dark-mode table{
+
+background:#1e1e1e;
+
+color:white;
+
+}
+
+.dark-mode .table{
+
+color:white;
+
+}
+
+.dark-mode .form-control{
+
+background:#333;
+
+color:white;
+
+border:1px solid #555;
+
+}
+
+.dark-mode .form-control::placeholder{
+
+color:#ddd;
+
+}
+
+.dark-mode footer{
+
+background:black !important;
+
+}
+
+.dark-mode .navbar{
+
+background:#000 !important;
+
+}

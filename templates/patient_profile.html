@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+<div class="card shadow">
+
+<div class="card-header bg-primary text-white">
+
+<h2>
+<i class="fa-solid fa-user"></i>
+My Profile
+</h2>
+
+</div>
+
+<div class="card-body">
+
+<form method="POST">
+
+<div class="mb-3">
+<label>Name</label>
+<input type="text" name="name" class="form-control" value="{{ patient.name }}" required>
+</div>
+
+<div class="mb-3">
+<label>Age</label>
+<input type="number" name="age" class="form-control" value="{{ patient.age }}">
+</div>
+
+<div class="mb-3">
+<label>Gender</label>
+<select name="gender" class="form-control">
+
+<option {% if patient.gender=="Male" %}selected{% endif %}>Male</option>
+<option {% if patient.gender=="Female" %}selected{% endif %}>Female</option>
+<option {% if patient.gender=="Other" %}selected{% endif %}>Other</option>
+
+</select>
+</div>
+
+<div class="mb-3">
+<label>Phone</label>
+<input type="text" name="phone" class="form-control" value="{{ patient.phone }}">
+</div>
+
+<div class="mb-3">
+<label>Address</label>
+<textarea name="address" class="form-control">{{ patient.address }}</textarea>
+</div>
+
+<div class="mb-3">
+<label>Blood Group</label>
+<input type="text" name="blood_group" class="form-control" value="{{ patient.blood_group }}">
+</div>
+
+<button class="btn btn-success">
+<i class="fa-solid fa-floppy-disk"></i>
+Update Profile
+</button>
+
+<a href="{{ url_for('patient_dashboard') }}" class="btn btn-secondary">
+Back
+</a>
+
+</form>
+
+</div>
+
+</div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,307 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+<h2 class="mb-4">
+
+<i class="fa-solid fa-users-gear"></i>
+
+User Management
+
+</h2>
+
+<!-- Add User -->
+
+<div class="card shadow mb-4">
+
+<div class="card-header bg-primary text-white">
+
+<h4>Add New User</h4>
+
+</div>
+
+<div class="card-body">
+
+<form method="POST">
+
+<div class="row">
+
+<div class="col-md-6 mb-3">
+
+<label class="form-label">
+
+Full Name
+
+</label>
+
+<input
+type="text"
+name="fullname"
+class="form-control"
+placeholder="Enter Full Name"
+required>
+
+</div>
+
+<div class="col-md-6 mb-3">
+
+<label class="form-label">
+
+Username
+
+</label>
+
+<input
+type="text"
+name="username"
+class="form-control"
+placeholder="Enter Username"
+required>
+
+</div>
+
+<div class="col-md-6 mb-3">
+
+<label class="form-label">
+
+Password
+
+</label>
+
+<input
+type="password"
+name="password"
+class="form-control"
+placeholder="Enter Password"
+required>
+
+</div>
+
+<div class="col-md-6 mb-3">
+
+<label class="form-label">
+
+Role
+
+</label>
+
+<select
+name="role"
+class="form-control"
+required>
+
+<option value="">Select Role</option>
+
+<option value="Admin">Admin</option>
+
+<option value="Doctor">Doctor</option>
+
+<option value="Patient">Patient</option>
+
+<option value="Receptionist">Receptionist</option>
+
+</select>
+
+</div>
+
+</div>
+
+<button
+class="btn btn-success">
+
+<i class="fa-solid fa-user-plus"></i>
+
+Create User
+
+</button>
+
+</form>
+
+</div>
+
+</div>
+
+<!-- Search -->
+
+<div class="card shadow mb-4">
+
+<div class="card-body">
+
+<form method="GET">
+
+<div class="input-group">
+
+<input
+type="text"
+name="search"
+class="form-control"
+placeholder="Search User">
+
+<button
+class="btn btn-primary">
+
+<i class="fa-solid fa-magnifying-glass"></i>
+
+Search
+
+</button>
+
+</div>
+
+</form>
+
+</div>
+
+</div>
+
+<!-- User List -->
+
+<div class="card shadow">
+
+<div class="card-header bg-dark text-white">
+
+<h4>Registered Users</h4>
+
+</div>
+
+<div class="card-body">
+
+<table class="table table-bordered table-hover">
+
+<thead class="table-primary">
+
+<tr>
+
+<th>ID</th>
+<th>Full Name</th>
+<th>Username</th>
+<th>Role</th>
+<th>Created</th>
+<th>Action</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for user in users %}
+
+<tr>
+
+<td>
+
+USR{{ "%03d"|format(user.id) }}
+
+</td>
+
+<td>
+
+{{ user.fullname }}
+
+</td>
+
+<td>
+
+{{ user.username }}
+
+</td>
+
+<td>
+
+{% if user.role=="Admin" %}
+
+<span class="badge bg-danger">
+
+Admin
+
+</span>
+
+{% elif user.role=="Doctor" %}
+
+<span class="badge bg-success">
+
+Doctor
+
+</span>
+
+{% elif user.role=="Receptionist" %}
+
+<span class="badge bg-warning text-dark">
+
+Receptionist
+
+</span>
+
+{% else %}
+
+<span class="badge bg-primary">
+
+Patient
+
+</span>
+
+{% endif %}
+
+</td>
+
+<td>
+
+{{ user.created_at.strftime("%d-%m-%Y") }}
+
+</td>
+
+<td>
+
+<a
+href="{{ url_for('edit_user', id=user.id) }}"
+class="btn btn-warning btn-sm">
+
+<i class="fa-solid fa-pen"></i>
+
+Edit
+
+</a>
+
+<a
+href="{{ url_for('delete_user', id=user.id) }}"
+class="btn btn-danger btn-sm"
+onclick="return confirm('Delete this user?')">
+
+<i class="fa-solid fa-trash"></i>
+
+Delete
+
+</a>
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+<br>
+
+<a
+href="{{ url_for('dashboard') }}"
+class="btn btn-secondary">
+
+<i class="fa-solid fa-arrow-left"></i>
+
+Back to Dashboard
+
+</a>
+
+</div>
+
+{% endblock %}

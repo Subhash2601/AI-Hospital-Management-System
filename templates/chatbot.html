@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <div class="card shadow">
+
+        <div class="card-header bg-primary text-white">
+
+            <h2>
+                <i class="fa-solid fa-robot"></i>
+                AI Hospital Chatbot
+            </h2>
+
+        </div>
+
+        <div class="card-body">
+
+            <form method="POST">
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+                        Ask your health or hospital-related question
+                    </label>
+
+                    <textarea
+                        name="message"
+                        class="form-control"
+                        rows="4"
+                        placeholder="Example: I have fever..."
+                        required></textarea>
+
+                </div>
+
+                <button class="btn btn-primary">
+
+                    <i class="fa-solid fa-paper-plane"></i>
+
+                    Ask AI
+
+                </button>
+
+                <a href="{{ url_for('patient_dashboard') }}" class="btn btn-secondary">
+
+                    Back
+
+                </a>
+
+            </form>
+
+            {% if reply %}
+
+            <hr>
+
+            <div class="alert alert-success">
+
+                <h5>
+
+                    <i class="fa-solid fa-robot"></i>
+
+                    AI Response
+
+                </h5>
+
+                <p>{{ reply }}</p>
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+    <br>
+
+    <div class="card">
+
+        <div class="card-header bg-dark text-white">
+
+            <h5>Example Questions</h5>
+
+        </div>
+
+        <div class="card-body">
+
+            <ul>
+
+                <li>I have fever</li>
+
+                <li>I have cough</li>
+
+                <li>I have headache</li>
+
+                <li>Tell me about diabetes</li>
+
+                <li>How can I book an appointment?</li>
+
+                <li>Where are my prescriptions?</li>
+
+                <li>Show my lab reports</li>
+
+                <li>Where are my bills?</li>
+
+                <li>What is Smart Token?</li>
+
+            </ul>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

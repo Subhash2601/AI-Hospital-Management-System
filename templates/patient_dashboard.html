@@ -1,0 +1,207 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <!-- Welcome -->
+
+    <div class="alert alert-info text-center shadow">
+
+        <h2>
+            <i class="fa-solid fa-user"></i>
+            Patient Dashboard
+        </h2>
+
+        <p>
+            Welcome,
+            <strong>{{ current_user.fullname }}</strong>
+        </p>
+
+        <h5>
+            Current Time :
+            <span id="clock"></span>
+        </h5>
+
+    </div>
+
+    <!-- Dashboard Cards -->
+
+    <div class="row">
+
+        <!-- Appointments -->
+
+        <div class="col-md-3 mb-4">
+
+            <div class="card bg-primary text-white shadow">
+
+                <div class="card-body text-center">
+
+                    <i class="fa-solid fa-calendar-check fa-3x"></i>
+
+                    <h2>{{ appointments|length }}</h2>
+
+                    <h5>Appointments</h5>
+
+                    <a href="{{ url_for('my_appointments') }}" class="btn btn-light">
+                        View
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Bills -->
+
+        <div class="col-md-3 mb-4">
+
+            <div class="card bg-success text-white shadow">
+
+                <div class="card-body text-center">
+
+                    <i class="fa-solid fa-file-invoice-dollar fa-3x"></i>
+
+                    <h2>{{ bills|length }}</h2>
+
+                    <h5>Bills</h5>
+
+                    <a href="{{ url_for('my_bills') }}" class="btn btn-light">
+                        View
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Prescriptions -->
+
+        <div class="col-md-3 mb-4">
+
+            <div class="card bg-warning shadow">
+
+                <div class="card-body text-center">
+
+                    <i class="fa-solid fa-file-prescription fa-3x"></i>
+
+                    <h2>{{ prescriptions|length }}</h2>
+
+                    <h5>Prescriptions</h5>
+
+                    <a href="{{ url_for('my_prescriptions') }}" class="btn btn-dark">
+                        View
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- AI -->
+
+        <div class="col-md-3 mb-4">
+
+            <div class="card bg-dark text-white shadow">
+
+                <div class="card-body text-center">
+
+                    <i class="fa-solid fa-robot fa-3x"></i>
+
+                    <h2>AI</h2>
+
+                    <h5>Disease Prediction</h5>
+
+                    <a href="/ai" class="btn btn-light">
+                        Open
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Quick Actions -->
+
+    <div class="card shadow mb-4">
+
+        <div class="card-header bg-primary text-white">
+
+            <h4>
+                <i class="fa-solid fa-bolt"></i>
+                Quick Actions
+            </h4>
+
+        </div>
+
+        <div class="card-body text-center">
+
+            <a href="{{ url_for('my_appointments') }}" class="btn btn-primary m-2">
+                <i class="fa-solid fa-calendar-check"></i>
+                My Appointments
+            </a>
+
+            <a href="{{ url_for('my_bills') }}" class="btn btn-success m-2">
+                <i class="fa-solid fa-file-invoice-dollar"></i>
+                My Bills
+            </a>
+
+            <a href="{{ url_for('my_prescriptions') }}" class="btn btn-warning m-2">
+                <i class="fa-solid fa-file-prescription"></i>
+                My Prescriptions
+            </a>
+
+            <a href="{{ url_for('my_lab_reports') }}" class="btn btn-info m-2">
+                <i class="fa-solid fa-flask"></i>
+                My Lab Reports
+            </a>
+
+            <a href="{{ url_for('patient_profile') }}" class="btn btn-secondary m-2">
+                <i class="fa-solid fa-user"></i>
+                My Profile
+            </a>
+
+            <a href="{{ url_for('change_password') }}" class="btn btn-warning m-2">
+                <i class="fa-solid fa-key"></i>
+                Change Password
+            </a>
+
+            <a href="/ai" class="btn btn-dark m-2">
+                <i class="fa-solid fa-robot"></i>
+                AI Prediction
+            </a>
+
+            <a href="{{ url_for('chatbot') }}" class="btn btn-primary m-2">
+                 <i class="fa-solid fa-comments"></i>
+                  AI Chatbot
+            </a>
+
+            <a href="/logout" class="btn btn-danger m-2">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                Logout
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+setInterval(function(){
+
+    document.getElementById("clock").innerHTML =
+    new Date().toLocaleString();
+
+},1000);
+
+</script>
+
+{% endblock %}
