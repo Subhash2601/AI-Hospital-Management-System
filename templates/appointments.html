@@ -1,116 +1,181 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
 {% block content %}
 
 <div class="container mt-4">
 
-    <h2 class="mb-4">
-        <i class="fa-solid fa-calendar-check"></i>
-        Appointment Management
-    </h2>
+    <!-- Heading -->
+
+    <div class="text-center mb-4"
+         data-aos="fade-down">
+
+        <h2 class="fw-bold text-primary">
+
+            <i class="fa-solid fa-calendar-check"></i>
+
+            Appointment Management
+
+        </h2>
+
+        <p class="text-muted">
+
+            Book appointments and update their status
+
+        </p>
+
+    </div>
 
     <!-- Appointment Form -->
 
-    <div class="card shadow mb-4">
+    <div class="card shadow mb-5"
+         data-aos="fade-up">
 
         <div class="card-header bg-primary text-white">
 
-            <h4>Book New Appointment</h4>
+            <h4 class="mb-0">
+
+                <i class="fa-solid fa-calendar-plus"></i>
+
+                Book New Appointment
+
+            </h4>
 
         </div>
 
         <div class="card-body">
 
-            <form method="POST">
+            <form method="POST"
+                  action="{{ url_for('appointments') }}">
 
                 <div class="row">
 
+                    <!-- Patient -->
+
                     <div class="col-md-6 mb-3">
 
-                        <label class="form-label">
+                        <label class="form-label fw-semibold">
+
+                            <i class="fa-solid fa-user-injured"></i>
+
                             Patient
+
                         </label>
 
-                        <select
-                        name="patient"
-                        class="form-control"
-                        required>
+                        <select name="patient"
+                                class="form-select"
+                                required>
 
-                        <option value="">
-                            Select Patient
-                        </option>
+                            <option value="">
 
-                        {% for p in patients %}
+                                Select Patient
 
-                        <option value="{{ p.id }}">
-                            PAT{{ "%03d"|format(p.id) }} - {{ p.name }}
-                        </option>
+                            </option>
 
-                        {% endfor %}
+                            {% for patient in patients %}
+
+                            <option value="{{ patient.id }}">
+
+                                {{ patient.name }}
+
+                                {% if patient.phone %}
+
+                                    - {{ patient.phone }}
+
+                                {% endif %}
+
+                            </option>
+
+                            {% endfor %}
 
                         </select>
 
                     </div>
 
+                    <!-- Doctor -->
+
                     <div class="col-md-6 mb-3">
 
-                        <label class="form-label">
+                        <label class="form-label fw-semibold">
+
+                            <i class="fa-solid fa-user-doctor"></i>
+
                             Doctor
+
                         </label>
 
-                        <select
-                        name="doctor"
-                        class="form-control"
-                        required>
+                        <select name="doctor"
+                                class="form-select"
+                                required>
 
-                        <option value="">
-                            Select Doctor
-                        </option>
+                            <option value="">
 
-                        {% for d in doctors %}
+                                Select Doctor
 
-                        <option value="{{ d.id }}">
-                            Dr. {{ d.name }} ({{ d.specialization }})
-                        </option>
+                            </option>
 
-                        {% endfor %}
+                            {% for doctor in doctors %}
+
+                            <option value="{{ doctor.id }}">
+
+                                Dr. {{ doctor.name }}
+
+                                {% if doctor.specialization %}
+
+                                    - {{ doctor.specialization }}
+
+                                {% endif %}
+
+                            </option>
+
+                            {% endfor %}
 
                         </select>
 
                     </div>
 
+                    <!-- Date -->
+
                     <div class="col-md-6 mb-3">
 
-                        <label class="form-label">
+                        <label class="form-label fw-semibold">
+
+                            <i class="fa-solid fa-calendar-days"></i>
+
                             Appointment Date
+
                         </label>
 
-                        <input
-                        type="date"
-                        name="date"
-                        class="form-control"
-                        required>
+                        <input type="date"
+                               name="date"
+                               id="appointmentDate"
+                               class="form-control"
+                               required>
 
                     </div>
 
+                    <!-- Time -->
+
                     <div class="col-md-6 mb-3">
 
-                        <label class="form-label">
+                        <label class="form-label fw-semibold">
+
+                            <i class="fa-solid fa-clock"></i>
+
                             Appointment Time
+
                         </label>
 
-                        <input
-                        type="time"
-                        name="time"
-                        class="form-control"
-                        required>
+                        <input type="time"
+                               name="time"
+                               class="form-control"
+                               required>
 
                     </div>
 
                 </div>
 
-                <button
-                class="btn btn-success">
+                <button type="submit"
+                        class="btn btn-primary w-100">
 
                     <i class="fa-solid fa-calendar-plus"></i>
 
@@ -124,125 +189,421 @@
 
     </div>
 
-    <!-- Appointment List -->
+    <!-- Appointment Table -->
 
-    <div class="card shadow">
+    <div class="card shadow"
+         data-aos="fade-up">
 
         <div class="card-header bg-dark text-white">
 
-            <h4>Appointment List</h4>
+            <h4 class="mb-0">
+
+                <i class="fa-solid fa-list"></i>
+
+                Appointment List
+
+            </h4>
 
         </div>
 
         <div class="card-body">
 
-            <table class="table table-bordered table-hover">
+            {% if appointments %}
 
-                <thead class="table-primary">
+            <div class="table-responsive">
 
-                <tr>
+                <table class="table table-bordered table-hover align-middle">
 
-                    <th>ID</th>
-                    <th>Patient</th>
-                    <th>Doctor</th>
-                    <th>Date</th>
-                    <th>Time</th>
-                    <th>Status</th>
-                    <th>Action</th>
+                    <thead class="table-primary text-center">
 
-                </tr>
+                        <tr>
 
-                </thead>
+                            <th>ID</th>
 
-                <tbody>
+                            <th>Patient</th>
 
-                {% for a in appointments %}
+                            <th>Doctor</th>
 
-                <tr>
+                            <th>Date</th>
 
-                    <td>
-                        APT{{ "%03d"|format(a.id) }}
-                    </td>
+                            <th>Time</th>
 
-                    <td>
-                        {{ a.patient.name }}
-                    </td>
+                            <th>Status</th>
 
-                    <td>
-                        Dr. {{ a.doctor.name }}
-                    </td>
+                            <th>Actions</th>
 
-                    <td>
-                        {{ a.appointment_date }}
-                    </td>
+                        </tr>
 
-                    <td>
-                        {{ a.appointment_time }}
-                    </td>
+                    </thead>
 
-                    <td>
+                    <tbody>
 
-                        {% if a.status=="Pending" %}
+                    {% for appointment in appointments %}
 
-                        <span class="badge bg-warning">
-                            Pending
-                        </span>
+                        <tr>
 
-                        {% elif a.status=="Completed" %}
+                            <td class="text-center">
 
-                        <span class="badge bg-success">
-                            Completed
-                        </span>
+                                {{ appointment.id }}
 
-                        {% else %}
+                            </td>
 
-                        <span class="badge bg-secondary">
-                            {{ a.status }}
-                        </span>
+                            <td>
 
-                        {% endif %}
+                                {% if appointment.patient %}
 
-                    </td>
+                                    <i class="fa-solid fa-user-injured text-primary"></i>
 
-                    <td>
+                                    {{ appointment.patient.name }}
 
-                        <a
-                        href="{{ url_for('delete_appointment', id=a.id) }}"
-                        class="btn btn-danger btn-sm"
-                        onclick="return confirm('Delete Appointment?')">
+                                {% else %}
 
-                            <i class="fa-solid fa-trash"></i>
+                                    Patient not found
 
-                            Delete
+                                {% endif %}
 
-                        </a>
+                            </td>
 
-                    </td>
+                            <td>
 
-                </tr>
+                                {% if appointment.doctor %}
 
-                {% endfor %}
+                                    <i class="fa-solid fa-user-doctor text-success"></i>
 
-                </tbody>
+                                    Dr. {{ appointment.doctor.name }}
 
-            </table>
+                                    {% if appointment.doctor.specialization %}
+
+                                    <br>
+
+                                    <small class="text-muted">
+
+                                        {{ appointment.doctor.specialization }}
+
+                                    </small>
+
+                                    {% endif %}
+
+                                {% else %}
+
+                                    Doctor not found
+
+                                {% endif %}
+
+                            </td>
+
+                            <td class="text-center">
+
+                                {{ appointment.appointment_date }}
+
+                            </td>
+
+                            <td class="text-center">
+
+                                {{ appointment.appointment_time }}
+
+                            </td>
+
+                            <!-- Status -->
+
+                            <td class="text-center">
+
+                                {% if appointment.status == "Pending" %}
+
+                                <span class="badge bg-warning text-dark">
+
+                                    <i class="fa-solid fa-clock"></i>
+
+                                    Pending
+
+                                </span>
+
+                                {% elif appointment.status == "Approved" %}
+
+                                <span class="badge bg-primary">
+
+                                    <i class="fa-solid fa-circle-check"></i>
+
+                                    Approved
+
+                                </span>
+
+                                {% elif appointment.status == "In Consultation" %}
+
+                                <span class="badge bg-info text-dark">
+
+                                    <i class="fa-solid fa-stethoscope"></i>
+
+                                    In Consultation
+
+                                </span>
+
+                                {% elif appointment.status == "Completed" %}
+
+                                <span class="badge bg-success">
+
+                                    <i class="fa-solid fa-check-double"></i>
+
+                                    Completed
+
+                                </span>
+
+                                {% elif appointment.status == "Cancelled" %}
+
+                                <span class="badge bg-danger">
+
+                                    <i class="fa-solid fa-ban"></i>
+
+                                    Cancelled
+
+                                </span>
+
+                                {% else %}
+
+                                <span class="badge bg-secondary">
+
+                                    {{ appointment.status or "Pending" }}
+
+                                </span>
+
+                                {% endif %}
+
+                            </td>
+
+                            <!-- Actions -->
+
+                            <td class="text-center">
+
+                                {% if appointment.status == "Pending" %}
+
+                                <form method="POST"
+                                      action="{{ url_for(
+                                          'update_appointment_status',
+                                          appointment_id=appointment.id,
+                                          action='approve'
+                                      ) }}"
+                                      class="status-form d-inline">
+
+                                    <button type="submit"
+                                            class="btn btn-success btn-sm mb-1">
+
+                                        <i class="fa-solid fa-check"></i>
+
+                                        Approve
+
+                                    </button>
+
+                                </form>
+
+                                <form method="POST"
+                                      action="{{ url_for(
+                                          'update_appointment_status',
+                                          appointment_id=appointment.id,
+                                          action='cancel'
+                                      ) }}"
+                                      class="status-form d-inline"
+                                      onsubmit="return confirm('Cancel this appointment?');">
+
+                                    <button type="submit"
+                                            class="btn btn-danger btn-sm mb-1">
+
+                                        <i class="fa-solid fa-ban"></i>
+
+                                        Cancel
+
+                                    </button>
+
+                                </form>
+
+                                {% elif appointment.status == "Approved" %}
+
+                                <form method="POST"
+                                      action="{{ url_for(
+                                          'update_appointment_status',
+                                          appointment_id=appointment.id,
+                                          action='start'
+                                      ) }}"
+                                      class="status-form d-inline">
+
+                                    <button type="submit"
+                                            class="btn btn-info btn-sm mb-1">
+
+                                        <i class="fa-solid fa-stethoscope"></i>
+
+                                        Start
+
+                                    </button>
+
+                                </form>
+
+                                <form method="POST"
+                                      action="{{ url_for(
+                                          'update_appointment_status',
+                                          appointment_id=appointment.id,
+                                          action='cancel'
+                                      ) }}"
+                                      class="status-form d-inline"
+                                      onsubmit="return confirm('Cancel this appointment?');">
+
+                                    <button type="submit"
+                                            class="btn btn-danger btn-sm mb-1">
+
+                                        <i class="fa-solid fa-ban"></i>
+
+                                        Cancel
+
+                                    </button>
+
+                                </form>
+
+                                {% elif appointment.status == "In Consultation" %}
+
+                                <form method="POST"
+                                      action="{{ url_for(
+                                          'update_appointment_status',
+                                          appointment_id=appointment.id,
+                                          action='complete'
+                                      ) }}"
+                                      class="status-form d-inline">
+
+                                    <button type="submit"
+                                            class="btn btn-success btn-sm mb-1">
+
+                                        <i class="fa-solid fa-check-double"></i>
+
+                                        Complete
+
+                                    </button>
+
+                                </form>
+
+                                <form method="POST"
+                                      action="{{ url_for(
+                                          'update_appointment_status',
+                                          appointment_id=appointment.id,
+                                          action='cancel'
+                                      ) }}"
+                                      class="status-form d-inline"
+                                      onsubmit="return confirm('Cancel this appointment?');">
+
+                                    <button type="submit"
+                                            class="btn btn-danger btn-sm mb-1">
+
+                                        <i class="fa-solid fa-ban"></i>
+
+                                        Cancel
+
+                                    </button>
+
+                                </form>
+
+                                {% elif appointment.status == "Completed" %}
+
+                                <span class="text-success fw-semibold">
+
+                                    <i class="fa-solid fa-circle-check"></i>
+
+                                    Finished
+
+                                </span>
+
+                                {% elif appointment.status == "Cancelled" %}
+
+                                <span class="text-danger fw-semibold">
+
+                                    <i class="fa-solid fa-circle-xmark"></i>
+
+                                    Cancelled
+
+                                </span>
+
+                                {% endif %}
+
+                                <hr class="my-2">
+
+                                <form method="POST"
+                                      action="{{ url_for(
+                                          'delete_appointment',
+                                          id=appointment.id
+                                      ) }}"
+                                      class="status-form d-inline"
+                                      onsubmit="return confirm('Permanently delete this appointment?');">
+
+                                    <button type="submit"
+                                            class="btn btn-outline-danger btn-sm">
+
+                                        <i class="fa-solid fa-trash"></i>
+
+                                        Delete
+
+                                    </button>
+
+                                </form>
+
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            {% else %}
+
+            <div class="text-center py-5">
+
+                <i class="fa-solid fa-calendar-xmark fa-4x text-muted mb-3"></i>
+
+                <h4>No Appointments Found</h4>
+
+                <p class="text-muted">
+
+                    Book the first appointment using the form above.
+
+                </p>
+
+            </div>
+
+            {% endif %}
 
         </div>
 
     </div>
 
-    <br>
-
-    <a
-    href="{{ url_for('dashboard') }}"
-    class="btn btn-secondary">
-
-        <i class="fa-solid fa-arrow-left"></i>
-
-        Back to Dashboard
-
-    </a>
-
 </div>
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const appointmentDate =
+        document.getElementById("appointmentDate");
+
+    if (appointmentDate) {
+
+        const today = new Date();
+
+        const year = today.getFullYear();
+
+        const month = String(
+            today.getMonth() + 1
+        ).padStart(2, "0");
+
+        const day = String(
+            today.getDate()
+        ).padStart(2, "0");
+
+        appointmentDate.min =
+            year + "-" + month + "-" + day;
+
+    }
+
+});
+
+</script>
 
 {% endblock %}

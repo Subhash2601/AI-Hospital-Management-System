@@ -879,14 +879,86 @@ def appointments():
 
     if request.method == "POST":
 
-        patient_id = int(request.form["patient"])
-        doctor_id = int(request.form["doctor"])
-        appointment_date = request.form["date"]
-        appointment_time = request.form["time"]
+        try:
 
-        # -----------------------------
-        # Save Appointment
-        # -----------------------------
+            patient_id = int(request.form.get("patient", 0))
+            doctor_id = int(request.form.get("doctor", 0))
+
+        except (TypeError, ValueError):
+
+            flash("Please select a valid patient and doctor.", "danger")
+            return redirect(url_for("appointments"))
+
+        appointment_date = request.form.get("date", "").strip()
+        appointment_time = request.form.get("time", "").strip()
+
+        # Validate all fields
+
+        if not patient_id or not doctor_id:
+            flash("Please select a patient and doctor.", "danger")
+            return redirect(url_for("appointments"))
+
+        if not appointment_date or not appointment_time:
+            flash("Please select appointment date and time.", "danger")
+            return redirect(url_for("appointments"))
+
+        patient = db.session.get(Patient, patient_id)
+        doctor = db.session.get(Doctor, doctor_id)
+
+        if not patient:
+            flash("Selected patient was not found.", "danger")
+            return redirect(url_for("appointments"))
+
+        if not doctor:
+            flash("Selected doctor was not found.", "danger")
+            return redirect(url_for("appointments"))
+
+        # Prevent past dates
+
+        try:
+
+            selected_date = datetime.strptime(
+                appointment_date,
+                "%Y-%m-%d"
+            ).date()
+
+        except ValueError:
+
+            flash("Invalid appointment date.", "danger")
+            return redirect(url_for("appointments"))
+
+        today = datetime.now().date()
+
+        if selected_date < today:
+
+            flash(
+                "Appointment date cannot be in the past.",
+                "warning"
+            )
+
+            return redirect(url_for("appointments"))
+
+        # Prevent duplicate booking
+
+        existing_appointment = Appointment.query.filter_by(
+            patient_id=patient_id,
+            doctor_id=doctor_id,
+            appointment_date=appointment_date,
+            appointment_time=appointment_time
+        ).filter(
+            Appointment.status != "Cancelled"
+        ).first()
+
+        if existing_appointment:
+
+            flash(
+                "This appointment is already booked.",
+                "warning"
+            )
+
+            return redirect(url_for("appointments"))
+
+        # Save appointment
 
         appointment = Appointment(
             patient_id=patient_id,
@@ -897,48 +969,66 @@ def appointments():
         )
 
         db.session.add(appointment)
-        db.session.commit()
 
-        # -----------------------------
-        # Generate Smart Token
-        # -----------------------------
+        # Generate smart token
 
-        today = datetime.now().date()
+        today_string = today.strftime("%Y-%m-%d")
 
-        today
         today_tokens = Token.query.filter(
-            db.func.date(Token.created_at) == today
+            db.func.date(Token.created_at) == today_string
         ).count()
 
-        token_number = f"T{today_tokens + 1:03d}"
+        queue_position = today_tokens + 1
+
+        # Date is included because token_number is unique
+        token_date = today.strftime("%Y%m%d")
+
+        token_number = (
+            f"T{token_date}-{queue_position:03d}"
+        )
 
         token = Token(
             token_number=token_number,
             patient_id=patient_id,
             doctor_id=doctor_id,
-            department="General",
+            department=doctor.specialization or "General",
             priority="Normal",
             status="Waiting",
-            queue_position=today_tokens + 1,
+            queue_position=queue_position,
             estimated_wait=today_tokens * 10
         )
 
         db.session.add(token)
-        db.session.commit()
+
+        try:
+
+            db.session.commit()
+
+        except Exception:
+
+            db.session.rollback()
+
+            flash(
+                "Unable to book the appointment. Please try again.",
+                "danger"
+            )
+
+            return redirect(url_for("appointments"))
 
         flash(
-            f"Appointment Booked Successfully! Token No: {token_number}",
+            f"Appointment booked successfully! "
+            f"Token number: {token_number}",
             "success"
         )
 
         return redirect(url_for("appointments"))
 
     patients = Patient.query.order_by(
-        Patient.name
+        Patient.name.asc()
     ).all()
 
     doctors = Doctor.query.order_by(
-        Doctor.name
+        Doctor.name.asc()
     ).all()
 
     appointments = Appointment.query.order_by(
@@ -954,35 +1044,183 @@ def appointments():
 
 
 # ==========================================================
+# Update Appointment Status
+# ==========================================================
+
+@app.route(
+    "/appointment/<int:appointment_id>/status/<string:action>",
+    methods=["POST"]
+)
+@login_required
+@role_required("Admin", "Reception")
+def update_appointment_status(appointment_id, action):
+
+    appointment = db.session.get(
+        Appointment,
+        appointment_id
+    )
+
+    if not appointment:
+
+        flash("Appointment was not found.", "danger")
+        return redirect(url_for("appointments"))
+
+    action_status_map = {
+        "approve": "Approved",
+        "start": "In Consultation",
+        "complete": "Completed",
+        "cancel": "Cancelled"
+    }
+
+    if action not in action_status_map:
+
+        flash("Invalid appointment action.", "danger")
+        return redirect(url_for("appointments"))
+
+    current_status = appointment.status or "Pending"
+    new_status = action_status_map[action]
+
+    allowed_transitions = {
+        "Pending": [
+            "Approved",
+            "Cancelled"
+        ],
+        "Approved": [
+            "In Consultation",
+            "Cancelled"
+        ],
+        "In Consultation": [
+            "Completed",
+            "Cancelled"
+        ],
+        "Completed": [],
+        "Cancelled": []
+    }
+
+    allowed_next_statuses = allowed_transitions.get(
+        current_status,
+        []
+    )
+
+    if new_status not in allowed_next_statuses:
+
+        flash(
+            f"Cannot change appointment from "
+            f"{current_status} to {new_status}.",
+            "warning"
+        )
+
+        return redirect(url_for("appointments"))
+
+    appointment.status = new_status
+
+    # Find the related active token
+
+    token = Token.query.filter(
+        Token.patient_id == appointment.patient_id,
+        Token.doctor_id == appointment.doctor_id,
+        Token.status.notin_(
+            ["Completed", "Cancelled"]
+        )
+    ).order_by(
+        Token.id.desc()
+    ).first()
+
+    # Keep token status synchronized
+
+    if token:
+
+        if new_status == "Approved":
+            token.status = "Waiting"
+
+        elif new_status == "In Consultation":
+            token.status = "In Consultation"
+
+        elif new_status == "Completed":
+            token.status = "Completed"
+
+        elif new_status == "Cancelled":
+            token.status = "Cancelled"
+
+    try:
+
+        db.session.commit()
+
+        flash(
+            f"Appointment status changed to {new_status}.",
+            "success"
+        )
+
+    except Exception:
+
+        db.session.rollback()
+
+        flash(
+            "Unable to update appointment status.",
+            "danger"
+        )
+
+    return redirect(url_for("appointments"))
+
+
+# ==========================================================
 # Delete Appointment
 # ==========================================================
 
-@app.route("/delete_appointment/<int:id>")
+@app.route(
+    "/delete_appointment/<int:id>",
+    methods=["POST"]
+)
 @login_required
 @role_required("Admin", "Reception")
 def delete_appointment(id):
 
-    appointment = Appointment.query.get_or_404(id)
+    appointment = db.session.get(
+        Appointment,
+        id
+    )
 
-    token = Token.query.filter_by(
-        patient_id=appointment.patient_id,
-        doctor_id=appointment.doctor_id,
-        status="Waiting"
+    if not appointment:
+
+        flash("Appointment was not found.", "danger")
+        return redirect(url_for("appointments"))
+
+    # Find the latest related active token
+
+    token = Token.query.filter(
+        Token.patient_id == appointment.patient_id,
+        Token.doctor_id == appointment.doctor_id,
+        Token.status.notin_(
+            ["Completed", "Cancelled"]
+        )
+    ).order_by(
+        Token.id.desc()
     ).first()
 
     if token:
         db.session.delete(token)
 
     db.session.delete(appointment)
-    db.session.commit()
 
-    flash(
-        "Appointment Deleted Successfully!",
-        "success"
-    )
+    try:
+
+        db.session.commit()
+
+        flash(
+            "Appointment deleted successfully.",
+            "success"
+        )
+
+    except Exception:
+
+        db.session.rollback()
+
+        flash(
+            "Unable to delete appointment.",
+            "danger"
+        )
 
     return redirect(url_for("appointments"))
-
 # ==========================================================
 # Token Management
 # ==========================================================
