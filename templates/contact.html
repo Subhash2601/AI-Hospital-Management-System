@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <div class="text-center mb-5">
+
+        <h1 class="text-primary">
+            <i class="fa-solid fa-phone"></i>
+            Contact Us
+        </h1>
+
+        <p class="lead">
+            We'd love to hear from you.
+        </p>
+
+    </div>
+
+    <div class="row">
+
+        <div class="col-md-6">
+
+            <div class="card shadow">
+
+                <div class="card-header bg-primary text-white">
+
+                    <h4>Hospital Information</h4>
+
+                </div>
+
+                <div class="card-body">
+
+                    <p><i class="fa-solid fa-location-dot"></i>
+                    Hyderabad, Telangana, India</p>
+
+                    <p><i class="fa-solid fa-phone"></i>
+                    +91 9876543210</p>
+
+                    <p><i class="fa-solid fa-envelope"></i>
+                    info@aihospital.com</p>
+
+                    <p><i class="fa-solid fa-clock"></i>
+                    Open 24 × 7</p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-6">
+
+            <div class="card shadow">
+
+                <div class="card-header bg-success text-white">
+
+                    <h4>Send Message</h4>
+
+                </div>
+
+                <div class="card-body">
+
+                    <form>
+
+                        <input
+                        type="text"
+                        class="form-control mb-3"
+                        placeholder="Your Name">
+
+                        <input
+                        type="email"
+                        class="form-control mb-3"
+                        placeholder="Your Email">
+
+                        <textarea
+                        class="form-control mb-3"
+                        rows="5"
+                        placeholder="Your Message"></textarea>
+
+                        <button
+                        class="btn btn-success w-100">
+
+                        Send Message
+
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1810,6 +1810,21 @@ with app.app_context():
 
     create_default_users()
 
+# ===============================
+# About Page
+# ===============================
+
+@app.route("/about")
+def about():
+    return render_template("about.html")
+
+# ==========================================================
+# Contact Page
+# ==========================================================
+
+@app.route("/contact")
+def contact():
+    return render_template("contact.html")
 
 # ==========================================================
 # Run Application
