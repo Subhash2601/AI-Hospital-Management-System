@@ -2,156 +2,1599 @@
 
 {% block content %}
 
-<!-- Hero Section -->
-<div class="container-fluid bg-primary text-white py-5">
+<div class="modern-home">
 
-    <div class="container text-center">
+    <!-- =====================================================
+         HERO SECTION
+    ====================================================== -->
 
-        <h1 class="display-3 fw-bold">
-            🏥 AI Hospital Management System
-        </h1>
+    <section class="modern-hero">
 
-        <p class="lead mt-3">
-            Smart Healthcare Powered by Artificial Intelligence
-        </p>
+        <div class="hero-background-shape shape-one"></div>
+        <div class="hero-background-shape shape-two"></div>
+        <div class="hero-background-shape shape-three"></div>
 
-        <a href="/login" class="btn btn-light btn-lg mt-3">
-            Login
-        </a>
+        <div class="container position-relative">
 
-    </div>
+            <div class="row align-items-center hero-row">
+
+                <!-- Hero Text -->
+
+                <div class="col-lg-7"
+                     data-aos="fade-right"
+                     data-aos-duration="1200">
+
+                    <div class="hero-small-label">
+
+                        <i class="fa-solid fa-heart-pulse"></i>
+
+                        Intelligent Healthcare Management
+
+                    </div>
+
+                    <h1 class="hero-main-title">
+
+                        Smarter Hospital Care with
+
+                        <span>
+                            Artificial Intelligence
+                        </span>
+
+                    </h1>
+
+                    <p class="hero-main-description">
+
+                        A complete digital hospital platform for managing
+                        patients, doctors, appointments, smart tokens,
+                        prescriptions, lab reports, billing and AI-powered
+                        disease prediction.
+
+                    </p>
+
+                    <div class="hero-buttons">
+
+                        {% if current_user.is_authenticated %}
+
+                        <a href="{{ url_for('dashboard') }}"
+                           class="btn hero-primary-button">
+
+                            <i class="fa-solid fa-chart-line"></i>
+
+                            Open Dashboard
+
+                        </a>
+
+                        {% else %}
+
+                        <a href="{{ url_for('login') }}"
+                           class="btn hero-primary-button">
+
+                            <i class="fa-solid fa-right-to-bracket"></i>
+
+                            Login Now
+
+                        </a>
+
+                        {% endif %}
+
+                        <a href="#services"
+                           class="btn hero-outline-button">
+
+                            <i class="fa-solid fa-arrow-down"></i>
+
+                            Explore Services
+
+                        </a>
+
+                    </div>
+
+                    <div class="hero-trust-row">
+
+                        <div class="hero-trust-item">
+
+                            <i class="fa-solid fa-shield-halved"></i>
+
+                            <div>
+
+                                <strong>Secure Access</strong>
+
+                                <small>Role-based authentication</small>
+
+                            </div>
+
+                        </div>
+
+                        <div class="hero-trust-item">
+
+                            <i class="fa-solid fa-clock"></i>
+
+                            <div>
+
+                                <strong>24/7 Platform</strong>
+
+                                <small>Healthcare access anytime</small>
+
+                            </div>
+
+                        </div>
+
+                        <div class="hero-trust-item">
+
+                            <i class="fa-solid fa-brain"></i>
+
+                            <div>
+
+                                <strong>AI Powered</strong>
+
+                                <small>Smart health prediction</small>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- Hero Visual -->
+
+                <div class="col-lg-5 mt-5 mt-lg-0"
+                     data-aos="zoom-in"
+                     data-aos-duration="1200">
+
+                    <div class="health-dashboard-preview">
+
+                        <div class="preview-top-bar">
+
+                            <div>
+
+                                <span class="preview-dot dot-red"></span>
+                                <span class="preview-dot dot-yellow"></span>
+                                <span class="preview-dot dot-green"></span>
+
+                            </div>
+
+                            <span class="preview-title">
+
+                                Hospital Dashboard
+
+                            </span>
+
+                        </div>
+
+                        <div class="preview-body">
+
+                            <div class="preview-welcome">
+
+                                <div>
+
+                                    <small>Welcome Back</small>
+
+                                    <h4>Healthcare Dashboard</h4>
+
+                                </div>
+
+                                <div class="preview-user-icon">
+
+                                    <i class="fa-solid fa-user-doctor"></i>
+
+                                </div>
+
+                            </div>
+
+                            <div class="preview-stat-grid">
+
+                                <div class="preview-stat-card stat-blue">
+
+                                    <i class="fa-solid fa-users"></i>
+
+                                    <div>
+
+                                        <strong>Patients</strong>
+
+                                        <span>Management</span>
+
+                                    </div>
+
+                                </div>
+
+                                <div class="preview-stat-card stat-green">
+
+                                    <i class="fa-solid fa-user-doctor"></i>
+
+                                    <div>
+
+                                        <strong>Doctors</strong>
+
+                                        <span>Specialists</span>
+
+                                    </div>
+
+                                </div>
+
+                                <div class="preview-stat-card stat-orange">
+
+                                    <i class="fa-solid fa-calendar-check"></i>
+
+                                    <div>
+
+                                        <strong>Appointments</strong>
+
+                                        <span>Scheduling</span>
+
+                                    </div>
+
+                                </div>
+
+                                <div class="preview-stat-card stat-red">
+
+                                    <i class="fa-solid fa-ticket"></i>
+
+                                    <div>
+
+                                        <strong>Smart Tokens</strong>
+
+                                        <span>Live Queue</span>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <div class="preview-chart">
+
+                                <div class="preview-chart-heading">
+
+                                    <span>Hospital Activity</span>
+
+                                    <i class="fa-solid fa-chart-line"></i>
+
+                                </div>
+
+                                <div class="chart-bars">
+
+                                    <span style="height: 40%;"></span>
+                                    <span style="height: 65%;"></span>
+                                    <span style="height: 48%;"></span>
+                                    <span style="height: 80%;"></span>
+                                    <span style="height: 60%;"></span>
+                                    <span style="height: 92%;"></span>
+                                    <span style="height: 72%;"></span>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="hero-floating-card floating-doctor">
+
+                        <div class="floating-icon doctor-icon">
+
+                            <i class="fa-solid fa-user-doctor"></i>
+
+                        </div>
+
+                        <div>
+
+                            <strong>Expert Doctors</strong>
+
+                            <small>Professional care</small>
+
+                        </div>
+
+                    </div>
+
+                    <div class="hero-floating-card floating-ai">
+
+                        <div class="floating-icon ai-icon">
+
+                            <i class="fa-solid fa-robot"></i>
+
+                        </div>
+
+                        <div>
+
+                            <strong>AI Prediction</strong>
+
+                            <small>Smart analysis</small>
+
+                        </div>
+
+                    </div>
+
+                    <div class="hero-floating-card floating-token">
+
+                        <div class="floating-icon token-icon">
+
+                            <i class="fa-solid fa-ticket"></i>
+
+                        </div>
+
+                        <div>
+
+                            <strong>Smart Queue</strong>
+
+                            <small>Reduced waiting</small>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- =====================================================
+         STATISTICS SECTION
+    ====================================================== -->
+
+    <section class="home-statistics-section">
+
+        <div class="container">
+
+            <div class="home-statistics-box"
+                 data-aos="fade-up">
+
+                <div class="row g-4 text-center">
+
+                    <div class="col-6 col-lg-3">
+
+                        <div class="home-stat-item">
+
+                            <i class="fa-solid fa-clock"></i>
+
+                            <h2 class="counter-number"
+                                data-target="24">
+
+                                0
+
+                            </h2>
+
+                            <p>Hours Available</p>
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-6 col-lg-3">
+
+                        <div class="home-stat-item">
+
+                            <i class="fa-solid fa-user-shield"></i>
+
+                            <h2 class="counter-number"
+                                data-target="4">
+
+                                0
+
+                            </h2>
+
+                            <p>User Portals</p>
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-6 col-lg-3">
+
+                        <div class="home-stat-item">
+
+                            <i class="fa-solid fa-layer-group"></i>
+
+                            <h2 class="counter-number"
+                                data-target="12">
+
+                                0
+
+                            </h2>
+
+                            <p>Smart Modules</p>
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-6 col-lg-3">
+
+                        <div class="home-stat-item">
+
+                            <i class="fa-solid fa-laptop-medical"></i>
+
+                            <h2 class="counter-number"
+                                data-target="100">
+
+                                0
+
+                            </h2>
+
+                            <p>Digital System</p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- =====================================================
+         SERVICES SECTION
+    ====================================================== -->
+
+    <section id="services"
+             class="home-services-section">
+
+        <div class="container">
+
+            <div class="home-section-heading"
+                 data-aos="fade-up">
+
+                <span class="home-section-tag">
+
+                    <i class="fa-solid fa-stethoscope"></i>
+
+                    Our Services
+
+                </span>
+
+                <h2>
+
+                    Complete Digital Healthcare Solution
+
+                </h2>
+
+                <p>
+
+                    Manage every important hospital operation from one
+                    centralized and easy-to-use system.
+
+                </p>
+
+            </div>
+
+            <div class="row g-4">
+
+                <div class="col-md-6 col-lg-4"
+                     data-aos="fade-up"
+                     data-aos-delay="100">
+
+                    <div class="modern-service-card">
+
+                        <div class="modern-service-icon service-blue">
+
+                            <i class="fa-solid fa-user-injured"></i>
+
+                        </div>
+
+                        <h4>Patient Management</h4>
+
+                        <p>
+
+                            Register patients, update their information
+                            and maintain organized digital records.
+
+                        </p>
+
+                        <span class="service-number">01</span>
+
+                    </div>
+
+                </div>
+
+                <div class="col-md-6 col-lg-4"
+                     data-aos="fade-up"
+                     data-aos-delay="200">
+
+                    <div class="modern-service-card">
+
+                        <div class="modern-service-icon service-green">
+
+                            <i class="fa-solid fa-user-doctor"></i>
+
+                        </div>
+
+                        <h4>Doctor Management</h4>
+
+                        <p>
+
+                            Manage doctors, specializations, availability,
+                            appointments and consultations.
+
+                        </p>
+
+                        <span class="service-number">02</span>
+
+                    </div>
+
+                </div>
+
+                <div class="col-md-6 col-lg-4"
+                     data-aos="fade-up"
+                     data-aos-delay="300">
+
+                    <div class="modern-service-card">
+
+                        <div class="modern-service-icon service-orange">
+
+                            <i class="fa-solid fa-calendar-check"></i>
+
+                        </div>
+
+                        <h4>Appointments</h4>
+
+                        <p>
+
+                            Schedule appointments and track Pending,
+                            Approved and Completed status.
+
+                        </p>
+
+                        <span class="service-number">03</span>
+
+                    </div>
+
+                </div>
+
+                <div class="col-md-6 col-lg-4"
+                     data-aos="fade-up"
+                     data-aos-delay="100">
+
+                    <div class="modern-service-card">
+
+                        <div class="modern-service-icon service-purple">
+
+                            <i class="fa-solid fa-ticket"></i>
+
+                        </div>
+
+                        <h4>Smart Token Queue</h4>
+
+                        <p>
+
+                            Generate tokens, manage queue positions and
+                            display estimated waiting time.
+
+                        </p>
+
+                        <span class="service-number">04</span>
+
+                    </div>
+
+                </div>
+
+                <div class="col-md-6 col-lg-4"
+                     data-aos="fade-up"
+                     data-aos-delay="200">
+
+                    <div class="modern-service-card">
+
+                        <div class="modern-service-icon service-red">
+
+                            <i class="fa-solid fa-brain"></i>
+
+                        </div>
+
+                        <h4>AI Health Prediction</h4>
+
+                        <p>
+
+                            Analyze entered symptoms and provide an
+                            educational disease prediction result.
+
+                        </p>
+
+                        <span class="service-number">05</span>
+
+                    </div>
+
+                </div>
+
+                <div class="col-md-6 col-lg-4"
+                     data-aos="fade-up"
+                     data-aos-delay="300">
+
+                    <div class="modern-service-card">
+
+                        <div class="modern-service-icon service-cyan">
+
+                            <i class="fa-solid fa-file-medical"></i>
+
+                        </div>
+
+                        <h4>Digital Medical Records</h4>
+
+                        <p>
+
+                            Store prescriptions, lab reports, bills
+                            and complete patient medical information.
+
+                        </p>
+
+                        <span class="service-number">06</span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- =====================================================
+         WHY CHOOSE US
+    ====================================================== -->
+
+    <section class="why-choose-section">
+
+        <div class="container">
+
+            <div class="row align-items-center">
+
+                <div class="col-lg-6"
+                     data-aos="fade-right">
+
+                    <div class="why-visual">
+
+                        <div class="why-main-circle">
+
+                            <i class="fa-solid fa-hospital-user"></i>
+
+                        </div>
+
+                        <div class="why-ring ring-one"></div>
+                        <div class="why-ring ring-two"></div>
+
+                        <div class="why-mini-card why-card-one">
+
+                            <i class="fa-solid fa-shield-halved"></i>
+
+                            <span>Secure</span>
+
+                        </div>
+
+                        <div class="why-mini-card why-card-two">
+
+                            <i class="fa-solid fa-bolt"></i>
+
+                            <span>Fast</span>
+
+                        </div>
+
+                        <div class="why-mini-card why-card-three">
+
+                            <i class="fa-solid fa-chart-line"></i>
+
+                            <span>Smart</span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="col-lg-6 mt-5 mt-lg-0"
+                     data-aos="fade-left">
+
+                    <span class="home-section-tag">
+
+                        <i class="fa-solid fa-star"></i>
+
+                        Why Choose Us
+
+                    </span>
+
+                    <h2 class="why-title">
+
+                        Technology Designed for Better Healthcare
+
+                    </h2>
+
+                    <p class="why-description">
+
+                        This platform helps reduce paperwork, improve
+                        hospital workflow and provide faster access to
+                        healthcare information.
+
+                    </p>
+
+                    <div class="why-feature-list">
+
+                        <div class="why-feature-item">
+
+                            <div class="why-check">
+
+                                <i class="fa-solid fa-check"></i>
+
+                            </div>
+
+                            <div>
+
+                                <h5>Role-Based Secure Login</h5>
+
+                                <p>
+
+                                    Separate access for Admin, Doctor,
+                                    Receptionist and Patient.
+
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                        <div class="why-feature-item">
+
+                            <div class="why-check">
+
+                                <i class="fa-solid fa-check"></i>
+
+                            </div>
+
+                            <div>
+
+                                <h5>Centralized Hospital Records</h5>
+
+                                <p>
+
+                                    Important medical information is managed
+                                    through one organized system.
+
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                        <div class="why-feature-item">
+
+                            <div class="why-check">
+
+                                <i class="fa-solid fa-check"></i>
+
+                            </div>
+
+                            <div>
+
+                                <h5>Live Token Status Tracking</h5>
+
+                                <p>
+
+                                    Patients can check token number, queue
+                                    position and consultation status.
+
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                        <div class="why-feature-item">
+
+                            <div class="why-check">
+
+                                <i class="fa-solid fa-check"></i>
+
+                            </div>
+
+                            <div>
+
+                                <h5>Responsive Modern Design</h5>
+
+                                <p>
+
+                                    Works smoothly on desktop, tablet
+                                    and mobile devices.
+
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- =====================================================
+         USER ROLES
+    ====================================================== -->
+
+    <section class="home-roles-section">
+
+        <div class="container">
+
+            <div class="home-section-heading"
+                 data-aos="fade-up">
+
+                <span class="home-section-tag">
+
+                    <i class="fa-solid fa-users-gear"></i>
+
+                    User Portals
+
+                </span>
+
+                <h2>
+
+                    Designed for Every Hospital User
+
+                </h2>
+
+                <p>
+
+                    Each role receives a personalized dashboard and
+                    access to the correct hospital services.
+
+                </p>
+
+            </div>
+
+            <div class="row g-4">
+
+                <div class="col-md-6 col-lg-3"
+                     data-aos="flip-left"
+                     data-aos-delay="100">
+
+                    <div class="role-card role-admin">
+
+                        <div class="role-card-icon">
+
+                            <i class="fa-solid fa-user-shield"></i>
+
+                        </div>
+
+                        <h4>Administrator</h4>
+
+                        <p>
+
+                            Manages hospital users, doctors, patients,
+                            billing and system information.
+
+                        </p>
+
+                        <span>Full System Control</span>
+
+                    </div>
+
+                </div>
+
+                <div class="col-md-6 col-lg-3"
+                     data-aos="flip-left"
+                     data-aos-delay="200">
+
+                    <div class="role-card role-doctor">
+
+                        <div class="role-card-icon">
+
+                            <i class="fa-solid fa-user-doctor"></i>
+
+                        </div>
+
+                        <h4>Doctor</h4>
+
+                        <p>
+
+                            Views appointments, manages consultations,
+                            prescriptions and reports.
+
+                        </p>
+
+                        <span>Clinical Management</span>
+
+                    </div>
+
+                </div>
+
+                <div class="col-md-6 col-lg-3"
+                     data-aos="flip-left"
+                     data-aos-delay="300">
+
+                    <div class="role-card role-reception">
+
+                        <div class="role-card-icon">
+
+                            <i class="fa-solid fa-headset"></i>
+
+                        </div>
+
+                        <h4>Receptionist</h4>
+
+                        <p>
+
+                            Handles patient registration, appointments,
+                            tokens and billing operations.
+
+                        </p>
+
+                        <span>Front Desk Operations</span>
+
+                    </div>
+
+                </div>
+
+                <div class="col-md-6 col-lg-3"
+                     data-aos="flip-left"
+                     data-aos-delay="400">
+
+                    <div class="role-card role-patient">
+
+                        <div class="role-card-icon">
+
+                            <i class="fa-solid fa-user-injured"></i>
+
+                        </div>
+
+                        <h4>Patient</h4>
+
+                        <p>
+
+                            Views appointments, tokens, prescriptions,
+                            bills and laboratory reports.
+
+                        </p>
+
+                        <span>Personal Health Portal</span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- =====================================================
+         WORKFLOW
+    ====================================================== -->
+
+    <section class="home-workflow-section">
+
+        <div class="container">
+
+            <div class="home-section-heading"
+                 data-aos="fade-up">
+
+                <span class="home-section-tag">
+
+                    <i class="fa-solid fa-route"></i>
+
+                    Simple Workflow
+
+                </span>
+
+                <h2>
+
+                    Patient Journey Made Easy
+
+                </h2>
+
+                <p>
+
+                    From registration to treatment, every step is
+                    managed digitally and efficiently.
+
+                </p>
+
+            </div>
+
+            <div class="workflow-wrapper">
+
+                <div class="workflow-line"></div>
+
+                <div class="row g-4">
+
+                    <div class="col-md-3"
+                         data-aos="fade-up"
+                         data-aos-delay="100">
+
+                        <div class="modern-workflow-card">
+
+                            <div class="workflow-step-number">1</div>
+
+                            <div class="workflow-icon">
+
+                                <i class="fa-solid fa-user-plus"></i>
+
+                            </div>
+
+                            <h5>Patient Registration</h5>
+
+                            <p>
+
+                                Register patient details and create
+                                a secure login account.
+
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-3"
+                         data-aos="fade-up"
+                         data-aos-delay="200">
+
+                        <div class="modern-workflow-card">
+
+                            <div class="workflow-step-number">2</div>
+
+                            <div class="workflow-icon">
+
+                                <i class="fa-solid fa-calendar-plus"></i>
+
+                            </div>
+
+                            <h5>Book Appointment</h5>
+
+                            <p>
+
+                                Choose the doctor, appointment date
+                                and consultation time.
+
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-3"
+                         data-aos="fade-up"
+                         data-aos-delay="300">
+
+                        <div class="modern-workflow-card">
+
+                            <div class="workflow-step-number">3</div>
+
+                            <div class="workflow-icon">
+
+                                <i class="fa-solid fa-ticket"></i>
+
+                            </div>
+
+                            <h5>Receive Smart Token</h5>
+
+                            <p>
+
+                                Track token number, queue position
+                                and estimated waiting time.
+
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-3"
+                         data-aos="fade-up"
+                         data-aos-delay="400">
+
+                        <div class="modern-workflow-card">
+
+                            <div class="workflow-step-number">4</div>
+
+                            <div class="workflow-icon">
+
+                                <i class="fa-solid fa-notes-medical"></i>
+
+                            </div>
+
+                            <h5>Receive Treatment</h5>
+
+                            <p>
+
+                                Access prescriptions, reports,
+                                bills and consultation status.
+
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- =====================================================
+         EMERGENCY SECTION
+    ====================================================== -->
+
+    <section class="emergency-banner-section">
+
+        <div class="container">
+
+            <div class="emergency-banner"
+                 data-aos="zoom-in">
+
+                <div class="emergency-icon">
+
+                    <i class="fa-solid fa-truck-medical"></i>
+
+                </div>
+
+                <div class="emergency-content">
+
+                    <span>Emergency Healthcare Support</span>
+
+                    <h2>Available 24 Hours a Day</h2>
+
+                    <p>
+
+                        For medical emergencies, contact your nearest
+                        hospital or local emergency service immediately.
+
+                    </p>
+
+                </div>
+
+                <a href="{{ url_for('contact') }}"
+                   class="btn emergency-button">
+
+                    <i class="fa-solid fa-phone-volume"></i>
+
+                    Contact Hospital
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- =====================================================
+         TESTIMONIALS
+    ====================================================== -->
+
+    <section class="testimonial-section">
+
+        <div class="container">
+
+            <div class="home-section-heading"
+                 data-aos="fade-up">
+
+                <span class="home-section-tag">
+
+                    <i class="fa-solid fa-comments"></i>
+
+                    System Benefits
+
+                </span>
+
+                <h2>
+
+                    Built to Improve Hospital Experience
+
+                </h2>
+
+            </div>
+
+            <div class="row g-4">
+
+                <div class="col-md-4"
+                     data-aos="fade-up"
+                     data-aos-delay="100">
+
+                    <div class="testimonial-card">
+
+                        <div class="testimonial-stars">
+
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+
+                        </div>
+
+                        <p>
+
+                            “The centralized dashboard makes patient,
+                            doctor and appointment management simple
+                            and organized.”
+
+                        </p>
+
+                        <div class="testimonial-user">
+
+                            <div class="testimonial-avatar">
+
+                                <i class="fa-solid fa-user-shield"></i>
+
+                            </div>
+
+                            <div>
+
+                                <strong>Hospital Administrator</strong>
+
+                                <small>System Management</small>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="col-md-4"
+                     data-aos="fade-up"
+                     data-aos-delay="200">
+
+                    <div class="testimonial-card">
+
+                        <div class="testimonial-stars">
+
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+
+                        </div>
+
+                        <p>
+
+                            “Smart token tracking helps patients understand
+                            their position and reduces confusion in the queue.”
+
+                        </p>
+
+                        <div class="testimonial-user">
+
+                            <div class="testimonial-avatar">
+
+                                <i class="fa-solid fa-user-injured"></i>
+
+                            </div>
+
+                            <div>
+
+                                <strong>Patient Portal</strong>
+
+                                <small>Queue Tracking</small>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="col-md-4"
+                     data-aos="fade-up"
+                     data-aos-delay="300">
+
+                    <div class="testimonial-card">
+
+                        <div class="testimonial-stars">
+
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+                            <i class="fa-solid fa-star"></i>
+
+                        </div>
+
+                        <p>
+
+                            “Doctors can quickly view appointments,
+                            manage consultations and create digital
+                            medical records.”
+
+                        </p>
+
+                        <div class="testimonial-user">
+
+                            <div class="testimonial-avatar">
+
+                                <i class="fa-solid fa-user-doctor"></i>
+
+                            </div>
+
+                            <div>
+
+                                <strong>Doctor Portal</strong>
+
+                                <small>Clinical Workflow</small>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- =====================================================
+         FINAL CALL TO ACTION
+    ====================================================== -->
+
+    <section class="final-cta-section">
+
+        <div class="container">
+
+            <div class="final-cta-box"
+                 data-aos="zoom-in">
+
+                <div class="cta-glow cta-glow-one"></div>
+                <div class="cta-glow cta-glow-two"></div>
+
+                <div class="position-relative">
+
+                    <div class="final-cta-icon">
+
+                        <i class="fa-solid fa-heart-pulse"></i>
+
+                    </div>
+
+                    <h2>
+
+                        Experience Smarter Healthcare Management
+
+                    </h2>
+
+                    <p>
+
+                        Access a modern hospital management system designed
+                        for efficient administration and better patient care.
+
+                    </p>
+
+                    <div class="final-cta-buttons">
+
+                        {% if current_user.is_authenticated %}
+
+                        <a href="{{ url_for('dashboard') }}"
+                           class="btn cta-light-button">
+
+                            <i class="fa-solid fa-chart-line"></i>
+
+                            Open Dashboard
+
+                        </a>
+
+                        {% else %}
+
+                        <a href="{{ url_for('login') }}"
+                           class="btn cta-light-button">
+
+                            <i class="fa-solid fa-right-to-bracket"></i>
+
+                            Login to Continue
+
+                        </a>
+
+                        {% endif %}
+
+                        <a href="{{ url_for('about') }}"
+                           class="btn cta-outline-button">
+
+                            <i class="fa-solid fa-circle-info"></i>
+
+                            About the Project
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
 
 </div>
 
-<!-- Features -->
+<!-- Floating Chatbot Button -->
 
-<div class="container mt-5">
+{% if current_user.is_authenticated %}
 
-    <h2 class="text-center mb-5">
-        Our Services
-    </h2>
+<a href="{{ url_for('chatbot') }}"
+   class="floating-chatbot-button"
+   title="Open Hospital Chatbot">
 
-    <div class="row">
+    <i class="fa-solid fa-comments"></i>
 
-        <div class="col-md-3">
+    <span>Chat</span>
 
-            <div class="card shadow text-center">
+</a>
 
-                <div class="card-body">
+{% else %}
 
-                    <h1>👨‍⚕️</h1>
+<a href="{{ url_for('login') }}"
+   class="floating-chatbot-button"
+   title="Login to use the chatbot">
 
-                    <h4>Doctors</h4>
+    <i class="fa-solid fa-comments"></i>
 
-                    <p>
-                        Experienced doctors from different specialties.
-                    </p>
+    <span>Chat</span>
 
-                </div>
+</a>
 
-            </div>
+{% endif %}
 
-        </div>
+<!-- Scroll To Top Button -->
 
-        <div class="col-md-3">
+<button type="button"
+        id="scrollTopButton"
+        class="scroll-top-button"
+        onclick="scrollToTop()"
+        title="Go to top">
 
-            <div class="card shadow text-center">
+    <i class="fa-solid fa-arrow-up"></i>
 
-                <div class="card-body">
+</button>
 
-                    <h1>🩺</h1>
+<script>
 
-                    <h4>Patient Care</h4>
+document.addEventListener("DOMContentLoaded", function () {
 
-                    <p>
-                        Fast registration and appointment booking.
-                    </p>
+    const counters =
+        document.querySelectorAll(".counter-number");
 
-                </div>
+    let countersStarted = false;
 
-            </div>
+    function startCounters() {
 
-        </div>
+        if (countersStarted) {
+            return;
+        }
 
-        <div class="col-md-3">
+        const statisticsSection =
+            document.querySelector(
+                ".home-statistics-section"
+            );
 
-            <div class="card shadow text-center">
+        if (!statisticsSection) {
+            return;
+        }
 
-                <div class="card-body">
+        const sectionPosition =
+            statisticsSection.getBoundingClientRect().top;
 
-                    <h1>🤖</h1>
+        const screenHeight =
+            window.innerHeight;
 
-                    <h4>AI Diagnosis</h4>
+        if (sectionPosition < screenHeight - 50) {
 
-                    <p>
-                        Predict diseases using Artificial Intelligence.
-                    </p>
+            countersStarted = true;
 
-                </div>
+            counters.forEach(function (counter) {
 
-            </div>
+                const target =
+                    Number(counter.dataset.target);
 
-        </div>
+                let current = 0;
 
-        <div class="col-md-3">
+                const increment =
+                    Math.max(
+                        1,
+                        Math.ceil(target / 50)
+                    );
 
-            <div class="card shadow text-center">
+                const timer =
+                    setInterval(function () {
 
-                <div class="card-body">
+                        current += increment;
 
-                    <h1>💊</h1>
+                        if (current >= target) {
 
-                    <h4>Pharmacy</h4>
+                            counter.textContent =
+                                target + (
+                                    target === 100
+                                    ? "%"
+                                    : target === 24
+                                    ? "/7"
+                                    : "+"
+                                );
 
-                    <p>
-                        Billing, medicines and digital reports.
-                    </p>
+                            clearInterval(timer);
 
-                </div>
+                        } else {
 
-            </div>
+                            counter.textContent =
+                                current;
 
-        </div>
+                        }
 
-    </div>
+                    }, 30);
 
-</div>
+            });
 
-<!-- About -->
+        }
 
-<div class="container mt-5">
+    }
 
-    <div class="card shadow">
+    startCounters();
 
-        <div class="card-body">
+    window.addEventListener(
+        "scroll",
+        startCounters
+    );
 
-            <h2 class="text-center">
-                About Our Hospital
-            </h2>
 
-            <p class="mt-4 text-center">
+    const scrollButton =
+        document.getElementById(
+            "scrollTopButton"
+        );
 
-                Our AI Hospital Management System helps hospitals
-                manage patients, doctors, appointments, billing,
-                disease prediction, prescriptions and reports
-                using modern Artificial Intelligence.
+    window.addEventListener(
+        "scroll",
+        function () {
 
-            </p>
+            if (!scrollButton) {
+                return;
+            }
 
-        </div>
+            if (window.scrollY > 500) {
 
-    </div>
+                scrollButton.classList.add(
+                    "show-scroll-button"
+                );
 
-</div>
+            } else {
 
-<!-- Footer -->
+                scrollButton.classList.remove(
+                    "show-scroll-button"
+                );
 
-<footer class="bg-dark text-white text-center p-4 mt-5">
+            }
 
-    <h5>AI Hospital Management System</h5>
+        }
+    );
 
-    <p>Developed using Flask • Python • SQLAlchemy • Bootstrap</p>
+});
 
-</footer>
+
+function scrollToTop() {
+
+    window.scrollTo({
+
+        top: 0,
+
+        behavior: "smooth"
+
+    });
+
+}
+
+</script>
 
 {% endblock %}

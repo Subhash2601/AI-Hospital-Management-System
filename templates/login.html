@@ -2,266 +2,425 @@
 
 {% block content %}
 
-<div class="login-page">
+<style>
+    .login-page {
+        min-height: calc(100vh - 70px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 60px 15px;
+        position: relative;
+        overflow: hidden;
+        background:
+            linear-gradient(
+                135deg,
+                #031b4e 0%,
+                #0756a3 50%,
+                #0d6efd 75%,
+                #20c997 100%
+            );
+    }
 
-    <div class="row justify-content-center align-items-center">
+    .login-circle {
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.08);
+        pointer-events: none;
+    }
 
-        <div class="col-lg-10">
+    .login-circle-one {
+        width: 350px;
+        height: 350px;
+        top: -150px;
+        right: -80px;
+    }
 
-            <div class="login-container shadow-lg"
-                 data-aos="zoom-in">
+    .login-circle-two {
+        width: 260px;
+        height: 260px;
+        bottom: -110px;
+        left: -70px;
+    }
 
-                <div class="row g-0">
+    .login-container {
+        position: relative;
+        z-index: 2;
+        width: 100%;
+        max-width: 1050px;
+        overflow: hidden;
+        border-radius: 25px;
+        background: white;
+        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.3);
+    }
 
-                    <!-- Left Information Section -->
+    .login-information {
+        height: 100%;
+        padding: 55px 45px;
+        color: white;
+        background:
+            linear-gradient(
+                145deg,
+                #063970,
+                #0d6efd,
+                #20c997
+            );
+    }
 
-                    <div class="col-lg-6 login-info">
+    .login-logo {
+        width: 75px;
+        height: 75px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 25px;
+        border-radius: 22px;
+        background: rgba(255, 255, 255, 0.18);
+        font-size: 37px;
+    }
 
-                        <div class="login-info-content">
+    .login-information h1 {
+        margin-bottom: 18px;
+        font-size: 2.5rem;
+        font-weight: 800;
+    }
 
-                            <div class="login-logo">
+    .login-information > p {
+        margin-bottom: 30px;
+        color: rgba(255, 255, 255, 0.85);
+        line-height: 1.8;
+    }
 
-                                <i class="fa-solid fa-hospital-user"></i>
+    .login-feature {
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        margin-top: 20px;
+    }
 
-                            </div>
+    .login-feature i {
+        width: 42px;
+        height: 42px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        color: #ffc107;
+        background: rgba(255, 255, 255, 0.14);
+    }
 
-                            <h1 class="fw-bold mt-4">
+    .login-feature strong,
+    .login-feature small {
+        display: block;
+    }
 
-                                AI Hospital Management System
+    .login-feature small {
+        color: rgba(255, 255, 255, 0.72);
+    }
 
-                            </h1>
+    .login-form-section {
+        padding: 55px 48px;
+    }
 
-                            <p class="lead mt-3">
+    .login-form-section h2 {
+        color: #063970;
+        font-weight: 800;
+    }
 
-                                Smart, secure and centralized healthcare
-                                management powered by artificial intelligence.
+    .login-form-section .form-label {
+        color: #344054;
+        font-weight: 700;
+    }
 
-                            </p>
+    .login-input-group {
+        position: relative;
+    }
 
-                            <div class="login-features mt-4">
+    .login-input-icon {
+        position: absolute;
+        z-index: 5;
+        top: 50%;
+        left: 17px;
+        transform: translateY(-50%);
+        color: #0d6efd;
+    }
 
-                                <div class="login-feature-item">
+    .login-form-control {
+        min-height: 55px;
+        padding-left: 48px;
+        border: 1px solid #d7deea;
+        border-radius: 13px;
+        background: #f8faff;
+    }
 
-                                    <i class="fa-solid fa-circle-check"></i>
+    .login-form-control:focus {
+        border-color: #0d6efd;
+        background: white;
+        box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.12);
+    }
 
-                                    <span>Patient and Doctor Management</span>
+    .password-toggle {
+        position: absolute;
+        z-index: 6;
+        top: 50%;
+        right: 16px;
+        transform: translateY(-50%);
+        border: none;
+        color: #6c757d;
+        background: transparent;
+    }
 
-                                </div>
+    .login-submit-button {
+        min-height: 55px;
+        border: none;
+        border-radius: 13px;
+        color: white;
+        background:
+            linear-gradient(
+                135deg,
+                #0d6efd,
+                #20c997
+            );
+        font-weight: 800;
+        box-shadow: 0 13px 28px rgba(13, 110, 253, 0.25);
+    }
 
-                                <div class="login-feature-item">
+    .login-submit-button:hover {
+        color: white;
+        transform: translateY(-2px);
+    }
 
-                                    <i class="fa-solid fa-circle-check"></i>
+    .role-badges {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 7px;
+        margin-top: 25px;
+    }
 
-                                    <span>Appointments and Smart Tokens</span>
+    .role-badges span {
+        padding: 6px 11px;
+        border-radius: 20px;
+        color: #0d6efd;
+        background: #e7f1ff;
+        font-size: 12px;
+        font-weight: 700;
+    }
 
-                                </div>
+    @media (max-width: 768px) {
+        .login-information {
+            padding: 40px 28px;
+        }
 
-                                <div class="login-feature-item">
+        .login-information h1 {
+            font-size: 2rem;
+        }
 
-                                    <i class="fa-solid fa-circle-check"></i>
+        .login-form-section {
+            padding: 40px 25px;
+        }
+    }
+</style>
 
-                                    <span>Billing and Medical Reports</span>
+<section class="login-page">
 
-                                </div>
+    <div class="login-circle login-circle-one"></div>
+    <div class="login-circle login-circle-two"></div>
 
-                                <div class="login-feature-item">
+    <div class="login-container"
+         data-aos="zoom-in"
+         data-aos-duration="800">
 
-                                    <i class="fa-solid fa-circle-check"></i>
+        <div class="row g-0">
 
-                                    <span>AI Disease Prediction</span>
+            <!-- Left Side -->
 
-                                </div>
+            <div class="col-lg-6">
 
-                            </div>
+                <div class="login-information">
 
+                    <div class="login-logo">
+                        <i class="fa-solid fa-heart-pulse"></i>
+                    </div>
+
+                    <h1>
+                        AI Hospital Management System
+                    </h1>
+
+                    <p>
+                        Securely access your personalized hospital portal
+                        and manage healthcare services from one intelligent
+                        digital platform.
+                    </p>
+
+                    <div class="login-feature">
+
+                        <i class="fa-solid fa-shield-halved"></i>
+
+                        <div>
+                            <strong>Secure Authentication</strong>
+                            <small>Protected role-based access</small>
                         </div>
 
                     </div>
 
-                    <!-- Login Form Section -->
+                    <div class="login-feature">
 
-                    <div class="col-lg-6 login-form-section">
+                        <i class="fa-solid fa-users-gear"></i>
 
-                        <div class="login-form-content">
+                        <div>
+                            <strong>Four User Portals</strong>
+                            <small>Admin, Doctor, Receptionist and Patient</small>
+                        </div>
 
-                            <div class="text-center mb-4">
+                    </div>
 
-                                <div class="login-user-icon">
+                    <div class="login-feature">
 
-                                    <i class="fa-solid fa-user-lock"></i>
+                        <i class="fa-solid fa-laptop-medical"></i>
 
-                                </div>
+                        <div>
+                            <strong>Complete Hospital Services</strong>
+                            <small>Appointments, tokens, bills and reports</small>
+                        </div>
 
-                                <h2 class="fw-bold mt-3">
+                    </div>
 
-                                    Welcome Back
+                </div>
 
-                                </h2>
+            </div>
 
-                                <p class="text-muted">
+            <!-- Login Form -->
 
-                                    Login to access your hospital dashboard
+            <div class="col-lg-6">
 
-                                </p>
+                <div class="login-form-section">
 
-                            </div>
+                    <div class="text-center mb-4">
 
-                            <form method="POST"
-                                  action="{{ url_for('login') }}"
-                                  class="login-form">
+                        <div class="mb-3 text-primary"
+                             style="font-size: 48px;">
 
-                                <div class="mb-4">
+                            <i class="fa-solid fa-user-lock"></i>
 
-                                    <label class="form-label fw-semibold">
+                        </div>
 
-                                        <i class="fa-solid fa-user"></i>
+                        <h2>Welcome Back</h2>
 
-                                        Username
+                        <p class="text-muted">
+                            Enter your account details to continue
+                        </p>
 
-                                    </label>
+                    </div>
 
-                                    <div class="input-group">
+                    <form method="POST"
+                          action="{{ url_for('login') }}">
 
-                                        <span class="input-group-text">
+                        <div class="mb-4">
 
-                                            <i class="fa-solid fa-user"></i>
+                            <label for="username"
+                                   class="form-label">
 
-                                        </span>
+                                Username
 
-                                        <input type="text"
-                                               name="username"
-                                               class="form-control form-control-lg"
-                                               placeholder="Enter your username"
-                                               autocomplete="username"
-                                               required
-                                               autofocus>
+                            </label>
 
-                                    </div>
+                            <div class="login-input-group">
 
-                                </div>
+                                <i class="fa-solid fa-user login-input-icon"></i>
 
-                                <div class="mb-3">
-
-                                    <label class="form-label fw-semibold">
-
-                                        <i class="fa-solid fa-lock"></i>
-
-                                        Password
-
-                                    </label>
-
-                                    <div class="input-group">
-
-                                        <span class="input-group-text">
-
-                                            <i class="fa-solid fa-key"></i>
-
-                                        </span>
-
-                                        <input type="password"
-                                               name="password"
-                                               id="password"
-                                               class="form-control form-control-lg"
-                                               placeholder="Enter your password"
-                                               autocomplete="current-password"
-                                               required>
-
-                                        <button type="button"
-                                                class="btn btn-outline-secondary"
-                                                onclick="togglePassword()">
-
-                                            <i id="passwordIcon"
-                                               class="fa-solid fa-eye"></i>
-
-                                        </button>
-
-                                    </div>
-
-                                </div>
-
-                                <div class="d-flex justify-content-between align-items-center mb-4">
-
-                                    <div class="form-check">
-
-                                        <input class="form-check-input"
-                                               type="checkbox"
-                                               id="rememberUsername"
-                                               onclick="saveUsername()">
-
-                                        <label class="form-check-label"
-                                               for="rememberUsername">
-
-                                            Remember username
-
-                                        </label>
-
-                                    </div>
-
-                                    <a href="{{ url_for('home') }}"
-                                       class="text-decoration-none">
-
-                                        <i class="fa-solid fa-house"></i>
-
-                                        Home
-
-                                    </a>
-
-                                </div>
-
-                                <button type="submit"
-                                        class="btn btn-primary btn-lg w-100 login-button">
-
-                                    <i class="fa-solid fa-right-to-bracket"></i>
-
-                                    Login Securely
-
-                                </button>
-
-                            </form>
-
-                            <div class="text-center mt-4">
-
-                                <p class="text-muted mb-2">
-
-                                    Authorized users only
-
-                                </p>
-
-                                <div class="login-role-icons">
-
-                                    <span title="Administrator">
-
-                                        <i class="fa-solid fa-user-shield"></i>
-                                        Admin
-
-                                    </span>
-
-                                    <span title="Doctor">
-
-                                        <i class="fa-solid fa-user-doctor"></i>
-                                        Doctor
-
-                                    </span>
-
-                                    <span title="Receptionist">
-
-                                        <i class="fa-solid fa-headset"></i>
-                                        Reception
-
-                                    </span>
-
-                                    <span title="Patient">
-
-                                        <i class="fa-solid fa-user-injured"></i>
-                                        Patient
-
-                                    </span>
-
-                                </div>
+                                <input type="text"
+                                       id="username"
+                                       name="username"
+                                       class="form-control login-form-control"
+                                       placeholder="Enter your username"
+                                       autocomplete="username"
+                                       required
+                                       autofocus>
 
                             </div>
 
                         </div>
+
+                        <div class="mb-4">
+
+                            <label for="password"
+                                   class="form-label">
+
+                                Password
+
+                            </label>
+
+                            <div class="login-input-group">
+
+                                <i class="fa-solid fa-lock login-input-icon"></i>
+
+                                <input type="password"
+                                       id="password"
+                                       name="password"
+                                       class="form-control login-form-control"
+                                       placeholder="Enter your password"
+                                       autocomplete="current-password"
+                                       required>
+
+                                <button type="button"
+                                        class="password-toggle"
+                                        onclick="togglePassword()"
+                                        aria-label="Show or hide password">
+
+                                    <i id="passwordIcon"
+                                       class="fa-solid fa-eye"></i>
+
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                        <button type="submit"
+                                class="btn login-submit-button w-100">
+
+                            <i class="fa-solid fa-right-to-bracket me-2"></i>
+
+                            Login to Dashboard
+
+                        </button>
+
+                    </form>
+
+                    <div class="role-badges">
+
+                        <span>
+                            <i class="fa-solid fa-user-shield"></i>
+                            Admin
+                        </span>
+
+                        <span>
+                            <i class="fa-solid fa-user-doctor"></i>
+                            Doctor
+                        </span>
+
+                        <span>
+                            <i class="fa-solid fa-headset"></i>
+                            Receptionist
+                        </span>
+
+                        <span>
+                            <i class="fa-solid fa-user-injured"></i>
+                            Patient
+                        </span>
+
+                    </div>
+
+                    <div class="text-center mt-4">
+
+                        <a href="{{ url_for('home') }}"
+                           class="text-decoration-none">
+
+                            <i class="fa-solid fa-arrow-left me-1"></i>
+
+                            Return to Home Page
+
+                        </a>
 
                     </div>
 
@@ -273,71 +432,26 @@
 
     </div>
 
-</div>
+</section>
 
 <script>
+    function togglePassword() {
+        const passwordInput =
+            document.getElementById("password");
 
-function togglePassword() {
+        const passwordIcon =
+            document.getElementById("passwordIcon");
 
-    const passwordInput = document.getElementById("password");
-    const passwordIcon = document.getElementById("passwordIcon");
-
-    if (passwordInput.type === "password") {
-
-        passwordInput.type = "text";
-        passwordIcon.className = "fa-solid fa-eye-slash";
-
-    } else {
-
-        passwordInput.type = "password";
-        passwordIcon.className = "fa-solid fa-eye";
-
+        if (passwordInput.type === "password") {
+            passwordInput.type = "text";
+            passwordIcon.className =
+                "fa-solid fa-eye-slash";
+        } else {
+            passwordInput.type = "password";
+            passwordIcon.className =
+                "fa-solid fa-eye";
+        }
     }
-
-}
-
-function saveUsername() {
-
-    const checkbox = document.getElementById("rememberUsername");
-    const usernameInput = document.querySelector(
-        'input[name="username"]'
-    );
-
-    if (checkbox.checked) {
-
-        localStorage.setItem(
-            "hospitalUsername",
-            usernameInput.value
-        );
-
-    } else {
-
-        localStorage.removeItem("hospitalUsername");
-
-    }
-
-}
-
-document.addEventListener("DOMContentLoaded", function () {
-
-    const savedUsername =
-        localStorage.getItem("hospitalUsername");
-
-    const usernameInput =
-        document.querySelector('input[name="username"]');
-
-    const checkbox =
-        document.getElementById("rememberUsername");
-
-    if (savedUsername && usernameInput && checkbox) {
-
-        usernameInput.value = savedUsername;
-        checkbox.checked = true;
-
-    }
-
-});
-
 </script>
 
 {% endblock %}
