@@ -1,193 +1,342 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
 {% block content %}
 
-<div class="container mt-5">
+<div class="login-page">
 
-<div class="row justify-content-center">
+    <div class="row justify-content-center align-items-center">
 
-<div class="col-md-5">
+        <div class="col-lg-10">
 
-<div class="card shadow-lg">
+            <div class="login-container shadow-lg"
+                 data-aos="zoom-in">
 
-<div class="card-header bg-primary text-white text-center">
+                <div class="row g-0">
 
-<h3>
+                    <!-- Left Information Section -->
 
-<i class="fa-solid fa-hospital"></i>
+                    <div class="col-lg-6 login-info">
 
-AI Hospital Management System
+                        <div class="login-info-content">
 
-</h3>
+                            <div class="login-logo">
 
-<p class="mb-0">
+                                <i class="fa-solid fa-hospital-user"></i>
 
-Secure Login
+                            </div>
 
-</p>
+                            <h1 class="fw-bold mt-4">
 
-</div>
+                                AI Hospital Management System
 
-<div class="card-body">
+                            </h1>
 
-<form method="POST">
+                            <p class="lead mt-3">
 
-<div class="mb-3">
+                                Smart, secure and centralized healthcare
+                                management powered by artificial intelligence.
 
-<label class="form-label">
+                            </p>
 
-Username
+                            <div class="login-features mt-4">
 
-</label>
+                                <div class="login-feature-item">
 
-<div class="input-group">
+                                    <i class="fa-solid fa-circle-check"></i>
 
-<span class="input-group-text">
+                                    <span>Patient and Doctor Management</span>
 
-<i class="fa-solid fa-user"></i>
+                                </div>
 
-</span>
+                                <div class="login-feature-item">
 
-<input
-type="text"
-name="username"
-class="form-control"
-placeholder="Enter Username"
-required>
+                                    <i class="fa-solid fa-circle-check"></i>
 
-</div>
+                                    <span>Appointments and Smart Tokens</span>
 
-</div>
+                                </div>
 
-<div class="mb-3">
+                                <div class="login-feature-item">
 
-<label class="form-label">
+                                    <i class="fa-solid fa-circle-check"></i>
 
-Password
+                                    <span>Billing and Medical Reports</span>
 
-</label>
+                                </div>
 
-<div class="input-group">
+                                <div class="login-feature-item">
 
-<span class="input-group-text">
+                                    <i class="fa-solid fa-circle-check"></i>
 
-<i class="fa-solid fa-lock"></i>
+                                    <span>AI Disease Prediction</span>
 
-</span>
+                                </div>
 
-<input
-type="password"
-name="password"
-id="password"
-class="form-control"
-placeholder="Enter Password"
-required>
+                            </div>
 
-<button
-type="button"
-class="btn btn-outline-secondary"
-onclick="togglePassword()">
+                        </div>
 
-<i class="fa-solid fa-eye"></i>
+                    </div>
 
-</button>
+                    <!-- Login Form Section -->
 
-</div>
+                    <div class="col-lg-6 login-form-section">
 
-</div>
+                        <div class="login-form-content">
 
-<button
-class="btn btn-primary w-100">
+                            <div class="text-center mb-4">
 
-<i class="fa-solid fa-right-to-bracket"></i>
+                                <div class="login-user-icon">
 
-Login
+                                    <i class="fa-solid fa-user-lock"></i>
 
-</button>
+                                </div>
 
-</form>
+                                <h2 class="fw-bold mt-3">
 
-{% with messages=get_flashed_messages() %}
-{% if messages %}
+                                    Welcome Back
 
-<div class="alert alert-danger mt-3">
+                                </h2>
 
-{{ messages[0] }}
+                                <p class="text-muted">
 
-</div>
+                                    Login to access your hospital dashboard
 
-{% endif %}
-{% endwith %}
+                                </p>
 
-<hr>
+                            </div>
 
-<div class="text-center">
+                            <form method="POST"
+                                  action="{{ url_for('login') }}"
+                                  class="login-form">
 
-<h6>
+                                <div class="mb-4">
 
-Available Roles
+                                    <label class="form-label fw-semibold">
 
-</h6>
+                                        <i class="fa-solid fa-user"></i>
 
-<span class="badge bg-danger">
+                                        Username
 
-Admin
+                                    </label>
 
-</span>
+                                    <div class="input-group">
 
-<span class="badge bg-success">
+                                        <span class="input-group-text">
 
-Doctor
+                                            <i class="fa-solid fa-user"></i>
 
-</span>
+                                        </span>
 
-<span class="badge bg-warning text-dark">
+                                        <input type="text"
+                                               name="username"
+                                               class="form-control form-control-lg"
+                                               placeholder="Enter your username"
+                                               autocomplete="username"
+                                               required
+                                               autofocus>
 
-Receptionist
+                                    </div>
 
-</span>
+                                </div>
 
-<span class="badge bg-primary">
+                                <div class="mb-3">
 
-Patient
+                                    <label class="form-label fw-semibold">
 
-</span>
+                                        <i class="fa-solid fa-lock"></i>
 
-</div>
+                                        Password
 
-</div>
+                                    </label>
 
-<div class="card-footer text-center">
+                                    <div class="input-group">
 
-© 2026 AI Hospital Management System
+                                        <span class="input-group-text">
 
-</div>
+                                            <i class="fa-solid fa-key"></i>
 
-</div>
+                                        </span>
 
-</div>
+                                        <input type="password"
+                                               name="password"
+                                               id="password"
+                                               class="form-control form-control-lg"
+                                               placeholder="Enter your password"
+                                               autocomplete="current-password"
+                                               required>
 
-</div>
+                                        <button type="button"
+                                                class="btn btn-outline-secondary"
+                                                onclick="togglePassword()">
+
+                                            <i id="passwordIcon"
+                                               class="fa-solid fa-eye"></i>
+
+                                        </button>
+
+                                    </div>
+
+                                </div>
+
+                                <div class="d-flex justify-content-between align-items-center mb-4">
+
+                                    <div class="form-check">
+
+                                        <input class="form-check-input"
+                                               type="checkbox"
+                                               id="rememberUsername"
+                                               onclick="saveUsername()">
+
+                                        <label class="form-check-label"
+                                               for="rememberUsername">
+
+                                            Remember username
+
+                                        </label>
+
+                                    </div>
+
+                                    <a href="{{ url_for('home') }}"
+                                       class="text-decoration-none">
+
+                                        <i class="fa-solid fa-house"></i>
+
+                                        Home
+
+                                    </a>
+
+                                </div>
+
+                                <button type="submit"
+                                        class="btn btn-primary btn-lg w-100 login-button">
+
+                                    <i class="fa-solid fa-right-to-bracket"></i>
+
+                                    Login Securely
+
+                                </button>
+
+                            </form>
+
+                            <div class="text-center mt-4">
+
+                                <p class="text-muted mb-2">
+
+                                    Authorized users only
+
+                                </p>
+
+                                <div class="login-role-icons">
+
+                                    <span title="Administrator">
+
+                                        <i class="fa-solid fa-user-shield"></i>
+                                        Admin
+
+                                    </span>
+
+                                    <span title="Doctor">
+
+                                        <i class="fa-solid fa-user-doctor"></i>
+                                        Doctor
+
+                                    </span>
+
+                                    <span title="Receptionist">
+
+                                        <i class="fa-solid fa-headset"></i>
+                                        Reception
+
+                                    </span>
+
+                                    <span title="Patient">
+
+                                        <i class="fa-solid fa-user-injured"></i>
+                                        Patient
+
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
 
 </div>
 
 <script>
 
-function togglePassword(){
+function togglePassword() {
 
-let p=document.getElementById("password");
+    const passwordInput = document.getElementById("password");
+    const passwordIcon = document.getElementById("passwordIcon");
 
-if(p.type==="password"){
+    if (passwordInput.type === "password") {
 
-p.type="text";
+        passwordInput.type = "text";
+        passwordIcon.className = "fa-solid fa-eye-slash";
 
-}else{
+    } else {
 
-p.type="password";
+        passwordInput.type = "password";
+        passwordIcon.className = "fa-solid fa-eye";
+
+    }
 
 }
 
+function saveUsername() {
+
+    const checkbox = document.getElementById("rememberUsername");
+    const usernameInput = document.querySelector(
+        'input[name="username"]'
+    );
+
+    if (checkbox.checked) {
+
+        localStorage.setItem(
+            "hospitalUsername",
+            usernameInput.value
+        );
+
+    } else {
+
+        localStorage.removeItem("hospitalUsername");
+
+    }
+
 }
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const savedUsername =
+        localStorage.getItem("hospitalUsername");
+
+    const usernameInput =
+        document.querySelector('input[name="username"]');
+
+    const checkbox =
+        document.getElementById("rememberUsername");
+
+    if (savedUsername && usernameInput && checkbox) {
+
+        usernameInput.value = savedUsername;
+        checkbox.checked = true;
+
+    }
+
+});
 
 </script>
 

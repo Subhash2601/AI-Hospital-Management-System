@@ -586,3 +586,235 @@ background:#000 !important;
         padding: 45px 18px;
     }
 }
+/* =========================================================
+   PROFESSIONAL LOGIN PAGE
+========================================================= */
+
+.login-page {
+    min-height: 75vh;
+    display: flex;
+    align-items: center;
+    padding: 45px 0;
+}
+
+.login-container {
+    overflow: hidden;
+    border-radius: 25px;
+    background: white;
+}
+
+.login-info {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-height: 620px;
+    padding: 50px;
+    color: white;
+    background:
+        linear-gradient(
+            135deg,
+            rgba(6, 57, 112, 0.97),
+            rgba(13, 110, 253, 0.92),
+            rgba(32, 201, 151, 0.88)
+        );
+}
+
+.login-info::before,
+.login-info::after {
+    position: absolute;
+    content: "";
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.09);
+}
+
+.login-info::before {
+    width: 230px;
+    height: 230px;
+    top: -80px;
+    right: -70px;
+}
+
+.login-info::after {
+    width: 170px;
+    height: 170px;
+    bottom: -50px;
+    left: -50px;
+}
+
+.login-info-content {
+    position: relative;
+    z-index: 2;
+}
+
+.login-logo {
+    width: 100px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 25px;
+    background: rgba(255, 255, 255, 0.18);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px);
+}
+
+.login-logo i {
+    font-size: 52px;
+}
+
+.login-feature-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 17px;
+    padding: 12px 15px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.login-feature-item i {
+    color: #ffc107;
+    font-size: 20px;
+}
+
+.login-form-section {
+    display: flex;
+    align-items: center;
+    min-height: 620px;
+    padding: 50px;
+    background: white;
+}
+
+.login-form-content {
+    width: 100%;
+}
+
+.login-user-icon {
+    width: 85px;
+    height: 85px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    color: white;
+    background: linear-gradient(135deg, #0d6efd, #20c997);
+    box-shadow: 0 12px 30px rgba(13, 110, 253, 0.3);
+}
+
+.login-user-icon i {
+    font-size: 38px;
+}
+
+.login-form {
+    padding: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.login-form .input-group-text {
+    min-width: 55px;
+    justify-content: center;
+    color: #0d6efd;
+    background: #eef5ff;
+    border-right: none;
+}
+
+.login-form .form-control {
+    border-left: none;
+}
+
+.login-form .form-control:focus {
+    border-color: #dee2e6;
+    box-shadow: none;
+}
+
+.login-button {
+    min-height: 55px;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #0d6efd, #084298);
+    box-shadow: 0 10px 25px rgba(13, 110, 253, 0.25);
+}
+
+.login-role-icons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+}
+
+.login-role-icons span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 10px;
+    border-radius: 20px;
+    color: #495057;
+    background: #f1f4f9;
+    font-size: 13px;
+}
+
+.login-role-icons i {
+    color: #0d6efd;
+}
+
+/* Login dark mode */
+
+.dark-mode .login-container,
+.dark-mode .login-form-section {
+    background: #1e1e1e;
+    color: white;
+}
+
+.dark-mode .login-form {
+    background: transparent;
+}
+
+.dark-mode .login-form .input-group-text {
+    color: #6ea8fe;
+    background: #292929;
+    border-color: #555;
+}
+
+.dark-mode .login-role-icons span {
+    color: white;
+    background: #292929;
+}
+
+/* Login responsive design */
+
+@media (max-width: 992px) {
+    .login-info {
+        min-height: auto;
+        padding: 45px 30px;
+        text-align: center;
+    }
+
+    .login-logo {
+        margin: auto;
+    }
+
+    .login-form-section {
+        min-height: auto;
+        padding: 45px 30px;
+    }
+}
+
+@media (max-width: 576px) {
+    .login-page {
+        padding: 20px 0;
+    }
+
+    .login-info,
+    .login-form-section {
+        padding: 35px 20px;
+    }
+
+    .login-info h1 {
+        font-size: 1.8rem;
+    }
+
+    .login-role-icons {
+        gap: 7px;
+    }
+}
