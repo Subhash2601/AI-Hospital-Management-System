@@ -83,26 +83,61 @@ def load_user(user_id):
 # Role Required Decorator
 # ==========================================================
 
-def role_required(*roles):
+def role_required(*allowed_roles):
 
-    def decorator(f):
+    # Convert all allowed roles to lowercase
+    normalized_allowed_roles = set()
 
-        @wraps(f)
+    for role in allowed_roles:
+
+        normalized_role = str(role).strip().lower()
+
+        # Treat Receptionist and Reception as the same role
+        if normalized_role == "receptionist":
+            normalized_role = "reception"
+
+        normalized_allowed_roles.add(normalized_role)
+
+    def decorator(function):
+
+        @wraps(function)
         def decorated_function(*args, **kwargs):
 
+            # Check whether the user is logged in
             if not current_user.is_authenticated:
 
-                flash("Please login first.", "danger")
+                flash(
+                    "Please login first.",
+                    "warning"
+                )
 
-                return redirect(url_for("login"))
+                return redirect(
+                    url_for("login")
+                )
 
-            if current_user.role not in roles:
+            # Read and normalize the logged-in user's role
+            current_role = (
+                current_user.role or ""
+            ).strip().lower()
 
-                flash("Access Denied!", "danger")
+            # Treat Receptionist and Reception as the same role
+            if current_role == "receptionist":
+                current_role = "reception"
 
-                return redirect(url_for("login"))
+            # Check role permission
+            if current_role not in normalized_allowed_roles:
 
-            return f(*args, **kwargs)
+                flash(
+                    "Access Denied! You do not have permission "
+                    "to access this page.",
+                    "danger"
+                )
+
+                return redirect(
+                    url_for("home")
+                )
+
+            return function(*args, **kwargs)
 
         return decorated_function
 
@@ -123,62 +158,134 @@ def home():
 @app.route("/login", methods=["GET", "POST"])
 def login():
 
-    # Already Logged In
     if current_user.is_authenticated:
+        return redirect(url_for("dashboard"))
 
-        if current_user.role == "Admin":
-            return redirect(url_for("dashboard"))
-
-        elif current_user.role == "Doctor":
-            return redirect(url_for("doctor_dashboard"))
-
-        elif current_user.role == "Reception":
-            return redirect(url_for("reception_dashboard"))
-
-        elif current_user.role == "Patient":
-            return redirect(url_for("patient_dashboard"))
-
-    # Login Process
     if request.method == "POST":
 
-        username = request.form["username"]
-        password = request.form["password"]
+        username = request.form.get(
+            "username",
+            ""
+        ).strip()
 
-        user = User.query.filter_by(
-            username=username
-        ).first()
+        password = request.form.get(
+            "password",
+            ""
+        )
 
-        if user and check_password_hash(
-            user.password,
-            password
-        ):
-
-            login_user(user)
+        if not username or not password:
 
             flash(
-                f"Welcome {user.fullname}",
-                "success"
+                "Please enter username and password.",
+                "warning"
             )
 
-            if user.role == "Admin":
-                return redirect(url_for("dashboard"))
+            return redirect(url_for("login"))
 
-            elif user.role == "Doctor":
-                return redirect(url_for("doctor_dashboard"))
+        # Username search is not case-sensitive
+        user = User.query.filter(
+            db.func.lower(User.username)
+            == username.lower()
+        ).first()
 
-            elif user.role == "Reception":
-                return redirect(url_for("reception_dashboard"))
+        if not user:
 
-            elif user.role == "Patient":
-                return redirect(url_for("patient_dashboard"))
+            flash(
+                "Invalid username or password.",
+                "danger"
+            )
+
+            return redirect(url_for("login"))
+
+        stored_password = user.password or ""
+
+        # Support both old plain-text passwords
+        # and new hashed passwords
+        password_is_hashed = stored_password.startswith(
+            (
+                "scrypt:",
+                "pbkdf2:"
+            )
+        )
+
+        if password_is_hashed:
+
+            password_correct = check_password_hash(
+                stored_password,
+                password
+            )
+
+        else:
+
+            password_correct = (
+                stored_password == password
+            )
+
+            # Automatically convert old plain password
+            # into a secure hashed password
+            if password_correct:
+
+                user.password = generate_password_hash(
+                    password
+                )
+
+                db.session.commit()
+
+        if not password_correct:
+
+            flash(
+                "Invalid username or password.",
+                "danger"
+            )
+
+            return redirect(url_for("login"))
+
+        login_user(user)
+
+        role = (user.role or "").strip().lower()
 
         flash(
-            "Invalid Username or Password",
+            f"Welcome, {user.fullname}!",
+            "success"
+        )
+
+        if role == "admin":
+
+            return redirect(
+                url_for("dashboard")
+            )
+
+        elif role == "doctor":
+
+            return redirect(
+                url_for("doctor_dashboard")
+            )
+
+        elif role in [
+            "reception",
+            "receptionist"
+        ]:
+
+            return redirect(
+                url_for("reception_dashboard")
+            )
+
+        elif role == "patient":
+
+            return redirect(
+                url_for("patient_dashboard")
+            )
+
+        logout_user()
+
+        flash(
+            "Your account has an invalid role.",
             "danger"
         )
 
-    return render_template("login.html")
+        return redirect(url_for("login"))
 
+    return render_template("login.html")
 
 # ==========================================================
 # Logout
@@ -306,27 +413,31 @@ def doctor_dashboard():
 
 
 # ==========================================================
-# Reception Dashboard
+# Receptionist Dashboard
 # ==========================================================
 
 @app.route("/reception_dashboard")
 @login_required
-@role_required("Reception")
+@role_required("Reception", "Receptionist")
 def reception_dashboard():
 
-    waiting = Token.query.filter_by(
+    total_patients = Patient.query.count()
+
+    total_doctors = Doctor.query.count()
+
+    total_appointments = Appointment.query.count()
+
+    waiting_tokens = Token.query.filter_by(
         status="Waiting"
     ).count()
 
     return render_template(
         "reception_dashboard.html",
-        patients=Patient.query.count(),
-        doctors=Doctor.query.count(),
-        appointments=Appointment.query.count(),
-        waiting_tokens=waiting
+        total_patients=total_patients,
+        total_doctors=total_doctors,
+        total_appointments=total_appointments,
+        waiting_tokens=waiting_tokens
     )
-
-
 # ==========================================================
 # Patient Dashboard
 # ==========================================================
@@ -373,6 +484,7 @@ def patient_dashboard():
         reports=reports,
         tokens=tokens
     )
+
 # ==========================================================
 # User Management
 # ==========================================================
@@ -384,50 +496,120 @@ def users():
 
     if request.method == "POST":
 
-        fullname = request.form["fullname"].strip()
-        username = request.form["username"].strip()
-        password = request.form["password"]
-        role = request.form["role"]
+        fullname = request.form.get(
+            "fullname",
+            ""
+        ).strip()
 
-        # Check Username
+        username = request.form.get(
+            "username",
+            ""
+        ).strip()
 
-        existing_user = User.query.filter_by(
-            username=username
+        password = request.form.get(
+            "password",
+            ""
+        )
+
+        role = request.form.get(
+            "role",
+            ""
+        ).strip()
+
+        if not fullname:
+
+            flash(
+                "Full name is required.",
+                "warning"
+            )
+
+            return redirect(url_for("users"))
+
+        if not username:
+
+            flash(
+                "Username is required.",
+                "warning"
+            )
+
+            return redirect(url_for("users"))
+
+        if not password:
+
+            flash(
+                "Password is required.",
+                "warning"
+            )
+
+            return redirect(url_for("users"))
+
+        # Convert Receptionist into Reception
+        # because your decorators use Reception
+        if role == "Receptionist":
+            role = "Reception"
+
+        allowed_roles = [
+            "Admin",
+            "Doctor",
+            "Reception",
+            "Patient"
+        ]
+
+        if role not in allowed_roles:
+
+            flash(
+                "Please select a valid role.",
+                "danger"
+            )
+
+            return redirect(url_for("users"))
+
+        existing_user = User.query.filter(
+            db.func.lower(User.username)
+            == username.lower()
         ).first()
 
         if existing_user:
 
             flash(
-                "Username already exists!",
-                "danger"
+                "This username already exists. "
+                "Please choose another username.",
+                "warning"
             )
 
-            return redirect(
-                url_for("users")
-            )
-
-        # Create User
+            return redirect(url_for("users"))
 
         new_user = User(
-
             fullname=fullname,
-            username=username,
-            password=generate_password_hash(password),
+            username=username.lower(),
+            password=generate_password_hash(
+                password
+            ),
             role=role
-
         )
 
         db.session.add(new_user)
-        db.session.commit()
 
-        flash(
-            "User Added Successfully!",
-            "success"
-        )
+        try:
 
-        return redirect(
-            url_for("users")
-        )
+            db.session.commit()
+
+            flash(
+                f"{role} account created successfully. "
+                f"Username: {username.lower()}",
+                "success"
+            )
+
+        except Exception:
+
+            db.session.rollback()
+
+            flash(
+                "Unable to create user account.",
+                "danger"
+            )
+
+        return redirect(url_for("users"))
 
     all_users = User.query.order_by(
         User.id.desc()
@@ -437,48 +619,6 @@ def users():
         "users.html",
         users=all_users
     )
-
-
-# ==========================================================
-# Edit User
-# ==========================================================
-
-@app.route("/edit_user/<int:id>", methods=["GET", "POST"])
-@login_required
-@role_required("Admin")
-def edit_user(id):
-
-    user = User.query.get_or_404(id)
-
-    if request.method == "POST":
-
-        user.fullname = request.form["fullname"].strip()
-        user.username = request.form["username"].strip()
-        user.role = request.form["role"]
-
-        password = request.form.get("password")
-
-        if password:
-
-            user.password = generate_password_hash(password)
-
-        db.session.commit()
-
-        flash(
-            "User Updated Successfully!",
-            "success"
-        )
-
-        return redirect(
-            url_for("users")
-        )
-
-    return render_template(
-        "edit_user.html",
-        user=user
-    )
-
-
 # ==========================================================
 # Delete User
 # ==========================================================
