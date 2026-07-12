@@ -2,721 +2,876 @@
 
 {% block content %}
 
-<div class="container mt-4">
+<div class="adminx-dashboard">
 
-    <!-- ================= WELCOME SECTION ================= -->
+    <!-- Dashboard Header -->
 
-    <div class="text-center mb-4"
-         data-aos="fade-down">
+    <section class="adminx-header">
 
-        <h2 class="fw-bold">
+        <div>
 
-            <i class="fa-solid fa-hospital text-primary"></i>
+            <div class="adminx-label">
+                <i class="fa-solid fa-shield-heart"></i>
+                Administration Centre
+            </div>
 
-            Admin Dashboard
+            <h1>
+                Welcome back,
+                <span>{{ current_user.fullname }}</span>
+            </h1>
 
-        </h2>
+            <p>
+                Monitor hospital activities, patient services and system
+                performance from one dashboard.
+            </p>
 
-        <p class="text-muted">
+        </div>
 
-            Welcome,
-            <strong>{{ current_user.fullname }}</strong>
+        <div class="adminx-header-right">
 
-        </p>
+            <div class="adminx-system-status">
+                <span class="adminx-status-dot"></span>
 
-        <h5 class="text-primary">
+                <div>
+                    <strong>System Operational</strong>
+                    <small>All services are available</small>
+                </div>
+            </div>
 
-            <i class="fa-solid fa-clock"></i>
+            <div class="adminx-live-time">
 
-            <span id="clock"></span>
+                <i class="fa-regular fa-clock"></i>
 
-        </h5>
-
-    </div>
-
-    <!-- ================= MAIN STATISTICS ================= -->
-
-    <div class="row">
-
-        <!-- Patients -->
-
-        <div class="col-md-6 col-lg-3 mb-4"
-             data-aos="zoom-in"
-             data-aos-delay="100">
-
-            <div class="card bg-primary text-white shadow h-100">
-
-                <div class="card-body text-center">
-
-                    <i class="fa-solid fa-users fa-3x mb-3"></i>
-
-                    <h2>
-                        {{ total_patients }}
-                    </h2>
-
-                    <h5>Total Patients</h5>
-
-                    <a href="{{ url_for('patients') }}"
-                       class="btn btn-light btn-sm mt-2">
-
-                        View Patients
-
-                    </a>
-
+                <div>
+                    <strong id="adminLiveTime">--:--:--</strong>
+                    <small id="adminLiveDate">Loading date...</small>
                 </div>
 
             </div>
 
         </div>
 
-        <!-- Doctors -->
+    </section>
 
-        <div class="col-md-6 col-lg-3 mb-4"
-             data-aos="zoom-in"
-             data-aos-delay="200">
+    <!-- Main Statistics -->
 
-            <div class="card bg-success text-white shadow h-100">
+    <section class="adminx-section">
 
-                <div class="card-body text-center">
+        <div class="adminx-section-title">
 
-                    <i class="fa-solid fa-user-doctor fa-3x mb-3"></i>
-
-                    <h2>
-                        {{ total_doctors }}
-                    </h2>
-
-                    <h5>Total Doctors</h5>
-
-                    <a href="{{ url_for('doctors') }}"
-                       class="btn btn-light btn-sm mt-2">
-
-                        View Doctors
-
-                    </a>
-
-                </div>
-
+            <div>
+                <span>LIVE INFORMATION</span>
+                <h2>Hospital Overview</h2>
             </div>
 
-        </div>
+            <a href="{{ url_for('dashboard') }}"
+               class="adminx-refresh-button">
 
-        <!-- Appointments -->
+                <i class="fa-solid fa-rotate-right"></i>
+                Refresh
 
-        <div class="col-md-6 col-lg-3 mb-4"
-             data-aos="zoom-in"
-             data-aos-delay="300">
-
-            <div class="card bg-warning shadow h-100">
-
-                <div class="card-body text-center">
-
-                    <i class="fa-solid fa-calendar-check fa-3x mb-3"></i>
-
-                    <h2>
-                        {{ total_appointments }}
-                    </h2>
-
-                    <h5>Appointments</h5>
-
-                    <a href="{{ url_for('appointments') }}"
-                       class="btn btn-dark btn-sm mt-2">
-
-                        View Appointments
-
-                    </a>
-
-                </div>
-
-            </div>
+            </a>
 
         </div>
 
-        <!-- Bills -->
-
-        <div class="col-md-6 col-lg-3 mb-4"
-             data-aos="zoom-in"
-             data-aos-delay="400">
-
-            <div class="card bg-danger text-white shadow h-100">
-
-                <div class="card-body text-center">
-
-                    <i class="fa-solid fa-file-invoice-dollar fa-3x mb-3"></i>
-
-                    <h2>
-                        {{ total_bills }}
-                    </h2>
-
-                    <h5>Total Bills</h5>
-
-                    <a href="{{ url_for('billing') }}"
-                       class="btn btn-light btn-sm mt-2">
-
-                        View Billing
-
-                    </a>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-    <!-- ================= REVENUE AND TOKEN STATISTICS ================= -->
-
-    <div class="row">
-
-        <!-- Revenue -->
-
-        <div class="col-md-4 mb-4"
-             data-aos="fade-right">
-
-            <div class="card bg-info text-white shadow h-100">
-
-                <div class="card-body text-center">
-
-                    <i class="fa-solid fa-indian-rupee-sign fa-3x mb-3"></i>
-
-                    <h2>
-                        ₹ {{ total_revenue or 0 }}
-                    </h2>
-
-                    <h5>Total Revenue</h5>
-
-                </div>
-
-            </div>
-
-        </div>
-
-        <!-- Waiting Tokens -->
-
-        <div class="col-md-4 mb-4"
-             data-aos="fade-up">
-
-            <div class="card bg-secondary text-white shadow h-100">
-
-                <div class="card-body text-center">
-
-                    <i class="fa-solid fa-ticket fa-3x mb-3"></i>
-
-                    <h2>
-                        {{ waiting_tokens }}
-                    </h2>
-
-                    <h5>Waiting Tokens</h5>
-
-                    <a href="{{ url_for('tokens') }}"
-                       class="btn btn-light btn-sm mt-2">
-
-                        Manage Tokens
-
-                    </a>
-
-                </div>
-
-            </div>
-
-        </div>
-
-        <!-- Completed Tokens -->
-
-        <div class="col-md-4 mb-4"
-             data-aos="fade-left">
-
-            <div class="card bg-dark text-white shadow h-100">
-
-                <div class="card-body text-center">
-
-                    <i class="fa-solid fa-circle-check fa-3x mb-3"></i>
-
-                    <h2>
-                        {{ completed_tokens }}
-                    </h2>
-
-                    <h5>Completed Tokens</h5>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-    <!-- ================= CHARTS ================= -->
-
-    <div class="row">
-
-        <!-- Hospital Statistics Chart -->
-
-        <div class="col-lg-6 mb-4"
-             data-aos="fade-right">
-
-            <div class="card shadow h-100">
-
-                <div class="card-header bg-primary text-white">
-
-                    <h5 class="mb-0">
-
-                        <i class="fa-solid fa-chart-column"></i>
-
-                        Hospital Statistics
-
-                    </h5>
-
-                </div>
-
-                <div class="card-body">
-
-                    <canvas id="barChart"></canvas>
-
-                </div>
-
-            </div>
-
-        </div>
-
-        <!-- Token Status Chart -->
-
-        <div class="col-lg-6 mb-4"
-             data-aos="fade-left">
-
-            <div class="card shadow h-100">
-
-                <div class="card-header bg-success text-white">
-
-                    <h5 class="mb-0">
-
-                        <i class="fa-solid fa-chart-pie"></i>
-
-                        Token Status
-
-                    </h5>
-
-                </div>
-
-                <div class="card-body">
-
-                    <canvas id="pieChart"></canvas>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-    <!-- ================= MONTHLY GROWTH CHART ================= -->
-
-    <div class="card shadow mb-4"
-         data-aos="fade-up">
-
-        <div class="card-header bg-info text-white">
-
-            <h5 class="mb-0">
-
-                <i class="fa-solid fa-chart-line"></i>
-
-                Monthly Patient Growth
-
-            </h5>
-
-        </div>
-
-        <div class="card-body">
-
-            <canvas id="lineChart"></canvas>
-
-        </div>
-
-    </div>
-
-    <!-- ================= QUICK ACTIONS ================= -->
-
-    <div class="card shadow"
-         data-aos="fade-up">
-
-        <div class="card-header bg-dark text-white">
-
-            <h4 class="mb-0">
-
-                <i class="fa-solid fa-bolt"></i>
-
-                Quick Actions
-
-            </h4>
-
-        </div>
-
-        <div class="card-body text-center">
+        <div class="adminx-stat-grid">
 
             <!-- Patients -->
 
             <a href="{{ url_for('patients') }}"
-               class="btn btn-primary m-2">
+               class="adminx-stat-card adminx-blue">
 
-                <i class="fa-solid fa-users"></i>
+                <div class="adminx-stat-top">
 
-                Patients
+                    <div class="adminx-stat-icon">
+                        <i class="fa-solid fa-hospital-user"></i>
+                    </div>
+
+                    <span>Patients</span>
+
+                </div>
+
+                <h3>
+                    {{ total_patients | default(0) }}
+                </h3>
+
+                <p>Total registered patients</p>
+
+                <div class="adminx-stat-link">
+                    View patient records
+                    <i class="fa-solid fa-arrow-right"></i>
+                </div>
 
             </a>
 
             <!-- Doctors -->
 
             <a href="{{ url_for('doctors') }}"
-               class="btn btn-success m-2">
+               class="adminx-stat-card adminx-green">
 
-                <i class="fa-solid fa-user-doctor"></i>
+                <div class="adminx-stat-top">
 
-                Doctors
+                    <div class="adminx-stat-icon">
+                        <i class="fa-solid fa-user-doctor"></i>
+                    </div>
+
+                    <span>Doctors</span>
+
+                </div>
+
+                <h3>
+                    {{ total_doctors | default(0) }}
+                </h3>
+
+                <p>Registered medical specialists</p>
+
+                <div class="adminx-stat-link">
+                    View doctor records
+                    <i class="fa-solid fa-arrow-right"></i>
+                </div>
 
             </a>
 
             <!-- Appointments -->
 
             <a href="{{ url_for('appointments') }}"
-               class="btn btn-warning m-2">
+               class="adminx-stat-card adminx-orange">
 
-                <i class="fa-solid fa-calendar-check"></i>
+                <div class="adminx-stat-top">
 
-                Appointments
+                    <div class="adminx-stat-icon">
+                        <i class="fa-solid fa-calendar-check"></i>
+                    </div>
+
+                    <span>Appointments</span>
+
+                </div>
+
+                <h3>
+                    {{ total_appointments | default(0) }}
+                </h3>
+
+                <p>Total booked appointments</p>
+
+                <div class="adminx-stat-link">
+                    Manage appointments
+                    <i class="fa-solid fa-arrow-right"></i>
+                </div>
 
             </a>
 
-            <!-- Billing -->
+            <!-- Bills -->
 
             <a href="{{ url_for('billing') }}"
-               class="btn btn-danger m-2">
+               class="adminx-stat-card adminx-red">
 
-                <i class="fa-solid fa-file-invoice-dollar"></i>
+                <div class="adminx-stat-top">
 
-                Billing
+                    <div class="adminx-stat-icon">
+                        <i class="fa-solid fa-file-invoice-dollar"></i>
+                    </div>
+
+                    <span>Bills</span>
+
+                </div>
+
+                <h3>
+                    {{ total_bills | default(0) }}
+                </h3>
+
+                <p>Total generated bills</p>
+
+                <div class="adminx-stat-link">
+                    View billing records
+                    <i class="fa-solid fa-arrow-right"></i>
+                </div>
 
             </a>
 
-            <!-- Tokens -->
+            <!-- Revenue -->
+
+            <a href="{{ url_for('billing') }}"
+               class="adminx-stat-card adminx-cyan">
+
+                <div class="adminx-stat-top">
+
+                    <div class="adminx-stat-icon">
+                        <i class="fa-solid fa-indian-rupee-sign"></i>
+                    </div>
+
+                    <span>Revenue</span>
+
+                </div>
+
+                <h3 class="adminx-revenue-value">
+                    ₹{{ "%.2f" | format(total_revenue | default(0)) }}
+                </h3>
+
+                <p>Total recorded revenue</p>
+
+                <div class="adminx-stat-link">
+                    Open financial records
+                    <i class="fa-solid fa-arrow-right"></i>
+                </div>
+
+            </a>
+
+            <!-- Waiting Tokens -->
 
             <a href="{{ url_for('tokens') }}"
-               class="btn btn-info m-2">
+               class="adminx-stat-card adminx-purple">
 
-                <i class="fa-solid fa-ticket"></i>
+                <div class="adminx-stat-top">
 
-                Tokens
+                    <div class="adminx-stat-icon">
+                        <i class="fa-solid fa-ticket"></i>
+                    </div>
 
-            </a>
+                    <span>Waiting Tokens</span>
 
-            <!-- User Management -->
+                </div>
 
-            <a href="{{ url_for('users') }}"
-               class="btn btn-primary m-2">
+                <h3>
+                    {{ waiting_tokens | default(0) }}
+                </h3>
 
-                <i class="fa-solid fa-user-gear"></i>
+                <p>Patients currently waiting</p>
 
-                Manage Users
-
-            </a>
-
-            <!-- Prescriptions -->
-
-            <a href="{{ url_for('prescriptions') }}"
-               class="btn btn-secondary m-2">
-
-                <i class="fa-solid fa-file-prescription"></i>
-
-                Prescriptions
+                <div class="adminx-stat-link">
+                    Manage token queue
+                    <i class="fa-solid fa-arrow-right"></i>
+                </div>
 
             </a>
 
-            <!-- Lab Reports -->
+            <!-- Completed Tokens -->
 
-            <a href="{{ url_for('lab_reports') }}"
-               class="btn btn-dark m-2">
+            <a href="{{ url_for('tokens') }}"
+               class="adminx-stat-card adminx-dark">
 
-                <i class="fa-solid fa-flask"></i>
+                <div class="adminx-stat-top">
 
-                Lab Reports
+                    <div class="adminx-stat-icon">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </div>
 
-            </a>
+                    <span>Completed Tokens</span>
 
-            <!-- AI Prediction -->
+                </div>
 
-            <a href="{{ url_for('ai') }}"
-               class="btn btn-danger m-2">
+                <h3>
+                    {{ completed_tokens | default(0) }}
+                </h3>
 
-                <i class="fa-solid fa-robot"></i>
+                <p>Successfully completed tokens</p>
 
-                AI Prediction
-
-            </a>
-
-            <!-- Chatbot -->
-
-            <a href="{{ url_for('chatbot') }}"
-               class="btn btn-success m-2">
-
-                <i class="fa-solid fa-comments"></i>
-
-                Chatbot
-
-            </a>
-
-            <!-- About -->
-
-            <a href="{{ url_for('about') }}"
-               class="btn btn-outline-primary m-2">
-
-                <i class="fa-solid fa-circle-info"></i>
-
-                About
-
-            </a>
-
-            <!-- Contact -->
-
-            <a href="{{ url_for('contact') }}"
-               class="btn btn-outline-warning m-2">
-
-                <i class="fa-solid fa-phone"></i>
-
-                Contact
-
-            </a>
-
-            <!-- Change Password -->
-
-            <a href="{{ url_for('change_password') }}"
-               class="btn btn-outline-dark m-2">
-
-                <i class="fa-solid fa-key"></i>
-
-                Change Password
+                <div class="adminx-stat-link">
+                    View token history
+                    <i class="fa-solid fa-arrow-right"></i>
+                </div>
 
             </a>
 
         </div>
 
-    </div>
+    </section>
+
+    <!-- Analytics -->
+
+    <section class="adminx-section">
+
+        <div class="adminx-section-title">
+
+            <div>
+                <span>DATABASE ANALYTICS</span>
+                <h2>Current Hospital Statistics</h2>
+            </div>
+
+            <div class="adminx-live-badge">
+                <span></span>
+                Live database values
+            </div>
+
+        </div>
+
+        <div class="row g-4">
+
+            <!-- Hospital Overview Chart -->
+
+            <div class="col-xl-7">
+
+                <div class="adminx-panel">
+
+                    <div class="adminx-panel-header">
+
+                        <div>
+                            <div class="adminx-panel-icon blue">
+                                <i class="fa-solid fa-chart-column"></i>
+                            </div>
+
+                            <div>
+                                <h3>Hospital Data Overview</h3>
+                                <p>Current records stored in the system</p>
+                            </div>
+                        </div>
+
+                        <span class="adminx-panel-tag">Overview</span>
+
+                    </div>
+
+                    <div class="adminx-chart-container adminx-bar-height">
+                        <canvas id="adminHospitalChart"></canvas>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Token Doughnut Chart -->
+
+            <div class="col-xl-5">
+
+                <div class="adminx-panel">
+
+                    <div class="adminx-panel-header">
+
+                        <div>
+                            <div class="adminx-panel-icon green">
+                                <i class="fa-solid fa-chart-pie"></i>
+                            </div>
+
+                            <div>
+                                <h3>Token Queue Status</h3>
+                                <p>Waiting and completed tokens</p>
+                            </div>
+                        </div>
+
+                        <span class="adminx-panel-tag">Tokens</span>
+
+                    </div>
+
+                    <div class="adminx-chart-container adminx-doughnut-height">
+                        <canvas id="adminTokenChart"></canvas>
+                    </div>
+
+                    <div class="adminx-token-summary">
+
+                        <div>
+                            <span class="adminx-legend-circle waiting"></span>
+
+                            <div>
+                                <strong>
+                                    {{ waiting_tokens | default(0) }}
+                                </strong>
+                                <small>Waiting</small>
+                            </div>
+                        </div>
+
+                        <div>
+                            <span class="adminx-legend-circle completed"></span>
+
+                            <div>
+                                <strong>
+                                    {{ completed_tokens | default(0) }}
+                                </strong>
+                                <small>Completed</small>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- Quick Actions -->
+
+    <section class="adminx-section">
+
+        <div class="adminx-section-title">
+
+            <div>
+                <span>ADMINISTRATIVE TOOLS</span>
+                <h2>Quick Actions</h2>
+            </div>
+
+        </div>
+
+        <div class="adminx-action-grid">
+
+            <!-- Management -->
+
+            <div class="adminx-action-group">
+
+                <div class="adminx-action-heading">
+
+                    <div class="adminx-action-heading-icon blue">
+                        <i class="fa-solid fa-users-gear"></i>
+                    </div>
+
+                    <div>
+                        <h3>Management</h3>
+                        <p>Manage system records</p>
+                    </div>
+
+                </div>
+
+                <a href="{{ url_for('patients') }}"
+                   class="adminx-action-link">
+
+                    <span>
+                        <i class="fa-solid fa-hospital-user"></i>
+                        Patients
+                    </span>
+
+                    <i class="fa-solid fa-chevron-right"></i>
+
+                </a>
+
+                <a href="{{ url_for('doctors') }}"
+                   class="adminx-action-link">
+
+                    <span>
+                        <i class="fa-solid fa-user-doctor"></i>
+                        Doctors
+                    </span>
+
+                    <i class="fa-solid fa-chevron-right"></i>
+
+                </a>
+
+                <a href="{{ url_for('users') }}"
+                   class="adminx-action-link">
+
+                    <span>
+                        <i class="fa-solid fa-user-gear"></i>
+                        Manage Users
+                    </span>
+
+                    <i class="fa-solid fa-chevron-right"></i>
+
+                </a>
+
+            </div>
+
+            <!-- Operations -->
+
+            <div class="adminx-action-group">
+
+                <div class="adminx-action-heading">
+
+                    <div class="adminx-action-heading-icon orange">
+                        <i class="fa-solid fa-gears"></i>
+                    </div>
+
+                    <div>
+                        <h3>Operations</h3>
+                        <p>Daily hospital workflow</p>
+                    </div>
+
+                </div>
+
+                <a href="{{ url_for('appointments') }}"
+                   class="adminx-action-link">
+
+                    <span>
+                        <i class="fa-solid fa-calendar-check"></i>
+                        Appointments
+                    </span>
+
+                    <i class="fa-solid fa-chevron-right"></i>
+
+                </a>
+
+                <a href="{{ url_for('billing') }}"
+                   class="adminx-action-link">
+
+                    <span>
+                        <i class="fa-solid fa-file-invoice-dollar"></i>
+                        Billing
+                    </span>
+
+                    <i class="fa-solid fa-chevron-right"></i>
+
+                </a>
+
+                <a href="{{ url_for('tokens') }}"
+                   class="adminx-action-link">
+
+                    <span>
+                        <i class="fa-solid fa-ticket"></i>
+                        Smart Tokens
+                    </span>
+
+                    <i class="fa-solid fa-chevron-right"></i>
+
+                </a>
+
+            </div>
+
+            <!-- Clinical -->
+
+            <div class="adminx-action-group">
+
+                <div class="adminx-action-heading">
+
+                    <div class="adminx-action-heading-icon green">
+                        <i class="fa-solid fa-notes-medical"></i>
+                    </div>
+
+                    <div>
+                        <h3>Clinical Services</h3>
+                        <p>Patient medical records</p>
+                    </div>
+
+                </div>
+
+                <a href="{{ url_for('prescriptions') }}"
+                   class="adminx-action-link">
+
+                    <span>
+                        <i class="fa-solid fa-file-prescription"></i>
+                        Prescriptions
+                    </span>
+
+                    <i class="fa-solid fa-chevron-right"></i>
+
+                </a>
+
+                <a href="{{ url_for('lab_reports') }}"
+                   class="adminx-action-link">
+
+                    <span>
+                        <i class="fa-solid fa-flask-vial"></i>
+                        Lab Reports
+                    </span>
+
+                    <i class="fa-solid fa-chevron-right"></i>
+
+                </a>
+
+                <a href="{{ url_for('ai') }}"
+                   class="adminx-action-link">
+
+                    <span>
+                        <i class="fa-solid fa-brain"></i>
+                        AI Prediction
+                    </span>
+
+                    <i class="fa-solid fa-chevron-right"></i>
+
+                </a>
+
+            </div>
+
+            <!-- Support -->
+
+            <div class="adminx-action-group">
+
+                <div class="adminx-action-heading">
+
+                    <div class="adminx-action-heading-icon purple">
+                        <i class="fa-solid fa-headset"></i>
+                    </div>
+
+                    <div>
+                        <h3>Support</h3>
+                        <p>Help and system settings</p>
+                    </div>
+
+                </div>
+
+                <a href="{{ url_for('chatbot') }}"
+                   class="adminx-action-link">
+
+                    <span>
+                        <i class="fa-solid fa-comments"></i>
+                        Hospital Chatbot
+                    </span>
+
+                    <i class="fa-solid fa-chevron-right"></i>
+
+                </a>
+
+                <a href="{{ url_for('about') }}"
+                   class="adminx-action-link">
+
+                    <span>
+                        <i class="fa-solid fa-circle-info"></i>
+                        About Project
+                    </span>
+
+                    <i class="fa-solid fa-chevron-right"></i>
+
+                </a>
+
+                <a href="{{ url_for('change_password') }}"
+                   class="adminx-action-link">
+
+                    <span>
+                        <i class="fa-solid fa-key"></i>
+                        Change Password
+                    </span>
+
+                    <i class="fa-solid fa-chevron-right"></i>
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </section>
 
 </div>
 
-<!-- ================= DASHBOARD JAVASCRIPT ================= -->
-
 <script>
-
 document.addEventListener("DOMContentLoaded", function () {
 
-    // Live Clock
+    function updateAdminClock() {
 
-    const clockElement = document.getElementById("clock");
+        const now = new Date();
 
-    function updateClock() {
+        const timeElement =
+            document.getElementById("adminLiveTime");
 
-        if (clockElement) {
+        const dateElement =
+            document.getElementById("adminLiveDate");
 
-            clockElement.textContent =
-                new Date().toLocaleString();
-
+        if (timeElement) {
+            timeElement.textContent =
+                now.toLocaleTimeString(
+                    [],
+                    {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        second: "2-digit"
+                    }
+                );
         }
 
+        if (dateElement) {
+            dateElement.textContent =
+                now.toLocaleDateString(
+                    [],
+                    {
+                        weekday: "short",
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric"
+                    }
+                );
+        }
     }
 
-    updateClock();
+    updateAdminClock();
+    setInterval(updateAdminClock, 1000);
 
-    setInterval(updateClock, 1000);
+
+    function initialiseAdminCharts() {
+
+        const hospitalCanvas =
+            document.getElementById(
+                "adminHospitalChart"
+            );
+
+        const tokenCanvas =
+            document.getElementById(
+                "adminTokenChart"
+            );
+
+        if (!hospitalCanvas || !tokenCanvas) {
+            return;
+        }
+
+        const totalPatients =
+            Number("{{ total_patients | default(0) }}");
+
+        const totalDoctors =
+            Number("{{ total_doctors | default(0) }}");
+
+        const totalAppointments =
+            Number("{{ total_appointments | default(0) }}");
+
+        const totalBills =
+            Number("{{ total_bills | default(0) }}");
+
+        const waitingTokens =
+            Number("{{ waiting_tokens | default(0) }}");
+
+        const completedTokens =
+            Number("{{ completed_tokens | default(0) }}");
 
 
-    // Hospital Statistics Bar Chart
+        new Chart(
+            hospitalCanvas,
+            {
+                type: "bar",
 
-    const barChartElement =
-        document.getElementById("barChart");
-
-    if (
-        barChartElement &&
-        typeof Chart !== "undefined"
-    ) {
-
-        new Chart(barChartElement, {
-
-            type: "bar",
-
-            data: {
-
-                labels: [
-                    "Patients",
-                    "Doctors",
-                    "Appointments",
-                    "Bills"
-                ],
-
-                datasets: [{
-
-                    label: "Hospital Data",
-
-                    data: [
-                        {{ total_patients or 0 }},
-                        {{ total_doctors or 0 }},
-                        {{ total_appointments or 0 }},
-                        {{ total_bills or 0 }}
+                data: {
+                    labels: [
+                        "Patients",
+                        "Doctors",
+                        "Appointments",
+                        "Bills"
                     ],
 
-                    borderWidth: 2
+                    datasets: [
+                        {
+                            label: "Current Records",
 
-                }]
+                            data: [
+                                totalPatients,
+                                totalDoctors,
+                                totalAppointments,
+                                totalBills
+                            ],
 
-            },
+                            backgroundColor: [
+                                "rgba(13, 110, 253, 0.78)",
+                                "rgba(25, 135, 84, 0.78)",
+                                "rgba(255, 193, 7, 0.78)",
+                                "rgba(220, 53, 69, 0.78)"
+                            ],
 
-            options: {
+                            borderColor: [
+                                "#0d6efd",
+                                "#198754",
+                                "#ffc107",
+                                "#dc3545"
+                            ],
 
-                responsive: true,
-
-                maintainAspectRatio: true,
-
-                scales: {
-
-                    y: {
-
-                        beginAtZero: true,
-
-                        ticks: {
-
-                            precision: 0
-
+                            borderWidth: 2,
+                            borderRadius: 10,
+                            borderSkipped: false
                         }
+                    ]
+                },
 
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+
+                        tooltip: {
+                            backgroundColor: "#101828",
+                            padding: 12,
+                            cornerRadius: 8
+                        }
+                    },
+
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+
+                            ticks: {
+                                precision: 0
+                            },
+
+                            grid: {
+                                color: "rgba(148, 163, 184, 0.18)"
+                            }
+                        },
+
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
                     }
-
                 }
-
             }
+        );
 
-        });
+
+        const noTokenData =
+            waitingTokens === 0 &&
+            completedTokens === 0;
+
+        new Chart(
+            tokenCanvas,
+            {
+                type: "doughnut",
+
+                data: {
+                    labels: [
+                        "Waiting",
+                        "Completed"
+                    ],
+
+                    datasets: [
+                        {
+                            data: noTokenData
+                                ? [1]
+                                : [
+                                    waitingTokens,
+                                    completedTokens
+                                ],
+
+                            backgroundColor: noTokenData
+                                ? ["#e9ecef"]
+                                : [
+                                    "#0d6efd",
+                                    "#20c997"
+                                ],
+
+                            borderWidth: 0,
+                            hoverOffset: 8
+                        }
+                    ]
+                },
+
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: "70%",
+
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+
+                        tooltip: {
+                            enabled: !noTokenData
+                        }
+                    }
+                }
+            }
+        );
 
     }
 
 
-    // Token Status Pie Chart
+    if (typeof Chart !== "undefined") {
 
-    const pieChartElement =
-        document.getElementById("pieChart");
+        initialiseAdminCharts();
 
-    if (
-        pieChartElement &&
-        typeof Chart !== "undefined"
-    ) {
+    } else {
 
-        new Chart(pieChartElement, {
+        const chartScript =
+            document.createElement("script");
 
-            type: "pie",
+        chartScript.src =
+            "https://cdn.jsdelivr.net/npm/chart.js";
 
-            data: {
+        chartScript.onload =
+            initialiseAdminCharts;
 
-                labels: [
-                    "Waiting",
-                    "Completed"
-                ],
-
-                datasets: [{
-
-                    data: [
-                        {{ waiting_tokens or 0 }},
-                        {{ completed_tokens or 0 }}
-                    ],
-
-                    borderWidth: 2
-
-                }]
-
-            },
-
-            options: {
-
-                responsive: true,
-
-                maintainAspectRatio: true
-
-            }
-
-        });
-
-    }
-
-
-    // Monthly Growth Line Chart
-
-    const lineChartElement =
-        document.getElementById("lineChart");
-
-    if (
-        lineChartElement &&
-        typeof Chart !== "undefined"
-    ) {
-
-        new Chart(lineChartElement, {
-
-            type: "line",
-
-            data: {
-
-                labels: [
-                    "Jan",
-                    "Feb",
-                    "Mar",
-                    "Apr",
-                    "May",
-                    "Jun"
-                ],
-
-                datasets: [{
-
-                    label: "Patient Growth",
-
-                    data: [
-                        20,
-                        35,
-                        50,
-                        70,
-                        90,
-                        120
-                    ],
-
-                    fill: false,
-
-                    tension: 0.4,
-
-                    borderWidth: 3
-
-                }]
-
-            },
-
-            options: {
-
-                responsive: true,
-
-                maintainAspectRatio: true,
-
-                scales: {
-
-                    y: {
-
-                        beginAtZero: true
-
-                    }
-
-                }
-
-            }
-
-        });
+        document.head.appendChild(
+            chartScript
+        );
 
     }
 
 });
-
 </script>
 
 {% endblock %}
