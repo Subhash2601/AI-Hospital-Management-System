@@ -179,7 +179,15 @@
 
 <!-- ================= CONTENT ================= -->
 
+{% if request.endpoint == "home" %}
+
+<div>
+
+{% else %}
+
 <div class="container mt-4">
+
+{% endif %}
 
     <!-- Flash Messages -->
 
