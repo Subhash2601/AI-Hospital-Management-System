@@ -1222,43 +1222,258 @@ def delete_appointment(id):
 
     return redirect(url_for("appointments"))
 # ==========================================================
+# Token Helper Functions
+# ==========================================================
+
+def generate_daily_token_number():
+
+    today_prefix = datetime.now().strftime("T%Y%m%d-")
+
+    today_tokens = Token.query.filter(
+        Token.token_number.like(f"{today_prefix}%")
+    ).count()
+
+    sequence_number = today_tokens + 1
+
+    token_number = (
+        f"{today_prefix}{sequence_number:03d}"
+    )
+
+    # Prevent duplicate token numbers
+    while Token.query.filter_by(
+        token_number=token_number
+    ).first():
+
+        sequence_number += 1
+
+        token_number = (
+            f"{today_prefix}{sequence_number:03d}"
+        )
+
+    return token_number
+
+
+def doctor_can_manage_token(token):
+
+    if current_user.role != "Doctor":
+        return True
+
+    doctor = Doctor.query.filter_by(
+        user_id=current_user.id
+    ).first()
+
+    if not doctor:
+        return False
+
+    return token.doctor_id == doctor.id
+
+
+# ==========================================================
 # Token Management
 # ==========================================================
 
 @app.route("/tokens", methods=["GET", "POST"])
 @login_required
-@role_required("Admin", "Doctor", "Reception")
+@role_required(
+    "Admin",
+    "Doctor",
+    "Reception",
+    "Receptionist"
+)
 def tokens():
+
+    doctor_profile = None
+
+    if current_user.role == "Doctor":
+
+        doctor_profile = Doctor.query.filter_by(
+            user_id=current_user.id
+        ).first()
+
+        if not doctor_profile:
+
+            flash(
+                "Doctor profile was not found.",
+                "danger"
+            )
+
+            return redirect(
+                url_for("doctor_dashboard")
+            )
 
     if request.method == "POST":
 
-        patient_id = int(request.form["patient_id"])
-        doctor_id = int(request.form["doctor_id"])
-        priority = request.form["priority"]
+        try:
 
-        token_count = Token.query.count() + 1
+            patient_id = int(
+                request.form.get(
+                    "patient_id",
+                    0
+                )
+            )
+
+            if current_user.role == "Doctor":
+
+                doctor_id = doctor_profile.id
+
+            else:
+
+                doctor_id = int(
+                    request.form.get(
+                        "doctor_id",
+                        0
+                    )
+                )
+
+        except (TypeError, ValueError):
+
+            flash(
+                "Please select a valid patient and doctor.",
+                "danger"
+            )
+
+            return redirect(
+                url_for("tokens")
+            )
+
+        priority = request.form.get(
+            "priority",
+            "Normal"
+        ).strip()
+
+        allowed_priorities = [
+            "Normal",
+            "High",
+            "Emergency"
+        ]
+
+        if priority not in allowed_priorities:
+
+            priority = "Normal"
+
+        patient = db.session.get(
+            Patient,
+            patient_id
+        )
+
+        doctor = db.session.get(
+            Doctor,
+            doctor_id
+        )
+
+        if not patient:
+
+            flash(
+                "Selected patient was not found.",
+                "danger"
+            )
+
+            return redirect(
+                url_for("tokens")
+            )
+
+        if not doctor:
+
+            flash(
+                "Selected doctor was not found.",
+                "danger"
+            )
+
+            return redirect(
+                url_for("tokens")
+            )
+
+        today_string = datetime.now().strftime(
+            "%Y-%m-%d"
+        )
+
+        active_statuses = [
+            "Waiting",
+            "Called",
+            "In Consultation"
+        ]
+
+        active_token_count = Token.query.filter(
+            Token.doctor_id == doctor_id,
+            db.func.date(
+                Token.created_at
+            ) == today_string,
+            Token.status.in_(
+                active_statuses
+            )
+        ).count()
+
+        queue_position = active_token_count + 1
+
+        estimated_wait = active_token_count * 10
+
+        token_number = generate_daily_token_number()
 
         token = Token(
-            token_number=f"T{token_count:03d}",
+            token_number=token_number,
             patient_id=patient_id,
             doctor_id=doctor_id,
-            department="General",
+            department=(
+                doctor.specialization
+                or "General"
+            ),
             priority=priority,
             status="Waiting",
-            queue_position=token_count,
-            estimated_wait=(token_count - 1) * 10
+            queue_position=queue_position,
+            estimated_wait=estimated_wait
         )
 
         db.session.add(token)
-        db.session.commit()
 
-        flash("Token Generated Successfully!", "success")
+        try:
 
-        return redirect(url_for("tokens"))
+            db.session.commit()
 
-    patients = Patient.query.order_by(Patient.name).all()
-    doctors = Doctor.query.order_by(Doctor.name).all()
-    all_tokens = Token.query.order_by(Token.queue_position.asc()).all()
+            flash(
+                f"Token generated successfully! "
+                f"Token number: {token_number}",
+                "success"
+            )
+
+        except Exception:
+
+            db.session.rollback()
+
+            flash(
+                "Unable to generate token. "
+                "Please try again.",
+                "danger"
+            )
+
+        return redirect(
+            url_for("tokens")
+        )
+
+    patients = Patient.query.order_by(
+        Patient.name.asc()
+    ).all()
+
+    if current_user.role == "Doctor":
+
+        doctors = [doctor_profile]
+
+        all_tokens = Token.query.filter_by(
+            doctor_id=doctor_profile.id
+        ).order_by(
+            Token.created_at.desc(),
+            Token.queue_position.asc()
+        ).all()
+
+    else:
+
+        doctors = Doctor.query.order_by(
+            Doctor.name.asc()
+        ).all()
+
+        all_tokens = Token.query.order_by(
+            Token.created_at.desc(),
+            Token.queue_position.asc()
+        ).all()
 
     return render_template(
         "tokens.html",
@@ -1272,81 +1487,490 @@ def tokens():
 # Call Token
 # ==========================================================
 
-@app.route("/call_token/<int:id>")
+@app.route(
+    "/call_token/<int:id>",
+    methods=["GET", "POST"]
+)
 @login_required
-@role_required("Admin", "Doctor", "Reception")
+@role_required(
+    "Admin",
+    "Doctor",
+    "Reception",
+    "Receptionist"
+)
 def call_token(id):
 
-    token = Token.query.get_or_404(id)
+    token = db.session.get(
+        Token,
+        id
+    )
+
+    if not token:
+
+        flash(
+            "Token was not found.",
+            "danger"
+        )
+
+        return redirect(
+            url_for("tokens")
+        )
+
+    if not doctor_can_manage_token(token):
+
+        flash(
+            "You cannot manage this token.",
+            "danger"
+        )
+
+        return redirect(
+            url_for("tokens")
+        )
+
+    if token.status not in [
+        "Waiting",
+        "Called"
+    ]:
+
+        flash(
+            f"Cannot call a token with "
+            f"status {token.status}.",
+            "warning"
+        )
+
+        return redirect(
+            url_for("tokens")
+        )
 
     token.status = "Called"
+    token.estimated_wait = 0
 
-    db.session.commit()
+    try:
 
-    flash("Token Called Successfully!", "success")
+        db.session.commit()
 
-    return redirect(url_for("tokens"))
+        flash(
+            f"Token {token.token_number} called successfully.",
+            "success"
+        )
+
+    except Exception:
+
+        db.session.rollback()
+
+        flash(
+            "Unable to call token.",
+            "danger"
+        )
+
+    return redirect(
+        url_for("tokens")
+    )
+
+
+# ==========================================================
+# Start Consultation
+# ==========================================================
+
+@app.route(
+    "/start_token/<int:id>",
+    methods=["GET", "POST"]
+)
+@login_required
+@role_required(
+    "Admin",
+    "Doctor",
+    "Reception",
+    "Receptionist"
+)
+def start_token(id):
+
+    token = db.session.get(
+        Token,
+        id
+    )
+
+    if not token:
+
+        flash(
+            "Token was not found.",
+            "danger"
+        )
+
+        return redirect(
+            url_for("tokens")
+        )
+
+    if not doctor_can_manage_token(token):
+
+        flash(
+            "You cannot manage this token.",
+            "danger"
+        )
+
+        return redirect(
+            url_for("tokens")
+        )
+
+    if token.status not in [
+        "Waiting",
+        "Called"
+    ]:
+
+        flash(
+            f"Cannot start consultation from "
+            f"{token.status} status.",
+            "warning"
+        )
+
+        return redirect(
+            url_for("tokens")
+        )
+
+    token.status = "In Consultation"
+    token.estimated_wait = 0
+
+    try:
+
+        db.session.commit()
+
+        flash(
+            f"Consultation started for "
+            f"{token.token_number}.",
+            "success"
+        )
+
+    except Exception:
+
+        db.session.rollback()
+
+        flash(
+            "Unable to start consultation.",
+            "danger"
+        )
+
+    return redirect(
+        url_for("tokens")
+    )
 
 
 # ==========================================================
 # Complete Token
 # ==========================================================
 
-@app.route("/complete_token/<int:id>")
+@app.route(
+    "/complete_token/<int:id>",
+    methods=["GET", "POST"]
+)
 @login_required
-@role_required("Admin", "Doctor")
+@role_required(
+    "Admin",
+    "Doctor"
+)
 def complete_token(id):
 
-    token = Token.query.get_or_404(id)
+    token = db.session.get(
+        Token,
+        id
+    )
+
+    if not token:
+
+        flash(
+            "Token was not found.",
+            "danger"
+        )
+
+        return redirect(
+            url_for("tokens")
+        )
+
+    if not doctor_can_manage_token(token):
+
+        flash(
+            "You cannot manage this token.",
+            "danger"
+        )
+
+        return redirect(
+            url_for("tokens")
+        )
+
+    if token.status == "Completed":
+
+        flash(
+            "This token is already completed.",
+            "warning"
+        )
+
+        return redirect(
+            url_for("tokens")
+        )
+
+    if token.status == "Cancelled":
+
+        flash(
+            "A cancelled token cannot be completed.",
+            "warning"
+        )
+
+        return redirect(
+            url_for("tokens")
+        )
 
     token.status = "Completed"
+    token.estimated_wait = 0
 
-    db.session.commit()
+    try:
 
-    flash("Consultation Completed Successfully!", "success")
+        db.session.commit()
 
-    return redirect(url_for("tokens"))
+        flash(
+            f"Consultation completed for "
+            f"{token.token_number}.",
+            "success"
+        )
+
+    except Exception:
+
+        db.session.rollback()
+
+        flash(
+            "Unable to complete consultation.",
+            "danger"
+        )
+
+    return redirect(
+        url_for("tokens")
+    )
 
 
 # ==========================================================
 # Update Token Status
 # ==========================================================
 
-@app.route("/update_token/<int:id>/<status>")
+@app.route(
+    "/update_token/<int:id>/<string:status>",
+    methods=["GET", "POST"]
+)
 @login_required
-@role_required("Admin", "Doctor", "Reception")
+@role_required(
+    "Admin",
+    "Doctor",
+    "Reception",
+    "Receptionist"
+)
 def update_token(id, status):
 
-    token = Token.query.get_or_404(id)
+    token = db.session.get(
+        Token,
+        id
+    )
+
+    if not token:
+
+        flash(
+            "Token was not found.",
+            "danger"
+        )
+
+        return redirect(
+            url_for("tokens")
+        )
+
+    if not doctor_can_manage_token(token):
+
+        flash(
+            "You cannot manage this token.",
+            "danger"
+        )
+
+        return redirect(
+            url_for("tokens")
+        )
+
+    allowed_statuses = [
+        "Waiting",
+        "Called",
+        "In Consultation",
+        "Completed",
+        "Cancelled"
+    ]
+
+    status = status.replace(
+        "_",
+        " "
+    ).strip()
+
+    if status not in allowed_statuses:
+
+        flash(
+            "Invalid token status.",
+            "danger"
+        )
+
+        return redirect(
+            url_for("tokens")
+        )
+
+    if (
+        status == "Completed"
+        and current_user.role
+        not in ["Admin", "Doctor"]
+    ):
+
+        flash(
+            "Only an Admin or Doctor can "
+            "complete a consultation.",
+            "danger"
+        )
+
+        return redirect(
+            url_for("tokens")
+        )
 
     token.status = status
 
-    db.session.commit()
+    if status in [
+        "Called",
+        "In Consultation",
+        "Completed",
+        "Cancelled"
+    ]:
 
-    flash("Token Status Updated Successfully!", "success")
+        token.estimated_wait = 0
 
-    return redirect(url_for("tokens"))
+    try:
+
+        db.session.commit()
+
+        flash(
+            f"Token status updated to {status}.",
+            "success"
+        )
+
+    except Exception:
+
+        db.session.rollback()
+
+        flash(
+            "Unable to update token status.",
+            "danger"
+        )
+
+    return redirect(
+        url_for("tokens")
+    )
 
 
 # ==========================================================
 # Delete Token
 # ==========================================================
 
-@app.route("/delete_token/<int:id>")
+@app.route(
+    "/delete_token/<int:id>",
+    methods=["GET", "POST"]
+)
 @login_required
 @role_required("Admin")
 def delete_token(id):
 
-    token = Token.query.get_or_404(id)
+    token = db.session.get(
+        Token,
+        id
+    )
 
-    db.session.delete(token)
+    if not token:
 
-    db.session.commit()
+        flash(
+            "Token was not found.",
+            "danger"
+        )
 
-    flash("Token Deleted Successfully!", "success")
+        return redirect(
+            url_for("tokens")
+        )
 
-    return redirect(url_for("tokens"))
+    try:
 
+        db.session.delete(token)
+        db.session.commit()
+
+        flash(
+            "Token deleted successfully.",
+            "success"
+        )
+
+    except Exception:
+
+        db.session.rollback()
+
+        flash(
+            "Unable to delete token.",
+            "danger"
+        )
+
+    return redirect(
+        url_for("tokens")
+    )
+
+
+# ==========================================================
+# Patient Smart Token Tracking
+# ==========================================================
+
+@app.route("/my_tokens")
+@login_required
+@role_required("Patient")
+def my_tokens():
+
+    patient = Patient.query.filter_by(
+        user_id=current_user.id
+    ).first()
+
+    if not patient:
+
+        flash(
+            "Patient profile was not found.",
+            "danger"
+        )
+
+        return redirect(
+            url_for("patient_dashboard")
+        )
+
+    all_patient_tokens = Token.query.filter_by(
+        patient_id=patient.id
+    ).order_by(
+        Token.created_at.desc(),
+        Token.id.desc()
+    ).all()
+
+    active_statuses = [
+        "Waiting",
+        "Called",
+        "In Consultation"
+    ]
+
+    active_tokens = [
+        token
+        for token in all_patient_tokens
+        if token.status in active_statuses
+    ]
+
+    history_tokens = [
+        token
+        for token in all_patient_tokens
+        if token.status not in active_statuses
+    ]
+
+    return render_template(
+        "my_tokens.html",
+        patient=patient,
+        tokens=all_patient_tokens,
+        active_tokens=active_tokens,
+        history_tokens=history_tokens
+    )
 # ==========================================================
 # Prescription Management
 # ==========================================================

@@ -208,7 +208,8 @@
                     <a class="nav-link dropdown-toggle"
                        href="#"
                        role="button"
-                       data-bs-toggle="dropdown">
+                       data-bs-toggle="dropdown"
+                       aria-expanded="false">
 
                         <i class="fa-solid fa-notes-medical"></i>
 
@@ -381,7 +382,8 @@
                     <a class="nav-link dropdown-toggle"
                        href="#"
                        role="button"
-                       data-bs-toggle="dropdown">
+                       data-bs-toggle="dropdown"
+                       aria-expanded="false">
 
                         <i class="fa-solid fa-user-injured"></i>
 
@@ -438,6 +440,36 @@
                                 <i class="fa-solid fa-flask"></i>
 
                                 My Lab Reports
+
+                            </a>
+
+                        </li>
+
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+
+                        <li>
+
+                            <a class="dropdown-item"
+                               href="{{ url_for('my_tokens') }}">
+
+                                <i class="fa-solid fa-ticket"></i>
+
+                                My Tokens
+
+                            </a>
+
+                        </li>
+
+                        <li>
+
+                            <a class="dropdown-item"
+                               href="{{ url_for('patient_profile') }}">
+
+                                <i class="fa-solid fa-user"></i>
+
+                                My Profile
 
                             </a>
 

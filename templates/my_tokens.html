@@ -1,0 +1,648 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <!-- Page Heading -->
+
+    <div class="text-center mb-4"
+         data-aos="fade-down">
+
+        <h2 class="fw-bold text-primary">
+
+            <i class="fa-solid fa-ticket"></i>
+
+            My Smart Tokens
+
+        </h2>
+
+        <p class="text-muted">
+
+            Hello, {{ patient.name }}.
+            Track your queue and consultation status.
+
+        </p>
+
+        <button type="button"
+                class="btn btn-outline-primary btn-sm"
+                onclick="window.location.reload();">
+
+            <i class="fa-solid fa-rotate"></i>
+
+            Refresh Token Status
+
+        </button>
+
+    </div>
+
+    <!-- Active Tokens -->
+
+    {% if active_tokens %}
+
+        {% for token in active_tokens %}
+
+        <div class="card shadow-lg border-0 mb-4 active-token-card"
+             data-aos="zoom-in">
+
+            <div class="card-header bg-primary text-white">
+
+                <div class="d-flex justify-content-between
+                            align-items-center flex-wrap gap-2">
+
+                    <h4 class="mb-0">
+
+                        <i class="fa-solid fa-ticket-simple"></i>
+
+                        Active Token
+
+                    </h4>
+
+                    {% if token.status == "Waiting" %}
+
+                    <span class="badge bg-warning text-dark fs-6">
+
+                        <i class="fa-solid fa-clock"></i>
+
+                        Waiting
+
+                    </span>
+
+                    {% elif token.status == "Called" %}
+
+                    <span class="badge bg-danger fs-6 token-called-badge">
+
+                        <i class="fa-solid fa-bell"></i>
+
+                        Called
+
+                    </span>
+
+                    {% elif token.status == "In Consultation" %}
+
+                    <span class="badge bg-success fs-6">
+
+                        <i class="fa-solid fa-stethoscope"></i>
+
+                        In Consultation
+
+                    </span>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+            <div class="card-body p-4">
+
+                <div class="row align-items-center">
+
+                    <!-- Token Number -->
+
+                    <div class="col-lg-4 text-center mb-4 mb-lg-0">
+
+                        <div class="token-number-circle">
+
+                            <small>Your Token Number</small>
+
+                            <h1>
+
+                                {{ token.token_number }}
+
+                            </h1>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Token Information -->
+
+                    <div class="col-lg-8">
+
+                        <div class="row g-3">
+
+                            <div class="col-md-6">
+
+                                <div class="token-info-box">
+
+                                    <i class="fa-solid fa-user-doctor
+                                              text-primary"></i>
+
+                                    <div>
+
+                                        <small>Doctor</small>
+
+                                        <h5 class="mb-0">
+
+                                            {% if token.doctor %}
+
+                                                Dr. {{ token.doctor.name }}
+
+                                            {% else %}
+
+                                                Not Assigned
+
+                                            {% endif %}
+
+                                        </h5>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <div class="col-md-6">
+
+                                <div class="token-info-box">
+
+                                    <i class="fa-solid fa-building-user
+                                              text-success"></i>
+
+                                    <div>
+
+                                        <small>Department</small>
+
+                                        <h5 class="mb-0">
+
+                                            {{ token.department or "General" }}
+
+                                        </h5>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <div class="col-md-6">
+
+                                <div class="token-info-box">
+
+                                    <i class="fa-solid fa-list-ol
+                                              text-warning"></i>
+
+                                    <div>
+
+                                        <small>Queue Position</small>
+
+                                        <h5 class="mb-0">
+
+                                            {{ token.queue_position or 0 }}
+
+                                        </h5>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <div class="col-md-6">
+
+                                <div class="token-info-box">
+
+                                    <i class="fa-solid fa-hourglass-half
+                                              text-danger"></i>
+
+                                    <div>
+
+                                        <small>Estimated Waiting Time</small>
+
+                                        <h5 class="mb-0">
+
+                                            {{ token.estimated_wait or 0 }}
+                                            Minutes
+
+                                        </h5>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <div class="col-md-6">
+
+                                <div class="token-info-box">
+
+                                    <i class="fa-solid fa-triangle-exclamation
+                                              text-info"></i>
+
+                                    <div>
+
+                                        <small>Priority</small>
+
+                                        <h5 class="mb-0">
+
+                                            {% if token.priority == "Emergency" %}
+
+                                            <span class="badge bg-danger">
+
+                                                Emergency
+
+                                            </span>
+
+                                            {% elif token.priority == "High" %}
+
+                                            <span class="badge bg-warning text-dark">
+
+                                                High
+
+                                            </span>
+
+                                            {% else %}
+
+                                            <span class="badge bg-secondary">
+
+                                                {{ token.priority or "Normal" }}
+
+                                            </span>
+
+                                            {% endif %}
+
+                                        </h5>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <div class="col-md-6">
+
+                                <div class="token-info-box">
+
+                                    <i class="fa-solid fa-calendar-days
+                                              text-secondary"></i>
+
+                                    <div>
+
+                                        <small>Generated Date</small>
+
+                                        <h6 class="mb-0">
+
+                                            {% if token.created_at %}
+
+                                                {{ token.created_at.strftime(
+                                                    "%d-%m-%Y %I:%M %p"
+                                                ) }}
+
+                                            {% else %}
+
+                                                Not Available
+
+                                            {% endif %}
+
+                                        </h6>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- Status Message -->
+
+                {% if token.status == "Called" %}
+
+                <div class="alert alert-danger
+                            text-center mt-4 mb-0
+                            token-called-alert">
+
+                    <h4 class="fw-bold">
+
+                        <i class="fa-solid fa-bell"></i>
+
+                        Your Token Has Been Called!
+
+                    </h4>
+
+                    <p class="mb-0">
+
+                        Please proceed to the doctor's consultation room.
+
+                    </p>
+
+                </div>
+
+                {% elif token.status == "In Consultation" %}
+
+                <div class="alert alert-success text-center mt-4 mb-0">
+
+                    <i class="fa-solid fa-stethoscope"></i>
+
+                    Your consultation is currently in progress.
+
+                </div>
+
+                {% else %}
+
+                <div class="alert alert-info text-center mt-4 mb-0">
+
+                    <i class="fa-solid fa-circle-info"></i>
+
+                    Please wait until your token is called.
+
+                </div>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    {% else %}
+
+    <div class="card shadow border-0 mb-4"
+         data-aos="fade-up">
+
+        <div class="card-body text-center py-5">
+
+            <i class="fa-solid fa-ticket-simple
+                      fa-4x text-muted mb-3"></i>
+
+            <h4>No Active Token</h4>
+
+            <p class="text-muted mb-0">
+
+                You currently have no waiting or active hospital token.
+
+            </p>
+
+        </div>
+
+    </div>
+
+    {% endif %}
+
+    <!-- Token History -->
+
+    <div class="card shadow border-0"
+         data-aos="fade-up">
+
+        <div class="card-header bg-dark text-white">
+
+            <h4 class="mb-0">
+
+                <i class="fa-solid fa-clock-rotate-left"></i>
+
+                Token History
+
+            </h4>
+
+        </div>
+
+        <div class="card-body">
+
+            {% if tokens %}
+
+            <div class="table-responsive">
+
+                <table class="table table-bordered
+                              table-hover align-middle">
+
+                    <thead class="table-primary text-center">
+
+                        <tr>
+
+                            <th>Token</th>
+
+                            <th>Doctor</th>
+
+                            <th>Department</th>
+
+                            <th>Priority</th>
+
+                            <th>Queue</th>
+
+                            <th>Wait Time</th>
+
+                            <th>Status</th>
+
+                            <th>Date</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for token in tokens %}
+
+                        <tr>
+
+                            <td class="text-center fw-bold">
+
+                                {{ token.token_number }}
+
+                            </td>
+
+                            <td>
+
+                                {% if token.doctor %}
+
+                                    Dr. {{ token.doctor.name }}
+
+                                {% else %}
+
+                                    Not Assigned
+
+                                {% endif %}
+
+                            </td>
+
+                            <td>
+
+                                {{ token.department or "General" }}
+
+                            </td>
+
+                            <td class="text-center">
+
+                                {% if token.priority == "Emergency" %}
+
+                                <span class="badge bg-danger">
+
+                                    Emergency
+
+                                </span>
+
+                                {% elif token.priority == "High" %}
+
+                                <span class="badge bg-warning text-dark">
+
+                                    High
+
+                                </span>
+
+                                {% else %}
+
+                                <span class="badge bg-secondary">
+
+                                    {{ token.priority or "Normal" }}
+
+                                </span>
+
+                                {% endif %}
+
+                            </td>
+
+                            <td class="text-center">
+
+                                {{ token.queue_position or 0 }}
+
+                            </td>
+
+                            <td class="text-center">
+
+                                {{ token.estimated_wait or 0 }} min
+
+                            </td>
+
+                            <td class="text-center">
+
+                                {% if token.status == "Waiting" %}
+
+                                <span class="badge bg-warning text-dark">
+
+                                    <i class="fa-solid fa-clock"></i>
+
+                                    Waiting
+
+                                </span>
+
+                                {% elif token.status == "Called" %}
+
+                                <span class="badge bg-danger">
+
+                                    <i class="fa-solid fa-bell"></i>
+
+                                    Called
+
+                                </span>
+
+                                {% elif token.status == "In Consultation" %}
+
+                                <span class="badge bg-info text-dark">
+
+                                    <i class="fa-solid fa-stethoscope"></i>
+
+                                    In Consultation
+
+                                </span>
+
+                                {% elif token.status == "Completed" %}
+
+                                <span class="badge bg-success">
+
+                                    <i class="fa-solid fa-circle-check"></i>
+
+                                    Completed
+
+                                </span>
+
+                                {% elif token.status == "Cancelled" %}
+
+                                <span class="badge bg-secondary">
+
+                                    <i class="fa-solid fa-ban"></i>
+
+                                    Cancelled
+
+                                </span>
+
+                                {% else %}
+
+                                <span class="badge bg-secondary">
+
+                                    {{ token.status or "Unknown" }}
+
+                                </span>
+
+                                {% endif %}
+
+                            </td>
+
+                            <td class="text-center">
+
+                                {% if token.created_at %}
+
+                                    {{ token.created_at.strftime(
+                                        "%d-%m-%Y"
+                                    ) }}
+
+                                {% else %}
+
+                                    Not Available
+
+                                {% endif %}
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            {% else %}
+
+            <div class="text-center py-5">
+
+                <i class="fa-solid fa-clock-rotate-left
+                          fa-4x text-muted mb-3"></i>
+
+                <h4>No Token History</h4>
+
+                <p class="text-muted mb-0">
+
+                    Your token records will appear here.
+
+                </p>
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const hasActiveToken =
+        {% if active_tokens %}true{% else %}false{% endif %};
+
+    if (hasActiveToken) {
+
+        setTimeout(function () {
+
+            window.location.reload();
+
+        }, 30000);
+
+    }
+
+});
+
+</script>
+
+{% endblock %}

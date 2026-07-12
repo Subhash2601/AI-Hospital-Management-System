@@ -835,3 +835,132 @@ background:#000 !important;
     background: transparent !important;
     box-shadow: none !important;
 }
+/* =========================================================
+   PATIENT SMART TOKEN TRACKING
+========================================================= */
+
+.active-token-card {
+    overflow: hidden;
+    border-radius: 20px;
+}
+
+.token-number-circle {
+    width: 210px;
+    height: 210px;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    color: white;
+    background: linear-gradient(
+        135deg,
+        #0d6efd,
+        #20c997
+    );
+    box-shadow:
+        0 15px 35px
+        rgba(13, 110, 253, 0.3);
+    animation:
+        tokenPulse
+        2.5s
+        ease-in-out
+        infinite;
+}
+
+.token-number-circle small {
+    font-size: 15px;
+    opacity: 0.9;
+}
+
+.token-number-circle h1 {
+    margin: 6px 0 0;
+    font-size: 35px;
+    font-weight: 800;
+}
+
+.token-info-box {
+    min-height: 95px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 17px;
+    border-radius: 14px;
+    background: #f6f9ff;
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+.token-info-box:hover {
+    transform: translateY(-4px);
+    box-shadow:
+        0 8px 20px
+        rgba(0, 0, 0, 0.1);
+}
+
+.token-info-box > i {
+    min-width: 40px;
+    font-size: 31px;
+    text-align: center;
+}
+
+.token-info-box small {
+    display: block;
+    margin-bottom: 3px;
+    color: #6c757d;
+}
+
+.token-called-badge,
+.token-called-alert {
+    animation: tokenBlink 1s infinite;
+}
+
+@keyframes tokenPulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.04);
+    }
+
+}
+
+@keyframes tokenBlink {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.55;
+    }
+
+}
+
+.dark-mode .token-info-box {
+    background: #292929;
+    color: white;
+}
+
+.dark-mode .token-info-box small {
+    color: #cccccc;
+}
+
+@media (max-width: 576px) {
+
+    .token-number-circle {
+        width: 170px;
+        height: 170px;
+    }
+
+    .token-number-circle h1 {
+        font-size: 28px;
+    }
+
+}
