@@ -385,30 +385,222 @@ def doctor_dashboard():
     ).first()
 
     if not doctor:
-        flash("Doctor record not found.", "danger")
-        return redirect(url_for("logout"))
+
+        flash(
+            "Doctor profile was not found. Contact the administrator.",
+            "danger"
+        )
+
+        return redirect(url_for("home"))
 
     appointments = Appointment.query.filter_by(
         doctor_id=doctor.id
+    ).order_by(
+        Appointment.id.desc()
     ).all()
 
-    waiting_tokens = Token.query.filter_by(
-        doctor_id=doctor.id,
-        status="Waiting"
-    ).all()
+    total_appointments = len(appointments)
 
-    completed_tokens = Token.query.filter_by(
-        doctor_id=doctor.id,
-        status="Completed"
-    ).count()
+    pending_appointments = sum(
+        1
+        for appointment in appointments
+        if appointment.status == "Pending"
+    )
+
+    approved_appointments = sum(
+        1
+        for appointment in appointments
+        if appointment.status == "Approved"
+    )
+
+    consultation_appointments = sum(
+        1
+        for appointment in appointments
+        if appointment.status == "In Consultation"
+    )
+
+    completed_appointments = sum(
+        1
+        for appointment in appointments
+        if appointment.status == "Completed"
+    )
+
+    active_tokens = Token.query.filter(
+        Token.doctor_id == doctor.id,
+        Token.status.in_(
+            [
+                "Waiting",
+                "Called",
+                "In Consultation"
+            ]
+        )
+    ).order_by(
+        Token.queue_position.asc()
+    ).all()
 
     return render_template(
         "doctor_dashboard.html",
         doctor=doctor,
         appointments=appointments,
-        waiting_tokens=waiting_tokens,
-        completed_tokens=completed_tokens,
-        patients=Patient.query.count()
+        active_tokens=active_tokens,
+        total_appointments=total_appointments,
+        pending_appointments=pending_appointments,
+        approved_appointments=approved_appointments,
+        consultation_appointments=consultation_appointments,
+        completed_appointments=completed_appointments
+    )
+
+# ==========================================================
+# Doctor Update Appointment Status
+# ==========================================================
+
+@app.route(
+    "/doctor/appointment/<int:appointment_id>/<string:action>",
+    methods=["POST"]
+)
+@login_required
+@role_required("Doctor")
+def doctor_update_appointment_status(
+    appointment_id,
+    action
+):
+
+    doctor = Doctor.query.filter_by(
+        user_id=current_user.id
+    ).first()
+
+    if not doctor:
+
+        flash(
+            "Doctor profile was not found.",
+            "danger"
+        )
+
+        return redirect(
+            url_for("doctor_dashboard")
+        )
+
+    appointment = db.session.get(
+        Appointment,
+        appointment_id
+    )
+
+    if not appointment:
+
+        flash(
+            "Appointment was not found.",
+            "danger"
+        )
+
+        return redirect(
+            url_for("doctor_dashboard")
+        )
+
+    if appointment.doctor_id != doctor.id:
+
+        flash(
+            "You cannot manage another doctor's appointment.",
+            "danger"
+        )
+
+        return redirect(
+            url_for("doctor_dashboard")
+        )
+
+    current_status = (
+        appointment.status or "Pending"
+    )
+
+    allowed_actions = {
+        "start": {
+            "required_status": "Approved",
+            "new_status": "In Consultation"
+        },
+        "complete": {
+            "required_status": "In Consultation",
+            "new_status": "Completed"
+        }
+    }
+
+    if action not in allowed_actions:
+
+        flash(
+            "Invalid appointment action.",
+            "danger"
+        )
+
+        return redirect(
+            url_for("doctor_dashboard")
+        )
+
+    required_status = allowed_actions[action][
+        "required_status"
+    ]
+
+    new_status = allowed_actions[action][
+        "new_status"
+    ]
+
+    if current_status != required_status:
+
+        flash(
+            f"Appointment must be {required_status} "
+            f"before changing it to {new_status}.",
+            "warning"
+        )
+
+        return redirect(
+            url_for("doctor_dashboard")
+        )
+
+    appointment.status = new_status
+
+    related_token = Token.query.filter(
+        Token.patient_id == appointment.patient_id,
+        Token.doctor_id == appointment.doctor_id,
+        Token.status.in_(
+            [
+                "Waiting",
+                "Called",
+                "In Consultation"
+            ]
+        )
+    ).order_by(
+        Token.id.desc()
+    ).first()
+
+    if related_token:
+
+        if new_status == "In Consultation":
+
+            related_token.status = "In Consultation"
+            related_token.estimated_wait = 0
+
+        elif new_status == "Completed":
+
+            related_token.status = "Completed"
+            related_token.estimated_wait = 0
+
+    try:
+
+        db.session.commit()
+
+        flash(
+            f"Appointment status updated to {new_status}.",
+            "success"
+        )
+
+    except Exception:
+
+        db.session.rollback()
+
+        flash(
+            "Unable to update appointment status.",
+            "danger"
+        )
+
+    return redirect(
+        url_for("doctor_dashboard")
     )
 
 
