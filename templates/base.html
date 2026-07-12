@@ -10,166 +10,536 @@
 
     <title>AI Hospital Management System</title>
 
-    <!-- Bootstrap -->
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-        rel="stylesheet">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet">
 
     <!-- Font Awesome -->
-    <link
-        rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
     <!-- AOS Animation CSS -->
-    <link
-        href="https://unpkg.com/aos@2.3.4/dist/aos.css"
-        rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.4/dist/aos.css"
+          rel="stylesheet">
 
     <!-- Custom CSS -->
-    <link
-        rel="stylesheet"
-        href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
 
 </head>
 
 <body>
 
-<!-- ================= NAVBAR ================= -->
+<!-- =====================================================
+     NAVBAR
+===================================================== -->
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow">
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow sticky-top">
 
-    <div class="container">
+    <div class="container-fluid px-4">
 
-        <a
-            class="navbar-brand fw-bold"
-            href="{{ url_for('dashboard') }}">
+        <!-- Hospital Logo -->
+
+        <a class="navbar-brand fw-bold"
+           href="{{ url_for('home') }}">
 
             <i class="fa-solid fa-hospital"></i>
 
-            AI Hospital Management System
+            AI Hospital
 
         </a>
 
-        <div class="d-flex flex-wrap gap-1">
+        <!-- Mobile Navbar Button -->
 
-            <a
-                href="{{ url_for('dashboard') }}"
-                class="btn btn-light btn-sm">
+        <button class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#hospitalNavbar"
+                aria-controls="hospitalNavbar"
+                aria-expanded="false"
+                aria-label="Toggle navigation">
 
-                <i class="fa-solid fa-house"></i>
+            <span class="navbar-toggler-icon"></span>
 
-                Dashboard
+        </button>
 
-            </a>
+        <!-- Navbar Links -->
 
-            <a
-                href="{{ url_for('about') }}"
-                class="btn btn-light btn-sm">
+        <div class="collapse navbar-collapse"
+             id="hospitalNavbar">
 
-                <i class="fa-solid fa-circle-info"></i>
+            <ul class="navbar-nav ms-auto align-items-lg-center gap-1">
 
-                About
+                <!-- Home -->
 
-            </a>
+                <li class="nav-item">
 
-            <a
-                href="{{ url_for('contact') }}"
-                class="btn btn-warning btn-sm">
+                    <a class="nav-link"
+                       href="{{ url_for('home') }}">
 
-                <i class="fa-solid fa-phone"></i>
+                        <i class="fa-solid fa-house"></i>
 
-                Contact
+                        Home
 
-            </a>
+                    </a>
 
-            <a
-                href="{{ url_for('patients') }}"
-                class="btn btn-light btn-sm">
+                </li>
 
-                <i class="fa-solid fa-users"></i>
+                <!-- About -->
 
-                Patients
+                <li class="nav-item">
 
-            </a>
+                    <a class="nav-link"
+                       href="{{ url_for('about') }}">
 
-            <a
-                href="{{ url_for('doctors') }}"
-                class="btn btn-light btn-sm">
+                        <i class="fa-solid fa-circle-info"></i>
 
-                <i class="fa-solid fa-user-doctor"></i>
+                        About
 
-                Doctors
+                    </a>
 
-            </a>
+                </li>
 
-            <a
-                href="{{ url_for('appointments') }}"
-                class="btn btn-light btn-sm">
+                <!-- Contact -->
 
-                <i class="fa-solid fa-calendar-check"></i>
+                <li class="nav-item">
 
-                Appointments
+                    <a class="nav-link"
+                       href="{{ url_for('contact') }}">
 
-            </a>
+                        <i class="fa-solid fa-phone"></i>
 
-            <a
-                href="{{ url_for('billing') }}"
-                class="btn btn-light btn-sm">
+                        Contact
 
-                <i class="fa-solid fa-file-invoice-dollar"></i>
+                    </a>
 
-                Billing
+                </li>
 
-            </a>
+                {% if current_user.is_authenticated %}
 
-            <a
-                href="{{ url_for('ai') }}"
-                class="btn btn-light btn-sm">
+                <!-- Dashboard -->
 
-                <i class="fa-solid fa-robot"></i>
+                <li class="nav-item">
 
-                AI
+                    <a class="nav-link"
+                       href="{{ url_for('dashboard') }}">
 
-            </a>
+                        <i class="fa-solid fa-chart-line"></i>
 
-            <a
-                href="{{ url_for('chatbot') }}"
-                class="btn btn-info btn-sm">
+                        Dashboard
 
-                <i class="fa-solid fa-comments"></i>
+                    </a>
 
-                Chatbot
+                </li>
 
-            </a>
+                <!-- =====================================================
+                     ADMIN NAVBAR
+                ===================================================== -->
 
-            <a
-                href="{{ url_for('tokens') }}"
-                class="btn btn-success btn-sm">
+                {% if current_user.role == "Admin" %}
 
-                <i class="fa-solid fa-ticket"></i>
+                <li class="nav-item">
 
-                Tokens
+                    <a class="nav-link"
+                       href="{{ url_for('patients') }}">
 
-            </a>
+                        <i class="fa-solid fa-users"></i>
 
-            <button
-                id="themeBtn"
-                class="btn btn-warning btn-sm"
-                onclick="toggleDarkMode()">
+                        Patients
 
-                🌙 Dark Mode
+                    </a>
 
-            </button>
+                </li>
 
-            <a
-                href="{{ url_for('logout') }}"
-                class="btn btn-danger btn-sm">
+                <li class="nav-item">
 
-                <i class="fa-solid fa-right-from-bracket"></i>
+                    <a class="nav-link"
+                       href="{{ url_for('doctors') }}">
 
-                Logout
+                        <i class="fa-solid fa-user-doctor"></i>
 
-            </a>
+                        Doctors
+
+                    </a>
+
+                </li>
+
+                <li class="nav-item">
+
+                    <a class="nav-link"
+                       href="{{ url_for('appointments') }}">
+
+                        <i class="fa-solid fa-calendar-check"></i>
+
+                        Appointments
+
+                    </a>
+
+                </li>
+
+                <li class="nav-item">
+
+                    <a class="nav-link"
+                       href="{{ url_for('billing') }}">
+
+                        <i class="fa-solid fa-file-invoice-dollar"></i>
+
+                        Billing
+
+                    </a>
+
+                </li>
+
+                <li class="nav-item">
+
+                    <a class="nav-link"
+                       href="{{ url_for('tokens') }}">
+
+                        <i class="fa-solid fa-ticket"></i>
+
+                        Tokens
+
+                    </a>
+
+                </li>
+
+                <li class="nav-item dropdown">
+
+                    <a class="nav-link dropdown-toggle"
+                       href="#"
+                       role="button"
+                       data-bs-toggle="dropdown">
+
+                        <i class="fa-solid fa-notes-medical"></i>
+
+                        Medical
+
+                    </a>
+
+                    <ul class="dropdown-menu dropdown-menu-end">
+
+                        <li>
+
+                            <a class="dropdown-item"
+                               href="{{ url_for('prescriptions') }}">
+
+                                <i class="fa-solid fa-file-prescription"></i>
+
+                                Prescriptions
+
+                            </a>
+
+                        </li>
+
+                        <li>
+
+                            <a class="dropdown-item"
+                               href="{{ url_for('lab_reports') }}">
+
+                                <i class="fa-solid fa-flask"></i>
+
+                                Lab Reports
+
+                            </a>
+
+                        </li>
+
+                    </ul>
+
+                </li>
+
+                {% endif %}
+
+                <!-- =====================================================
+                     RECEPTIONIST NAVBAR
+                ===================================================== -->
+
+                {% if current_user.role in ["Reception", "Receptionist"] %}
+
+                <li class="nav-item">
+
+                    <a class="nav-link"
+                       href="{{ url_for('patients') }}">
+
+                        <i class="fa-solid fa-users"></i>
+
+                        Patients
+
+                    </a>
+
+                </li>
+
+                <li class="nav-item">
+
+                    <a class="nav-link"
+                       href="{{ url_for('doctors') }}">
+
+                        <i class="fa-solid fa-user-doctor"></i>
+
+                        Doctors
+
+                    </a>
+
+                </li>
+
+                <li class="nav-item">
+
+                    <a class="nav-link"
+                       href="{{ url_for('appointments') }}">
+
+                        <i class="fa-solid fa-calendar-check"></i>
+
+                        Appointments
+
+                    </a>
+
+                </li>
+
+                <li class="nav-item">
+
+                    <a class="nav-link"
+                       href="{{ url_for('billing') }}">
+
+                        <i class="fa-solid fa-file-invoice-dollar"></i>
+
+                        Billing
+
+                    </a>
+
+                </li>
+
+                <li class="nav-item">
+
+                    <a class="nav-link"
+                       href="{{ url_for('tokens') }}">
+
+                        <i class="fa-solid fa-ticket"></i>
+
+                        Tokens
+
+                    </a>
+
+                </li>
+
+                {% endif %}
+
+                <!-- =====================================================
+                     DOCTOR NAVBAR
+                ===================================================== -->
+
+                {% if current_user.role == "Doctor" %}
+
+                <li class="nav-item">
+
+                    <a class="nav-link"
+                       href="{{ url_for('prescriptions') }}">
+
+                        <i class="fa-solid fa-file-prescription"></i>
+
+                        Prescriptions
+
+                    </a>
+
+                </li>
+
+                <li class="nav-item">
+
+                    <a class="nav-link"
+                       href="{{ url_for('lab_reports') }}">
+
+                        <i class="fa-solid fa-flask"></i>
+
+                        Lab Reports
+
+                    </a>
+
+                </li>
+
+                <li class="nav-item">
+
+                    <a class="nav-link"
+                       href="{{ url_for('tokens') }}">
+
+                        <i class="fa-solid fa-ticket"></i>
+
+                        Tokens
+
+                    </a>
+
+                </li>
+
+                {% endif %}
+
+                <!-- =====================================================
+                     PATIENT NAVBAR
+                ===================================================== -->
+
+                {% if current_user.role == "Patient" %}
+
+                <li class="nav-item dropdown">
+
+                    <a class="nav-link dropdown-toggle"
+                       href="#"
+                       role="button"
+                       data-bs-toggle="dropdown">
+
+                        <i class="fa-solid fa-user-injured"></i>
+
+                        My Records
+
+                    </a>
+
+                    <ul class="dropdown-menu dropdown-menu-end">
+
+                        <li>
+
+                            <a class="dropdown-item"
+                               href="{{ url_for('my_appointments') }}">
+
+                                <i class="fa-solid fa-calendar-check"></i>
+
+                                My Appointments
+
+                            </a>
+
+                        </li>
+
+                        <li>
+
+                            <a class="dropdown-item"
+                               href="{{ url_for('my_bills') }}">
+
+                                <i class="fa-solid fa-file-invoice-dollar"></i>
+
+                                My Bills
+
+                            </a>
+
+                        </li>
+
+                        <li>
+
+                            <a class="dropdown-item"
+                               href="{{ url_for('my_prescriptions') }}">
+
+                                <i class="fa-solid fa-file-prescription"></i>
+
+                                My Prescriptions
+
+                            </a>
+
+                        </li>
+
+                        <li>
+
+                            <a class="dropdown-item"
+                               href="{{ url_for('my_lab_reports') }}">
+
+                                <i class="fa-solid fa-flask"></i>
+
+                                My Lab Reports
+
+                            </a>
+
+                        </li>
+
+                    </ul>
+
+                </li>
+
+                {% endif %}
+
+                <!-- =====================================================
+                     COMMON LOGGED-IN LINKS
+                ===================================================== -->
+
+                <li class="nav-item">
+
+                    <a class="nav-link"
+                       href="{{ url_for('ai') }}">
+
+                        <i class="fa-solid fa-robot"></i>
+
+                        AI
+
+                    </a>
+
+                </li>
+
+                <li class="nav-item">
+
+                    <a class="nav-link"
+                       href="{{ url_for('chatbot') }}">
+
+                        <i class="fa-solid fa-comments"></i>
+
+                        Chatbot
+
+                    </a>
+
+                </li>
+
+                <li class="nav-item ms-lg-2">
+
+                    <button id="themeBtn"
+                            type="button"
+                            class="btn btn-warning btn-sm"
+                            onclick="toggleDarkMode()">
+
+                        🌙 Dark Mode
+
+                    </button>
+
+                </li>
+
+                <li class="nav-item ms-lg-2">
+
+                    <a class="btn btn-danger btn-sm"
+                       href="{{ url_for('logout') }}">
+
+                        <i class="fa-solid fa-right-from-bracket"></i>
+
+                        Logout
+
+                    </a>
+
+                </li>
+
+                {% else %}
+
+                <!-- =====================================================
+                     LOGGED-OUT NAVBAR
+                ===================================================== -->
+
+                <li class="nav-item ms-lg-2">
+
+                    <button id="themeBtn"
+                            type="button"
+                            class="btn btn-warning btn-sm"
+                            onclick="toggleDarkMode()">
+
+                        🌙 Dark Mode
+
+                    </button>
+
+                </li>
+
+                <li class="nav-item ms-lg-2">
+
+                    <a class="btn btn-light btn-sm"
+                       href="{{ url_for('login') }}">
+
+                        <i class="fa-solid fa-right-to-bracket"></i>
+
+                        Login
+
+                    </a>
+
+                </li>
+
+                {% endif %}
+
+            </ul>
 
         </div>
 
@@ -177,7 +547,9 @@
 
 </nav>
 
-<!-- ================= CONTENT ================= -->
+<!-- =====================================================
+     PAGE CONTENT
+===================================================== -->
 
 {% if request.endpoint == "home" %}
 
@@ -197,19 +569,18 @@
 
             {% for category, message in messages %}
 
-                <div
-                    class="alert alert-{{ category }} alert-dismissible fade show"
-                    data-aos="fade-down">
+            <div class="alert alert-{{ category }} alert-dismissible fade show"
+                 data-aos="fade-down">
 
-                    {{ message }}
+                {{ message }}
 
-                    <button
-                        type="button"
+                <button type="button"
                         class="btn-close"
-                        data-bs-dismiss="alert">
-                    </button>
+                        data-bs-dismiss="alert"
+                        aria-label="Close">
+                </button>
 
-                </div>
+            </div>
 
             {% endfor %}
 
@@ -222,13 +593,14 @@
 
 </div>
 
-<!-- ================= FOOTER ================= -->
+<!-- =====================================================
+     FOOTER
+===================================================== -->
 
-<footer
-    class="bg-dark text-white text-center p-3 mt-5"
-    data-aos="fade-up">
+<footer class="bg-dark text-white text-center p-4 mt-5"
+        data-aos="fade-up">
 
-    <h5>
+    <h5 class="fw-bold">
 
         <i class="fa-solid fa-hospital"></i>
 
@@ -236,13 +608,19 @@
 
     </h5>
 
-    <p>
+    <p class="mb-1">
+
+        Smart Healthcare Powered by Artificial Intelligence
+
+    </p>
+
+    <p class="mb-1">
 
         Developed using Python • Flask • SQLite • Bootstrap
 
     </p>
 
-    <p>
+    <p class="mb-0">
 
         © 2026 AI Hospital Management System
 
@@ -250,7 +628,9 @@
 
 </footer>
 
-<!-- ================= DARK MODE ================= -->
+<!-- =====================================================
+     DARK MODE
+===================================================== -->
 
 <script>
 
@@ -258,17 +638,21 @@ function toggleDarkMode() {
 
     document.body.classList.toggle("dark-mode");
 
-    const btn = document.getElementById("themeBtn");
+    const themeButton = document.getElementById("themeBtn");
 
     if (document.body.classList.contains("dark-mode")) {
 
-        btn.innerHTML = "☀ Light Mode";
+        if (themeButton) {
+            themeButton.innerHTML = "☀ Light Mode";
+        }
 
         localStorage.setItem("theme", "dark");
 
     } else {
 
-        btn.innerHTML = "🌙 Dark Mode";
+        if (themeButton) {
+            themeButton.innerHTML = "🌙 Dark Mode";
+        }
 
         localStorage.setItem("theme", "light");
 
@@ -278,16 +662,14 @@ function toggleDarkMode() {
 
 document.addEventListener("DOMContentLoaded", function () {
 
-    const themeBtn = document.getElementById("themeBtn");
+    const themeButton = document.getElementById("themeBtn");
 
     if (localStorage.getItem("theme") === "dark") {
 
         document.body.classList.add("dark-mode");
 
-        if (themeBtn) {
-
-            themeBtn.innerHTML = "☀ Light Mode";
-
+        if (themeButton) {
+            themeButton.innerHTML = "☀ Light Mode";
         }
 
     }
@@ -296,19 +678,27 @@ document.addEventListener("DOMContentLoaded", function () {
 
 </script>
 
+<!-- Bootstrap JavaScript -->
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
 <!-- AOS Animation JavaScript -->
 
 <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
 
 <script>
 
-AOS.init({
+document.addEventListener("DOMContentLoaded", function () {
 
-    duration: 1000,
+    if (typeof AOS !== "undefined") {
 
-    once: true,
+        AOS.init({
+            duration: 1000,
+            once: true,
+            offset: 80
+        });
 
-    offset: 80
+    }
 
 });
 
@@ -317,10 +707,6 @@ AOS.init({
 <!-- Chart.js -->
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<!-- Bootstrap -->
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 
