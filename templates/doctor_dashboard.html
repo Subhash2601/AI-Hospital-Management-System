@@ -1,58 +1,170 @@
+
 {% extends "base.html" %}
 
 {% block content %}
 
-<div class="container mt-4">
+<style>
+    .doctor-page {
+        min-height: 100vh;
+        padding: 35px 0 60px;
+        background: #f5f7fb;
+    }
 
-    <!-- Doctor Welcome Section -->
+    .doctor-hero {
+        position: relative;
+        overflow: hidden;
+        padding: 30px;
+        border-radius: 24px;
+        color: white;
+        background: linear-gradient(135deg, #063970, #0d6efd, #20c997);
+        box-shadow: 0 20px 50px rgba(13, 110, 253, 0.25);
+    }
 
-    <div class="text-center mb-4"
-         data-aos="fade-down">
+    .doctor-avatar {
+        width: 92px;
+        height: 92px;
+        display: grid;
+        place-items: center;
+        border: 4px solid rgba(255, 255, 255, 0.75);
+        border-radius: 25px;
+        background: rgba(255, 255, 255, 0.16);
+        font-size: 42px;
+    }
 
-        <h2 class="fw-bold text-primary">
+    .doctor-stat {
+        height: 100%;
+        padding: 22px;
+        border: 0;
+        border-radius: 18px;
+        background: white;
+        box-shadow: 0 10px 30px rgba(16, 24, 40, 0.08);
+        transition: transform 0.25s ease;
+    }
 
-            <i class="fa-solid fa-user-doctor"></i>
+    .doctor-stat:hover {
+        transform: translateY(-5px);
+    }
 
-            Doctor Dashboard
+    .doctor-stat-icon {
+        width: 50px;
+        height: 50px;
+        display: grid;
+        place-items: center;
+        border-radius: 14px;
+        font-size: 22px;
+    }
 
-        </h2>
+    .doctor-panel {
+        overflow: hidden;
+        border: 0;
+        border-radius: 20px;
+        box-shadow: 0 12px 35px rgba(16, 24, 40, 0.08);
+    }
 
-        <p class="text-muted">
+    .doctor-table thead th {
+        color: #475467;
+        background: #f8fafc;
+        font-size: 12px;
+        text-transform: uppercase;
+        white-space: nowrap;
+    }
 
-            Welcome,
-            <strong>Dr. {{ doctor.name }}</strong>
+    .doctor-action {
+        min-width: 170px;
+        border-radius: 10px;
+        font-weight: 700;
+    }
 
-        </p>
+    .token-card {
+        height: 100%;
+        padding: 18px;
+        border: 1px solid #e4e7ec;
+        border-radius: 16px;
+        background: #f9fafb;
+    }
 
-        <p>
+    .dark-mode .doctor-page {
+        background: #101114;
+    }
 
-            <span class="badge bg-success">
+    .dark-mode .doctor-stat,
+    .dark-mode .doctor-panel {
+        background: #191b20;
+    }
 
-                {{ doctor.specialization or "General Doctor" }}
+    .dark-mode .doctor-table thead th,
+    .dark-mode .token-card {
+        color: #d0d5dd;
+        background: #22242b;
+        border-color: #353841;
+    }
+</style>
 
-            </span>
+<div class="doctor-page">
 
-        </p>
+    <div class="container-fluid px-lg-5">
 
-    </div>
+        <div class="doctor-hero mb-4">
 
-    <!-- Dashboard Cards -->
+            <div class="d-flex flex-column flex-lg-row
+                        align-items-lg-center justify-content-between gap-4">
 
-    <div class="row">
+                <div class="d-flex flex-column flex-md-row
+                            align-items-md-center gap-4">
 
-        <div class="col-md-6 col-lg-3 mb-4"
-             data-aos="zoom-in"
-             data-aos-delay="100">
+                    <div class="doctor-avatar">
+                        <i class="fa-solid fa-user-doctor"></i>
+                    </div>
 
-            <div class="card bg-primary text-white shadow h-100">
+                    <div>
 
-                <div class="card-body text-center">
+                        <span class="badge bg-light text-primary mb-2">
+                            Doctor Portal
+                        </span>
 
-                    <i class="fa-solid fa-calendar-check fa-3x mb-3"></i>
+                        <h1 class="fw-bold mb-2">
+                            Dr. {{ doctor.name }}
+                        </h1>
 
-                    <h2>{{ total_appointments }}</h2>
+                        <div class="d-flex flex-wrap gap-2">
 
-                    <h5>Total Appointments</h5>
+                            <span class="badge bg-light text-dark p-2">
+                                <i class="fa-solid fa-stethoscope me-1"></i>
+                                {{ doctor.specialization or "General Doctor" }}
+                            </span>
+
+                            {% if doctor.phone %}
+
+                            <span class="badge bg-light text-dark p-2">
+                                <i class="fa-solid fa-phone me-1"></i>
+                                {{ doctor.phone }}
+                            </span>
+
+                            {% endif %}
+
+                            {% if doctor.email %}
+
+                            <span class="badge bg-light text-dark p-2">
+                                <i class="fa-solid fa-envelope me-1"></i>
+                                {{ doctor.email }}
+                            </span>
+
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="text-lg-end">
+
+                    <span class="badge bg-success fs-6 p-2 mb-2">
+                        <i class="fa-solid fa-circle me-1"></i>
+                        {{ doctor.status or "Available" }}
+                    </span>
+
+                    <div id="doctorDateTime" class="opacity-75"></div>
 
                 </div>
 
@@ -60,19 +172,93 @@
 
         </div>
 
-        <div class="col-md-6 col-lg-3 mb-4"
-             data-aos="zoom-in"
-             data-aos-delay="200">
+        <div class="row g-3 mb-4">
 
-            <div class="card bg-warning shadow h-100">
+            <div class="col-6 col-xl">
 
-                <div class="card-body text-center">
+                <div class="doctor-stat">
 
-                    <i class="fa-solid fa-clock fa-3x mb-3"></i>
+                    <div class="doctor-stat-icon text-primary bg-primary-subtle">
+                        <i class="fa-solid fa-calendar-days"></i>
+                    </div>
 
-                    <h2>{{ approved_appointments }}</h2>
+                    <h2 class="fw-bold mt-3 mb-1">
+                        {{ total_appointments | default(0) }}
+                    </h2>
 
-                    <h5>Approved</h5>
+                    <p class="text-muted mb-0">Total Appointments</p>
+
+                </div>
+
+            </div>
+
+            <div class="col-6 col-xl">
+
+                <div class="doctor-stat">
+
+                    <div class="doctor-stat-icon text-warning bg-warning-subtle">
+                        <i class="fa-solid fa-hourglass-half"></i>
+                    </div>
+
+                    <h2 class="fw-bold mt-3 mb-1">
+                        {{ pending_appointments | default(0) }}
+                    </h2>
+
+                    <p class="text-muted mb-0">Pending</p>
+
+                </div>
+
+            </div>
+
+            <div class="col-6 col-xl">
+
+                <div class="doctor-stat">
+
+                    <div class="doctor-stat-icon text-primary bg-primary-subtle">
+                        <i class="fa-solid fa-calendar-check"></i>
+                    </div>
+
+                    <h2 class="fw-bold mt-3 mb-1">
+                        {{ approved_appointments | default(0) }}
+                    </h2>
+
+                    <p class="text-muted mb-0">Approved</p>
+
+                </div>
+
+            </div>
+
+            <div class="col-6 col-xl">
+
+                <div class="doctor-stat">
+
+                    <div class="doctor-stat-icon text-info bg-info-subtle">
+                        <i class="fa-solid fa-stethoscope"></i>
+                    </div>
+
+                    <h2 class="fw-bold mt-3 mb-1">
+                        {{ consultation_appointments | default(0) }}
+                    </h2>
+
+                    <p class="text-muted mb-0">In Consultation</p>
+
+                </div>
+
+            </div>
+
+            <div class="col-6 col-xl">
+
+                <div class="doctor-stat">
+
+                    <div class="doctor-stat-icon text-success bg-success-subtle">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </div>
+
+                    <h2 class="fw-bold mt-3 mb-1">
+                        {{ completed_appointments | default(0) }}
+                    </h2>
+
+                    <p class="text-muted mb-0">Completed</p>
 
                 </div>
 
@@ -80,521 +266,450 @@
 
         </div>
 
-        <div class="col-md-6 col-lg-3 mb-4"
-             data-aos="zoom-in"
-             data-aos-delay="300">
+        <div class="card doctor-panel mb-4">
 
-            <div class="card bg-info text-white shadow h-100">
+            <div class="card-header bg-dark text-white p-3">
 
-                <div class="card-body text-center">
+                <h4 class="mb-0">
+                    <i class="fa-solid fa-bolt me-2"></i>
+                    Clinical Tools
+                </h4>
 
-                    <i class="fa-solid fa-stethoscope fa-3x mb-3"></i>
+            </div>
 
-                    <h2>{{ consultation_appointments }}</h2>
+            <div class="card-body d-flex flex-wrap gap-2">
 
-                    <h5>In Consultation</h5>
+                <a href="{{ url_for('tokens') }}"
+                   class="btn btn-primary">
+                    <i class="fa-solid fa-ticket me-1"></i>
+                    Tokens
+                </a>
 
-                </div>
+                <a href="{{ url_for('prescriptions') }}"
+                   class="btn btn-success">
+                    <i class="fa-solid fa-file-prescription me-1"></i>
+                    Prescriptions
+                </a>
+
+                <a href="{{ url_for('lab_reports') }}"
+                   class="btn btn-warning">
+                    <i class="fa-solid fa-flask-vial me-1"></i>
+                    Lab Reports
+                </a>
+
+                <a href="{{ url_for('ai') }}"
+                   class="btn btn-danger">
+                    <i class="fa-solid fa-brain me-1"></i>
+                    AI Prediction
+                </a>
+
+                <a href="{{ url_for('change_password') }}"
+                   class="btn btn-secondary">
+                    <i class="fa-solid fa-key me-1"></i>
+                    Change Password
+                </a>
 
             </div>
 
         </div>
 
-        <div class="col-md-6 col-lg-3 mb-4"
-             data-aos="zoom-in"
-             data-aos-delay="400">
+        <div class="card doctor-panel mb-4">
 
-            <div class="card bg-success text-white shadow h-100">
+            <div class="card-header bg-primary text-white p-3">
 
-                <div class="card-body text-center">
+                <div class="d-flex justify-content-between align-items-center">
 
-                    <i class="fa-solid fa-circle-check fa-3x mb-3"></i>
+                    <h4 class="mb-0">
+                        <i class="fa-solid fa-calendar-check me-2"></i>
+                        My Appointments
+                    </h4>
 
-                    <h2>{{ completed_appointments }}</h2>
-
-                    <h5>Completed</h5>
+                    <span class="badge bg-light text-primary">
+                        {{ appointments | length }} records
+                    </span>
 
                 </div>
 
             </div>
 
-        </div>
+            <div class="card-body p-0">
 
-    </div>
+                {% if appointments %}
 
-    <!-- Quick Actions -->
+                <div class="table-responsive">
 
-    <div class="card shadow mb-4"
-         data-aos="fade-up">
+                    <table class="table table-hover doctor-table mb-0 align-middle">
 
-        <div class="card-header bg-dark text-white">
+                        <thead>
 
-            <h4 class="mb-0">
+                            <tr>
+                                <th class="ps-4">ID</th>
+                                <th>Patient</th>
+                                <th>Schedule</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
 
-                <i class="fa-solid fa-bolt"></i>
+                        </thead>
 
-                Quick Actions
+                        <tbody>
 
-            </h4>
+                            {% for appointment in appointments %}
 
-        </div>
+                            <tr>
 
-        <div class="card-body text-center">
+                                <td class="ps-4 fw-bold text-primary">
+                                    #{{ appointment.id }}
+                                </td>
 
-            <a href="{{ url_for('tokens') }}"
-               class="btn btn-primary m-2">
+                                <td>
 
-                <i class="fa-solid fa-ticket"></i>
+                                    {% if appointment.patient %}
 
-                Manage Tokens
-
-            </a>
-
-            <a href="{{ url_for('prescriptions') }}"
-               class="btn btn-success m-2">
-
-                <i class="fa-solid fa-file-prescription"></i>
-
-                Prescriptions
-
-            </a>
-
-            <a href="{{ url_for('lab_reports') }}"
-               class="btn btn-warning m-2">
-
-                <i class="fa-solid fa-flask"></i>
-
-                Lab Reports
-
-            </a>
-
-            <a href="{{ url_for('ai') }}"
-               class="btn btn-danger m-2">
-
-                <i class="fa-solid fa-robot"></i>
-
-                AI Prediction
-
-            </a>
-
-            <a href="{{ url_for('change_password') }}"
-               class="btn btn-dark m-2">
-
-                <i class="fa-solid fa-key"></i>
-
-                Change Password
-
-            </a>
-
-        </div>
-
-    </div>
-
-    <!-- Doctor Appointments -->
-
-    <div class="card shadow mb-4"
-         data-aos="fade-up">
-
-        <div class="card-header bg-primary text-white">
-
-            <h4 class="mb-0">
-
-                <i class="fa-solid fa-calendar-days"></i>
-
-                My Appointments
-
-            </h4>
-
-        </div>
-
-        <div class="card-body">
-
-            {% if appointments %}
-
-            <div class="table-responsive">
-
-                <table class="table table-bordered table-hover align-middle">
-
-                    <thead class="table-primary text-center">
-
-                        <tr>
-
-                            <th>ID</th>
-
-                            <th>Patient</th>
-
-                            <th>Date</th>
-
-                            <th>Time</th>
-
-                            <th>Status</th>
-
-                            <th>Action</th>
-
-                        </tr>
-
-                    </thead>
-
-                    <tbody>
-
-                        {% for appointment in appointments %}
-
-                        <tr>
-
-                            <td class="text-center">
-
-                                {{ appointment.id }}
-
-                            </td>
-
-                            <td>
-
-                                {% if appointment.patient %}
-
-                                    <i class="fa-solid fa-user-injured text-primary"></i>
-
-                                    {{ appointment.patient.name }}
+                                    <strong>{{ appointment.patient.name }}</strong>
 
                                     {% if appointment.patient.phone %}
 
                                     <br>
 
                                     <small class="text-muted">
-
-                                        <i class="fa-solid fa-phone"></i>
-
+                                        <i class="fa-solid fa-phone me-1"></i>
                                         {{ appointment.patient.phone }}
-
                                     </small>
 
                                     {% endif %}
 
-                                {% else %}
+                                    {% else %}
 
                                     Patient not found
 
-                                {% endif %}
+                                    {% endif %}
 
-                            </td>
+                                </td>
 
-                            <td class="text-center">
+                                <td>
 
-                                {{ appointment.appointment_date }}
+                                    <strong>
+                                        <i class="fa-regular fa-calendar text-primary me-1"></i>
+                                        {{ appointment.appointment_date }}
+                                    </strong>
 
-                            </td>
+                                    <br>
 
-                            <td class="text-center">
+                                    <small class="text-muted">
+                                        <i class="fa-regular fa-clock me-1"></i>
+                                        {{ appointment.appointment_time }}
+                                    </small>
 
-                                {{ appointment.appointment_time }}
+                                </td>
 
-                            </td>
+                                <td>
 
-                            <td class="text-center">
+                                    {% if appointment.status == "Pending" %}
 
-                                {% if appointment.status == "Pending" %}
+                                    <span class="badge bg-warning text-dark">
+                                        Pending
+                                    </span>
 
-                                <span class="badge bg-warning text-dark">
+                                    {% elif appointment.status == "Approved" %}
 
-                                    Pending Approval
+                                    <span class="badge bg-primary">
+                                        Approved
+                                    </span>
 
-                                </span>
+                                    {% elif appointment.status == "In Consultation" %}
 
-                                {% elif appointment.status == "Approved" %}
+                                    <span class="badge bg-info text-dark">
+                                        In Consultation
+                                    </span>
 
-                                <span class="badge bg-primary">
+                                    {% elif appointment.status == "Completed" %}
 
-                                    Approved
+                                    <span class="badge bg-success">
+                                        Completed
+                                    </span>
 
-                                </span>
+                                    {% elif appointment.status == "Cancelled" %}
 
-                                {% elif appointment.status == "In Consultation" %}
+                                    <span class="badge bg-danger">
+                                        Cancelled
+                                    </span>
 
-                                <span class="badge bg-info text-dark">
+                                    {% else %}
 
-                                    In Consultation
+                                    <span class="badge bg-secondary">
+                                        {{ appointment.status or "Pending" }}
+                                    </span>
 
-                                </span>
+                                    {% endif %}
 
-                                {% elif appointment.status == "Completed" %}
+                                </td>
 
-                                <span class="badge bg-success">
+                                <td>
 
-                                    Completed
+                                    {% if appointment.status == "Approved" %}
 
-                                </span>
+                                    <form method="POST"
+                                          action="{{ url_for(
+                                              'doctor_update_appointment_status',
+                                              appointment_id=appointment.id,
+                                              action='start'
+                                          ) }}"
+                                          onsubmit="return confirm(
+                                              'Start consultation for this patient?'
+                                          );">
 
-                                {% elif appointment.status == "Cancelled" %}
+                                        <button type="submit"
+                                                class="btn btn-info btn-sm doctor-action">
 
-                                <span class="badge bg-danger">
+                                            <i class="fa-solid fa-stethoscope me-1"></i>
+                                            Start Consultation
 
-                                    Cancelled
+                                        </button>
 
-                                </span>
+                                    </form>
 
-                                {% else %}
+                                    {% elif appointment.status == "In Consultation" %}
 
-                                <span class="badge bg-secondary">
+                                    <form method="POST"
+                                          action="{{ url_for(
+                                              'doctor_update_appointment_status',
+                                              appointment_id=appointment.id,
+                                              action='complete'
+                                          ) }}"
+                                          onsubmit="return confirm(
+                                              'Mark this consultation as completed?'
+                                          );">
 
-                                    {{ appointment.status or "Pending" }}
+                                        <button type="submit"
+                                                class="btn btn-success btn-sm doctor-action">
 
-                                </span>
+                                            <i class="fa-solid fa-check-double me-1"></i>
+                                            Complete
 
-                                {% endif %}
+                                        </button>
 
-                            </td>
+                                    </form>
 
-                            <td class="text-center">
+                                    {% elif appointment.status == "Pending" %}
 
-                                {% if appointment.status == "Approved" %}
+                                    <span class="text-warning fw-semibold">
+                                        Waiting for approval
+                                    </span>
 
-                                <form method="POST"
-                                      class="status-form d-inline"
-                                      action="{{ url_for(
-                                          'doctor_update_appointment_status',
-                                          appointment_id=appointment.id,
-                                          action='start'
-                                      ) }}">
+                                    {% elif appointment.status == "Completed" %}
 
-                                    <button type="submit"
-                                            class="btn btn-info btn-sm">
+                                    <span class="text-success fw-semibold">
+                                        <i class="fa-solid fa-circle-check me-1"></i>
+                                        Finished
+                                    </span>
 
-                                        <i class="fa-solid fa-stethoscope"></i>
+                                    {% elif appointment.status == "Cancelled" %}
 
-                                        Start Consultation
+                                    <span class="text-danger fw-semibold">
+                                        Cancelled
+                                    </span>
 
-                                    </button>
+                                    {% endif %}
 
-                                </form>
+                                </td>
 
-                                {% elif appointment.status == "In Consultation" %}
+                            </tr>
 
-                                <form method="POST"
-                                      class="status-form d-inline"
-                                      action="{{ url_for(
-                                          'doctor_update_appointment_status',
-                                          appointment_id=appointment.id,
-                                          action='complete'
-                                      ) }}"
-                                      onsubmit="return confirm(
-                                          'Complete this consultation?'
-                                      );">
+                            {% endfor %}
 
-                                    <button type="submit"
-                                            class="btn btn-success btn-sm">
+                        </tbody>
 
-                                        <i class="fa-solid fa-check-double"></i>
+                    </table>
 
-                                        Complete
+                </div>
 
-                                    </button>
+                {% else %}
 
-                                </form>
+                <div class="text-center py-5">
 
-                                {% elif appointment.status == "Pending" %}
+                    <i class="fa-solid fa-calendar-xmark
+                              fa-4x text-muted mb-3"></i>
 
-                                <span class="text-warning fw-semibold">
+                    <h4>No Appointments Found</h4>
 
-                                    Waiting for approval
+                    <p class="text-muted mb-0">
+                        You currently have no assigned appointments.
+                    </p>
 
-                                </span>
+                </div>
 
-                                {% elif appointment.status == "Completed" %}
-
-                                <span class="text-success fw-semibold">
-
-                                    <i class="fa-solid fa-circle-check"></i>
-
-                                    Finished
-
-                                </span>
-
-                                {% elif appointment.status == "Cancelled" %}
-
-                                <span class="text-danger fw-semibold">
-
-                                    <i class="fa-solid fa-ban"></i>
-
-                                    Cancelled
-
-                                </span>
-
-                                {% endif %}
-
-                            </td>
-
-                        </tr>
-
-                        {% endfor %}
-
-                    </tbody>
-
-                </table>
+                {% endif %}
 
             </div>
 
-            {% else %}
+        </div>
 
-            <div class="text-center py-5">
+        <div class="card doctor-panel">
 
-                <i class="fa-solid fa-calendar-xmark fa-4x text-muted mb-3"></i>
+            <div class="card-header bg-success text-white p-3">
 
-                <h4>No Appointments Found</h4>
+                <div class="d-flex justify-content-between align-items-center">
 
-                <p class="text-muted">
+                    <h4 class="mb-0">
+                        <i class="fa-solid fa-ticket me-2"></i>
+                        Active Patient Tokens
+                    </h4>
 
-                    You currently have no assigned appointments.
+                    <span class="badge bg-light text-success">
+                        {{ active_tokens | length }} active
+                    </span>
 
-                </p>
+                </div>
 
             </div>
 
-            {% endif %}
+            <div class="card-body">
 
-        </div>
+                {% if active_tokens %}
 
-    </div>
+                <div class="row g-3">
 
-    <!-- Active Tokens -->
+                    {% for token in active_tokens %}
 
-    <div class="card shadow"
-         data-aos="fade-up">
+                    <div class="col-md-6 col-xl-4">
 
-        <div class="card-header bg-success text-white">
+                        <div class="token-card">
 
-            <h4 class="mb-0">
+                            <div class="d-flex justify-content-between
+                                        align-items-center mb-3">
 
-                <i class="fa-solid fa-ticket"></i>
-
-                Active Patient Tokens
-
-            </h4>
-
-        </div>
-
-        <div class="card-body">
-
-            {% if active_tokens %}
-
-            <div class="table-responsive">
-
-                <table class="table table-bordered table-hover align-middle">
-
-                    <thead class="table-success text-center">
-
-                        <tr>
-
-                            <th>Token</th>
-
-                            <th>Patient</th>
-
-                            <th>Priority</th>
-
-                            <th>Queue</th>
-
-                            <th>Status</th>
-
-                        </tr>
-
-                    </thead>
-
-                    <tbody>
-
-                        {% for token in active_tokens %}
-
-                        <tr>
-
-                            <td class="text-center fw-bold">
-
-                                {{ token.token_number }}
-
-                            </td>
-
-                            <td>
-
-                                {% if token.patient %}
-
-                                    {{ token.patient.name }}
-
-                                {% else %}
-
-                                    Patient not found
-
-                                {% endif %}
-
-                            </td>
-
-                            <td class="text-center">
+                                <strong class="text-primary fs-5">
+                                    {{ token.token_number }}
+                                </strong>
 
                                 {% if token.priority == "Emergency" %}
 
                                 <span class="badge bg-danger">
-
                                     Emergency
-
                                 </span>
 
                                 {% elif token.priority == "High" %}
 
                                 <span class="badge bg-warning text-dark">
-
                                     High
-
                                 </span>
 
                                 {% else %}
 
                                 <span class="badge bg-secondary">
-
                                     {{ token.priority or "Normal" }}
-
                                 </span>
 
                                 {% endif %}
 
-                            </td>
+                            </div>
 
-                            <td class="text-center">
+                            <h5 class="fw-bold">
 
-                                {{ token.queue_position or 0 }}
+                                {% if token.patient %}
+                                    {{ token.patient.name }}
+                                {% else %}
+                                    Patient not found
+                                {% endif %}
 
-                            </td>
+                            </h5>
 
-                            <td class="text-center">
+                            <div class="row text-center mt-3">
 
-                                <span class="badge bg-primary">
+                                <div class="col">
 
-                                    {{ token.status }}
+                                    <small class="text-muted d-block">
+                                        Queue
+                                    </small>
 
-                                </span>
+                                    <strong>
+                                        {{ token.queue_position or 0 }}
+                                    </strong>
 
-                            </td>
+                                </div>
 
-                        </tr>
+                                <div class="col">
 
-                        {% endfor %}
+                                    <small class="text-muted d-block">
+                                        Wait
+                                    </small>
 
-                    </tbody>
+                                    <strong>
+                                        {{ token.estimated_wait or 0 }} min
+                                    </strong>
 
-                </table>
+                                </div>
+
+                                <div class="col">
+
+                                    <small class="text-muted d-block">
+                                        Status
+                                    </small>
+
+                                    <strong>
+                                        {{ token.status }}
+                                    </strong>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+                {% else %}
+
+                <div class="text-center py-5">
+
+                    <i class="fa-solid fa-ticket-simple
+                              fa-4x text-muted mb-3"></i>
+
+                    <h4>No Active Tokens</h4>
+
+                    <p class="text-muted mb-0">
+                        There are currently no patients waiting.
+                    </p>
+
+                </div>
+
+                {% endif %}
 
             </div>
-
-            {% else %}
-
-            <div class="text-center py-4">
-
-                <i class="fa-solid fa-ticket-simple fa-3x text-muted mb-3"></i>
-
-                <h5>No Active Tokens</h5>
-
-            </div>
-
-            {% endif %}
 
         </div>
 
     </div>
 
 </div>
+
+<script>
+    function updateDoctorDateTime() {
+        const element = document.getElementById("doctorDateTime");
+
+        if (element) {
+            element.textContent = new Date().toLocaleString(
+                [],
+                {
+                    weekday: "short",
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    second: "2-digit"
+                }
+            );
+        }
+    }
+
+    updateDoctorDateTime();
+    setInterval(updateDoctorDateTime, 1000);
+</script>
 
 {% endblock %}

@@ -1,0 +1,392 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container py-4">
+
+    <div class="card border-0 shadow-lg mb-4 overflow-hidden"
+         style="border-radius: 22px;">
+
+        <div class="card-body p-4"
+             style="background: linear-gradient(135deg, #063970, #0d6efd);">
+
+            <div class="d-flex flex-column flex-md-row
+                        align-items-md-center justify-content-between gap-3 text-white">
+
+                <div class="d-flex align-items-center gap-3">
+
+                    <div class="d-flex align-items-center justify-content-center
+                                rounded-4 bg-white bg-opacity-25"
+                         style="width: 88px; height: 88px; font-size: 39px;">
+
+                        <i class="fa-solid fa-user-doctor"></i>
+
+                    </div>
+
+                    <div>
+
+                        <span class="badge bg-light text-primary mb-2">
+                            Doctor Profile
+                        </span>
+
+                        <h2 class="fw-bold mb-1">
+                            Dr. {{ doctor.name }}
+                        </h2>
+
+                        <p class="mb-0 opacity-75">
+                            <i class="fa-solid fa-stethoscope me-1"></i>
+                            {{ doctor.specialization or "General Doctor" }}
+                        </p>
+
+                    </div>
+
+                </div>
+
+                <span class="badge bg-success fs-6 p-2">
+                    {{ doctor.status or "Available" }}
+                </span>
+
+            </div>
+
+        </div>
+
+        <div class="card-body p-4">
+
+            <div class="row g-3">
+
+                <div class="col-md-6">
+
+                    <strong>
+                        <i class="fa-solid fa-phone text-primary me-2"></i>
+                        Phone
+                    </strong>
+
+                    <p class="text-muted mb-0">
+                        {{ doctor.phone or "Not provided" }}
+                    </p>
+
+                </div>
+
+                <div class="col-md-6">
+
+                    <strong>
+                        <i class="fa-solid fa-envelope text-primary me-2"></i>
+                        Email
+                    </strong>
+
+                    <p class="text-muted mb-0">
+                        {{ doctor.email or "Not provided" }}
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="row g-3 mb-4">
+
+        <div class="col-6 col-lg-3">
+
+            <div class="card border-0 shadow-sm h-100 text-center">
+
+                <div class="card-body">
+
+                    <i class="fa-solid fa-calendar-days
+                              fa-2x text-primary mb-2"></i>
+
+                    <h3 class="fw-bold">{{ total_appointments }}</h3>
+
+                    <p class="text-muted mb-0">Total Appointments</p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-6 col-lg-3">
+
+            <div class="card border-0 shadow-sm h-100 text-center">
+
+                <div class="card-body">
+
+                    <i class="fa-solid fa-hourglass-half
+                              fa-2x text-warning mb-2"></i>
+
+                    <h3 class="fw-bold">{{ pending_appointments }}</h3>
+
+                    <p class="text-muted mb-0">Pending</p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-6 col-lg-3">
+
+            <div class="card border-0 shadow-sm h-100 text-center">
+
+                <div class="card-body">
+
+                    <i class="fa-solid fa-stethoscope
+                              fa-2x text-info mb-2"></i>
+
+                    <h3 class="fw-bold">{{ consultation_appointments }}</h3>
+
+                    <p class="text-muted mb-0">In Consultation</p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-6 col-lg-3">
+
+            <div class="card border-0 shadow-sm h-100 text-center">
+
+                <div class="card-body">
+
+                    <i class="fa-solid fa-circle-check
+                              fa-2x text-success mb-2"></i>
+
+                    <h3 class="fw-bold">{{ completed_appointments }}</h3>
+
+                    <p class="text-muted mb-0">Completed</p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="card border-0 shadow-sm mb-4">
+
+        <div class="card-header bg-primary text-white p-3">
+
+            <h4 class="mb-0">
+                <i class="fa-solid fa-calendar-check me-2"></i>
+                Doctor Appointments
+            </h4>
+
+        </div>
+
+        <div class="card-body p-0">
+
+            {% if appointments %}
+
+            <div class="table-responsive">
+
+                <table class="table table-hover mb-0 align-middle">
+
+                    <thead class="table-light">
+
+                        <tr>
+                            <th class="ps-4">ID</th>
+                            <th>Patient</th>
+                            <th>Date</th>
+                            <th>Time</th>
+                            <th>Status</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for appointment in appointments %}
+
+                        <tr>
+
+                            <td class="ps-4 fw-bold text-primary">
+                                #{{ appointment.id }}
+                            </td>
+
+                            <td>
+
+                                {% if appointment.patient %}
+                                    {{ appointment.patient.name }}
+                                {% else %}
+                                    Patient not found
+                                {% endif %}
+
+                            </td>
+
+                            <td>{{ appointment.appointment_date }}</td>
+
+                            <td>{{ appointment.appointment_time }}</td>
+
+                            <td>
+
+                                {% if appointment.status == "Completed" %}
+
+                                <span class="badge bg-success">Completed</span>
+
+                                {% elif appointment.status == "Approved" %}
+
+                                <span class="badge bg-primary">Approved</span>
+
+                                {% elif appointment.status == "In Consultation" %}
+
+                                <span class="badge bg-info text-dark">
+                                    In Consultation
+                                </span>
+
+                                {% elif appointment.status == "Cancelled" %}
+
+                                <span class="badge bg-danger">Cancelled</span>
+
+                                {% else %}
+
+                                <span class="badge bg-warning text-dark">
+                                    {{ appointment.status or "Pending" }}
+                                </span>
+
+                                {% endif %}
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            {% else %}
+
+            <div class="text-center py-5">
+
+                <i class="fa-solid fa-calendar-xmark
+                          fa-4x text-muted mb-3"></i>
+
+                <h4>No Appointments Found</h4>
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+    <div class="card border-0 shadow-sm">
+
+        <div class="card-header bg-success text-white p-3">
+
+            <h4 class="mb-0">
+                <i class="fa-solid fa-ticket me-2"></i>
+                Active Tokens
+            </h4>
+
+        </div>
+
+        <div class="card-body p-0">
+
+            {% if active_tokens %}
+
+            <div class="table-responsive">
+
+                <table class="table table-hover mb-0 align-middle">
+
+                    <thead class="table-light">
+
+                        <tr>
+                            <th class="ps-4">Token</th>
+                            <th>Patient</th>
+                            <th>Priority</th>
+                            <th>Queue</th>
+                            <th>Status</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for token in active_tokens %}
+
+                        <tr>
+
+                            <td class="ps-4 fw-bold text-primary">
+                                {{ token.token_number }}
+                            </td>
+
+                            <td>
+
+                                {% if token.patient %}
+                                    {{ token.patient.name }}
+                                {% else %}
+                                    Patient not found
+                                {% endif %}
+
+                            </td>
+
+                            <td>{{ token.priority or "Normal" }}</td>
+
+                            <td>{{ token.queue_position or 0 }}</td>
+
+                            <td>
+                                <span class="badge bg-primary">
+                                    {{ token.status }}
+                                </span>
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            {% else %}
+
+            <div class="text-center py-5">
+
+                <i class="fa-solid fa-ticket-simple
+                          fa-4x text-muted mb-3"></i>
+
+                <h4>No Active Tokens</h4>
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+    <div class="mt-4 d-flex flex-wrap gap-2">
+
+        <a href="{{ url_for('doctors') }}"
+           class="btn btn-secondary">
+
+            <i class="fa-solid fa-arrow-left me-1"></i>
+            Back to Doctors
+
+        </a>
+
+        <a href="{{ url_for('edit_doctor', id=doctor.id) }}"
+           class="btn btn-warning">
+
+            <i class="fa-solid fa-pen-to-square me-1"></i>
+            Edit Doctor
+
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}

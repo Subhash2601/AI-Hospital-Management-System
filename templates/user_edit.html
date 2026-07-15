@@ -1,0 +1,161 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container py-5">
+
+    <div class="row justify-content-center">
+
+        <div class="col-lg-7">
+
+            <div class="card border-0 shadow-lg overflow-hidden"
+                 style="border-radius: 22px;">
+
+                <div class="card-header bg-primary text-white p-4">
+
+                    <h3 class="fw-bold mb-1">
+
+                        <i class="fa-solid fa-user-pen me-2"></i>
+                        Edit User Account
+
+                    </h3>
+
+                    <p class="mb-0 opacity-75">
+                        Update account information and login credentials
+                    </p>
+
+                </div>
+
+                <div class="card-body p-4 p-md-5">
+
+                    <form method="POST"
+                          action="{{ url_for('edit_user', id=user.id) }}">
+
+                        <div class="mb-4">
+
+                            <label for="fullname"
+                                   class="form-label fw-semibold">
+                                Full Name
+                            </label>
+
+                            <input type="text"
+                                   id="fullname"
+                                   name="fullname"
+                                   class="form-control form-control-lg"
+                                   value="{{ user.fullname }}"
+                                   minlength="2"
+                                   maxlength="100"
+                                   required>
+
+                        </div>
+
+                        <div class="mb-4">
+
+                            <label for="username"
+                                   class="form-label fw-semibold">
+                                Username
+                            </label>
+
+                            <input type="text"
+                                   id="username"
+                                   name="username"
+                                   class="form-control form-control-lg"
+                                   value="{{ user.username }}"
+                                   minlength="3"
+                                   maxlength="50"
+                                   required>
+
+                        </div>
+
+                        <div class="mb-4">
+
+                            <label for="role"
+                                   class="form-label fw-semibold">
+                                Role
+                            </label>
+
+                            <select id="role"
+                                    name="role"
+                                    class="form-select form-select-lg"
+                                    required>
+
+                                <option value="Admin"
+                                    {% if user.role == "Admin" %}selected{% endif %}>
+                                    Admin
+                                </option>
+
+                                <option value="Doctor"
+                                    {% if user.role == "Doctor" %}selected{% endif %}>
+                                    Doctor
+                                </option>
+
+                                <option value="Reception"
+                                    {% if user.role in ["Reception", "Receptionist"] %}selected{% endif %}>
+                                    Receptionist
+                                </option>
+
+                                <option value="Patient"
+                                    {% if user.role == "Patient" %}selected{% endif %}>
+                                    Patient
+                                </option>
+
+                            </select>
+
+                            <div class="form-text">
+                                Doctor and Patient profiles remain linked
+                                through their user ID.
+                            </div>
+
+                        </div>
+
+                        <div class="mb-4">
+
+                            <label for="password"
+                                   class="form-label fw-semibold">
+                                New Password
+                            </label>
+
+                            <input type="password"
+                                   id="password"
+                                   name="password"
+                                   class="form-control form-control-lg"
+                                   minlength="6"
+                                   autocomplete="new-password"
+                                   placeholder="Leave empty to keep current password">
+
+                        </div>
+
+                        <div class="d-flex flex-wrap gap-2">
+
+                            <button type="submit"
+                                    class="btn btn-primary btn-lg">
+
+                                <i class="fa-solid fa-floppy-disk me-2"></i>
+                                Save Changes
+
+                            </button>
+
+                            <a href="{{ url_for('users') }}"
+                               class="btn btn-outline-secondary btn-lg">
+
+                                <i class="fa-solid fa-arrow-left me-2"></i>
+                                Cancel
+
+                            </a>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

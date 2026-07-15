@@ -1,306 +1,478 @@
+
 {% extends "base.html" %}
 
 {% block content %}
 
-<div class="container mt-4">
+<style>
+    .user-page {
+        min-height: 100vh;
+        padding: 35px 0 60px;
+        background: #f5f7fb;
+    }
+
+    .user-hero {
+        padding: 28px;
+        border-radius: 22px;
+        color: white;
+        background: linear-gradient(135deg, #063970, #0d6efd, #20c997);
+        box-shadow: 0 18px 45px rgba(13, 110, 253, 0.22);
+    }
+
+    .user-card {
+        overflow: hidden;
+        border: 0;
+        border-radius: 20px;
+        box-shadow: 0 12px 35px rgba(16, 24, 40, 0.08);
+    }
+
+    .user-card .card-header {
+        padding: 18px 22px;
+        border: 0;
+    }
+
+    .user-form-control {
+        min-height: 48px;
+        border-radius: 12px;
+    }
+
+    .user-table thead th {
+        color: #475467;
+        background: #f8fafc;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        white-space: nowrap;
+    }
+
+    .user-table td {
+        vertical-align: middle;
+    }
+
+    .user-avatar {
+        width: 40px;
+        height: 40px;
+        display: inline-grid;
+        place-items: center;
+        margin-right: 9px;
+        border-radius: 12px;
+        color: #0d6efd;
+        background: #eaf2ff;
+    }
 
-<h2 class="mb-4">
+    .role-note {
+        border-left: 4px solid #0d6efd;
+        border-radius: 12px;
+        background: #eef6ff;
+    }
+
+    .dark-mode .user-page {
+        background: #101114;
+    }
+
+    .dark-mode .user-card {
+        background: #191b20;
+    }
+
+    .dark-mode .user-table thead th {
+        color: #d0d5dd;
+        background: #22242b;
+    }
+</style>
+
+<div class="user-page">
+
+    <div class="container">
+
+        <div class="user-hero mb-4">
+
+            <div class="d-flex flex-column flex-lg-row
+                        align-items-lg-center justify-content-between gap-3">
+
+                <div>
+
+                    <span class="badge bg-light text-primary mb-3">
+                        Administration
+                    </span>
+
+                    <h1 class="fw-bold mb-2">
+                        <i class="fa-solid fa-users-gear me-2"></i>
+                        User Management
+                    </h1>
+
+                    <p class="mb-0 opacity-75">
+                        Create administrator and receptionist accounts,
+                        then manage all registered hospital users.
+                    </p>
+
+                </div>
 
-<i class="fa-solid fa-users-gear"></i>
+                <a href="{{ url_for('dashboard') }}"
+                   class="btn btn-light btn-lg">
 
-User Management
+                    <i class="fa-solid fa-arrow-left me-2"></i>
+                    Dashboard
 
-</h2>
+                </a>
 
-<!-- Add User -->
+            </div>
 
-<div class="card shadow mb-4">
+        </div>
 
-<div class="card-header bg-primary text-white">
+        <div class="alert role-note mb-4">
 
-<h4>Add New User</h4>
+            <strong>
+                <i class="fa-solid fa-circle-info me-1"></i>
+                Account creation rule:
+            </strong>
 
-</div>
+            Create Doctor accounts from
+            <strong>Doctor Management</strong> and Patient accounts from
+            <strong>Patient Management</strong>. This keeps login accounts
+            connected to their profiles.
 
-<div class="card-body">
+        </div>
 
-<form method="POST">
+        <div class="card user-card mb-4">
 
-<div class="row">
+            <div class="card-header bg-primary text-white">
 
-<div class="col-md-6 mb-3">
+                <h4 class="mb-0">
+                    <i class="fa-solid fa-user-plus me-2"></i>
+                    Add New User
+                </h4>
 
-<label class="form-label">
+            </div>
 
-Full Name
+            <div class="card-body p-4">
 
-</label>
+                <form method="POST"
+                      action="{{ url_for('users') }}">
 
-<input
-type="text"
-name="fullname"
-class="form-control"
-placeholder="Enter Full Name"
-required>
+                    <div class="row g-3">
 
-</div>
+                        <div class="col-md-6">
 
-<div class="col-md-6 mb-3">
+                            <label for="fullname"
+                                   class="form-label fw-semibold">
+                                Full Name
+                            </label>
 
-<label class="form-label">
+                            <input type="text"
+                                   id="fullname"
+                                   name="fullname"
+                                   class="form-control user-form-control"
+                                   placeholder="Enter full name"
+                                   minlength="2"
+                                   maxlength="100"
+                                   required>
 
-Username
+                        </div>
 
-</label>
+                        <div class="col-md-6">
 
-<input
-type="text"
-name="username"
-class="form-control"
-placeholder="Enter Username"
-required>
+                            <label for="username"
+                                   class="form-label fw-semibold">
+                                Username
+                            </label>
 
-</div>
+                            <input type="text"
+                                   id="username"
+                                   name="username"
+                                   class="form-control user-form-control"
+                                   placeholder="Minimum 3 characters"
+                                   minlength="3"
+                                   maxlength="50"
+                                   autocomplete="username"
+                                   required>
 
-<div class="col-md-6 mb-3">
+                        </div>
 
-<label class="form-label">
+                        <div class="col-md-6">
 
-Password
+                            <label for="password"
+                                   class="form-label fw-semibold">
+                                Password
+                            </label>
 
-</label>
+                            <input type="password"
+                                   id="password"
+                                   name="password"
+                                   class="form-control user-form-control"
+                                   placeholder="Minimum 6 characters"
+                                   minlength="6"
+                                   autocomplete="new-password"
+                                   required>
 
-<input
-type="password"
-name="password"
-class="form-control"
-placeholder="Enter Password"
-required>
+                        </div>
 
-</div>
+                        <div class="col-md-6">
 
-<div class="col-md-6 mb-3">
+                            <label for="role"
+                                   class="form-label fw-semibold">
+                                Role
+                            </label>
 
-<label class="form-label">
+                            <select id="role"
+                                    name="role"
+                                    class="form-select user-form-control"
+                                    required>
 
-Role
+                                <option value="">
+                                    Select role
+                                </option>
 
-</label>
+                                <option value="Admin">
+                                    Admin
+                                </option>
 
-<select
-name="role"
-class="form-control"
-required>
+                                <option value="Reception">
+                                    Receptionist
+                                </option>
 
-<option value="">Select Role</option>
+                            </select>
 
-<option value="Admin">Admin</option>
+                        </div>
 
-<option value="Doctor">Doctor</option>
+                    </div>
 
-<option value="Patient">Patient</option>
+                    <button type="submit"
+                            class="btn btn-success btn-lg mt-4">
 
-<option value="Receptionist">Receptionist</option>
+                        <i class="fa-solid fa-user-plus me-2"></i>
+                        Create User
 
-</select>
+                    </button>
 
-</div>
+                </form>
 
-</div>
+            </div>
 
-<button
-class="btn btn-success">
+        </div>
 
-<i class="fa-solid fa-user-plus"></i>
+        <div class="card user-card mb-4">
 
-Create User
+            <div class="card-body p-3">
 
-</button>
+                <form method="GET"
+                      action="{{ url_for('users') }}">
 
-</form>
+                    <div class="input-group input-group-lg">
 
-</div>
+                        <span class="input-group-text bg-white">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </span>
 
-</div>
+                        <input type="text"
+                               name="search"
+                               class="form-control"
+                               placeholder="Search by name, username or role"
+                               value="{{ search or '' }}">
 
-<!-- Search -->
+                        <button type="submit"
+                                class="btn btn-primary">
+                            Search
+                        </button>
 
-<div class="card shadow mb-4">
+                        {% if search %}
 
-<div class="card-body">
+                        <a href="{{ url_for('users') }}"
+                           class="btn btn-outline-secondary">
+                            Clear
+                        </a>
 
-<form method="GET">
+                        {% endif %}
 
-<div class="input-group">
+                    </div>
 
-<input
-type="text"
-name="search"
-class="form-control"
-placeholder="Search User">
+                </form>
 
-<button
-class="btn btn-primary">
+            </div>
 
-<i class="fa-solid fa-magnifying-glass"></i>
+        </div>
 
-Search
+        <div class="card user-card">
 
-</button>
+            <div class="card-header bg-dark text-white">
 
-</div>
+                <div class="d-flex justify-content-between align-items-center">
 
-</form>
+                    <h4 class="mb-0">
+                        <i class="fa-solid fa-address-book me-2"></i>
+                        Registered Users
+                    </h4>
 
-</div>
+                    <span class="badge bg-light text-dark">
+                        {{ users | length }} users
+                    </span>
 
-</div>
+                </div>
 
-<!-- User List -->
+            </div>
 
-<div class="card shadow">
+            <div class="card-body p-0">
 
-<div class="card-header bg-dark text-white">
+                {% if users %}
 
-<h4>Registered Users</h4>
+                <div class="table-responsive">
 
-</div>
+                    <table class="table table-hover user-table mb-0">
 
-<div class="card-body">
+                        <thead>
 
-<table class="table table-bordered table-hover">
+                            <tr>
+                                <th class="ps-4">ID</th>
+                                <th>User</th>
+                                <th>Username</th>
+                                <th>Role</th>
+                                <th>Created</th>
+                                <th class="text-center">Actions</th>
+                            </tr>
 
-<thead class="table-primary">
+                        </thead>
 
-<tr>
+                        <tbody>
 
-<th>ID</th>
-<th>Full Name</th>
-<th>Username</th>
-<th>Role</th>
-<th>Created</th>
-<th>Action</th>
+                            {% for user in users %}
 
-</tr>
+                            {% set user_role = (user.role or "") | trim %}
 
-</thead>
+                            <tr>
 
-<tbody>
+                                <td class="ps-4 fw-semibold">
+                                    USR{{ "%03d" | format(user.id) }}
+                                </td>
 
-{% for user in users %}
+                                <td>
 
-<tr>
+                                    <span class="user-avatar">
+                                        <i class="fa-solid fa-user"></i>
+                                    </span>
 
-<td>
+                                    <strong>{{ user.fullname }}</strong>
 
-USR{{ "%03d"|format(user.id) }}
+                                </td>
 
-</td>
+                                <td>{{ user.username }}</td>
 
-<td>
+                                <td>
 
-{{ user.fullname }}
+                                    {% if user_role == "Admin" %}
 
-</td>
+                                    <span class="badge bg-danger">
+                                        <i class="fa-solid fa-user-shield me-1"></i>
+                                        Admin
+                                    </span>
 
-<td>
+                                    {% elif user_role == "Doctor" %}
 
-{{ user.username }}
+                                    <span class="badge bg-success">
+                                        <i class="fa-solid fa-user-doctor me-1"></i>
+                                        Doctor
+                                    </span>
 
-</td>
+                                    {% elif user_role in ["Reception", "Receptionist"] %}
 
-<td>
+                                    <span class="badge bg-warning text-dark">
+                                        <i class="fa-solid fa-headset me-1"></i>
+                                        Receptionist
+                                    </span>
 
-{% if user.role=="Admin" %}
+                                    {% elif user_role == "Patient" %}
 
-<span class="badge bg-danger">
+                                    <span class="badge bg-primary">
+                                        <i class="fa-solid fa-user-injured me-1"></i>
+                                        Patient
+                                    </span>
 
-Admin
+                                    {% else %}
 
-</span>
+                                    <span class="badge bg-secondary">
+                                        {{ user_role or "Unknown" }}
+                                    </span>
 
-{% elif user.role=="Doctor" %}
+                                    {% endif %}
 
-<span class="badge bg-success">
+                                </td>
 
-Doctor
+                                <td>
 
-</span>
+                                    {% if user.created_at %}
+                                        {{ user.created_at.strftime("%d-%m-%Y") }}
+                                    {% else %}
+                                        Not available
+                                    {% endif %}
 
-{% elif user.role=="Receptionist" %}
+                                </td>
 
-<span class="badge bg-warning text-dark">
+                                <td class="text-center">
 
-Receptionist
+                                    <a href="{{ url_for('edit_user', id=user.id) }}"
+                                       class="btn btn-warning btn-sm">
 
-</span>
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                        Edit
 
-{% else %}
+                                    </a>
 
-<span class="badge bg-primary">
+                                    {% if user.id != current_user.id %}
 
-Patient
+                                    <a href="{{ url_for('delete_user', id=user.id) }}"
+                                       class="btn btn-danger btn-sm"
+                                       onclick="return confirm(
+                                           'Are you sure you want to delete this user account?'
+                                       );">
 
-</span>
+                                        <i class="fa-solid fa-trash"></i>
+                                        Delete
 
-{% endif %}
+                                    </a>
 
-</td>
+                                    {% else %}
 
-<td>
+                                    <button type="button"
+                                            class="btn btn-secondary btn-sm"
+                                            disabled>
 
-{{ user.created_at.strftime("%d-%m-%Y") }}
+                                        Current Account
 
-</td>
+                                    </button>
 
-<td>
+                                    {% endif %}
 
-<a
-href="{{ url_for('edit_user', id=user.id) }}"
-class="btn btn-warning btn-sm">
+                                </td>
 
-<i class="fa-solid fa-pen"></i>
+                            </tr>
 
-Edit
+                            {% endfor %}
 
-</a>
+                        </tbody>
 
-<a
-href="{{ url_for('delete_user', id=user.id) }}"
-class="btn btn-danger btn-sm"
-onclick="return confirm('Delete this user?')">
+                    </table>
 
-<i class="fa-solid fa-trash"></i>
+                </div>
 
-Delete
+                {% else %}
 
-</a>
+                <div class="text-center py-5">
 
-</td>
+                    <i class="fa-solid fa-users-slash
+                              fa-4x text-muted mb-3"></i>
 
-</tr>
+                    <h4>No Users Found</h4>
 
-{% endfor %}
+                    <p class="text-muted mb-0">
+                        No accounts match the current search.
+                    </p>
 
-</tbody>
+                </div>
 
-</table>
+                {% endif %}
 
-</div>
+            </div>
 
-</div>
+        </div>
 
-<br>
-
-<a
-href="{{ url_for('dashboard') }}"
-class="btn btn-secondary">
-
-<i class="fa-solid fa-arrow-left"></i>
-
-Back to Dashboard
-
-</a>
+    </div>
 
 </div>
 

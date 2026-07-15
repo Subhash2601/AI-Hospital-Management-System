@@ -315,9 +315,13 @@ def logout():
 @login_required
 def dashboard():
 
+    role = (
+        current_user.role or ""
+    ).strip().lower()
+
     # ---------------- Admin ----------------
 
-    if current_user.role == "Admin":
+    if role == "admin":
 
         total_patients = Patient.query.count()
 
@@ -352,19 +356,19 @@ def dashboard():
 
     # ---------------- Doctor ----------------
 
-    elif current_user.role == "Doctor":
+    elif role == "doctor":
 
         return redirect(url_for("doctor_dashboard"))
 
     # ---------------- Reception ----------------
 
-    elif current_user.role == "Reception":
+    elif role in ["reception", "receptionist"]:
 
         return redirect(url_for("reception_dashboard"))
 
     # ---------------- Patient ----------------
 
-    elif current_user.role == "Patient":
+    elif role == "patient":
 
         return redirect(url_for("patient_dashboard"))
 
@@ -380,18 +384,36 @@ def dashboard():
 @role_required("Doctor")
 def doctor_dashboard():
 
+    # First check using the linked user ID
     doctor = Doctor.query.filter_by(
         user_id=current_user.id
     ).first()
 
+    # Repair older doctor accounts using username
+    if not doctor:
+
+        doctor = Doctor.query.filter(
+            db.func.lower(Doctor.username)
+            == current_user.username.lower()
+        ).first()
+
+        if doctor:
+
+            doctor.user_id = current_user.id
+            db.session.commit()
+
+    # No matching Doctor profile exists
     if not doctor:
 
         flash(
-            "Doctor profile was not found. Contact the administrator.",
+            "Your login account is not connected to a doctor profile. "
+            "Please ask the administrator to create your doctor profile.",
             "danger"
         )
 
-        return redirect(url_for("home"))
+        logout_user()
+
+        return redirect(url_for("login"))
 
     appointments = Appointment.query.filter_by(
         doctor_id=doctor.id
@@ -449,7 +471,6 @@ def doctor_dashboard():
         consultation_appointments=consultation_appointments,
         completed_appointments=completed_appointments
     )
-
 # ==========================================================
 # Doctor Update Appointment Status
 # ==========================================================
@@ -679,6 +700,9 @@ def patient_dashboard():
 
 # ==========================================================
 # User Management
+# Admin and Receptionist accounts are created here.
+# Doctor accounts must be created from Doctor Management.
+# Patient accounts must be created from Patient Management.
 # ==========================================================
 
 @app.route("/users", methods=["GET", "POST"])
@@ -708,49 +732,49 @@ def users():
             ""
         ).strip()
 
-        if not fullname:
+        if len(fullname) < 2:
 
             flash(
-                "Full name is required.",
+                "Full name must contain at least 2 characters.",
                 "warning"
             )
 
             return redirect(url_for("users"))
 
-        if not username:
+        if len(username) < 3:
 
             flash(
-                "Username is required.",
+                "Username must contain at least 3 characters.",
                 "warning"
             )
 
             return redirect(url_for("users"))
 
-        if not password:
+        if len(password) < 6:
 
             flash(
-                "Password is required.",
+                "Password must contain at least 6 characters.",
                 "warning"
             )
 
             return redirect(url_for("users"))
 
-        # Convert Receptionist into Reception
-        # because your decorators use Reception
+        # Store the receptionist role consistently.
         if role == "Receptionist":
             role = "Reception"
 
+        # Doctor and Patient accounts need linked profiles.
+        # Create those accounts from their management pages.
         allowed_roles = [
             "Admin",
-            "Doctor",
-            "Reception",
-            "Patient"
+            "Reception"
         ]
 
         if role not in allowed_roles:
 
             flash(
-                "Please select a valid role.",
+                "Create Doctor accounts from Doctor Management "
+                "and Patient accounts from Patient Management.",
                 "danger"
             )
 
@@ -786,9 +810,14 @@ def users():
 
             db.session.commit()
 
+            display_role = (
+                "Receptionist"
+                if role == "Reception"
+                else role
+            )
+
             flash(
-                f"{role} account created successfully. "
-                f"Username: {username.lower()}",
+                f"{display_role} account created successfully.",
                 "success"
             )
 
@@ -803,13 +832,261 @@ def users():
 
         return redirect(url_for("users"))
 
-    all_users = User.query.order_by(
+    search = request.args.get(
+        "search",
+        ""
+    ).strip()
+
+    query = User.query
+
+    if search:
+
+        search_pattern = f"%{search}%"
+
+        query = query.filter(
+            db.or_(
+                User.fullname.ilike(search_pattern),
+                User.username.ilike(search_pattern),
+                User.role.ilike(search_pattern)
+            )
+        )
+
+    all_users = query.order_by(
         User.id.desc()
     ).all()
 
     return render_template(
         "users.html",
-        users=all_users
+        users=all_users,
+        search=search
+    )
+
+
+# ==========================================================
+# Edit User
+# ==========================================================
+
+@app.route(
+    "/user/edit/<int:id>",
+    methods=["GET", "POST"]
+)
+@login_required
+@role_required("Admin")
+def edit_user(id):
+
+    user = db.session.get(User, id)
+
+    if not user:
+
+        flash(
+            "User account was not found.",
+            "danger"
+        )
+
+        return redirect(url_for("users"))
+
+    if request.method == "POST":
+
+        fullname = request.form.get(
+            "fullname",
+            ""
+        ).strip()
+
+        username = request.form.get(
+            "username",
+            ""
+        ).strip()
+
+        role = request.form.get(
+            "role",
+            ""
+        ).strip()
+
+        new_password = request.form.get(
+            "password",
+            ""
+        )
+
+        # Form validation
+
+        if not fullname:
+
+            flash(
+                "Full name is required.",
+                "warning"
+            )
+
+            return redirect(
+                url_for(
+                    "edit_user",
+                    id=user.id
+                )
+            )
+
+        if len(fullname) < 2:
+
+            flash(
+                "Full name must contain at least 2 characters.",
+                "warning"
+            )
+
+            return redirect(
+                url_for(
+                    "edit_user",
+                    id=user.id
+                )
+            )
+
+        if not username:
+
+            flash(
+                "Username is required.",
+                "warning"
+            )
+
+            return redirect(
+                url_for(
+                    "edit_user",
+                    id=user.id
+                )
+            )
+
+        if len(username) < 3:
+
+            flash(
+                "Username must contain at least 3 characters.",
+                "warning"
+            )
+
+            return redirect(
+                url_for(
+                    "edit_user",
+                    id=user.id
+                )
+            )
+
+        valid_roles = [
+            "Admin",
+            "Doctor",
+            "Reception",
+            "Receptionist",
+            "Patient"
+        ]
+
+        if role not in valid_roles:
+
+            flash(
+                "Please select a valid role.",
+                "warning"
+            )
+
+            return redirect(
+                url_for(
+                    "edit_user",
+                    id=user.id
+                )
+            )
+
+        # Store receptionist role consistently
+
+        if role == "Receptionist":
+            role = "Reception"
+
+        existing_user = User.query.filter(
+            db.func.lower(User.username)
+            == username.lower(),
+            User.id != user.id
+        ).first()
+
+        if existing_user:
+
+            flash(
+                "That username is already being used.",
+                "danger"
+            )
+
+            return redirect(
+                url_for(
+                    "edit_user",
+                    id=user.id
+                )
+            )
+
+        user.fullname = fullname
+        user.username = username.lower()
+        user.role = role
+
+        # Keep linked Doctor or Patient profile information synchronized.
+        linked_doctor = Doctor.query.filter_by(
+            user_id=user.id
+        ).first()
+
+        if linked_doctor:
+
+            linked_doctor.name = fullname
+            linked_doctor.username = username.lower()
+
+        linked_patient = Patient.query.filter_by(
+            user_id=user.id
+        ).first()
+
+        if linked_patient:
+
+            linked_patient.name = fullname
+            linked_patient.username = username.lower()
+
+        # Password is optional while editing
+
+        if new_password:
+
+            if len(new_password) < 6:
+
+                flash(
+                    "Password must contain at least 6 characters.",
+                    "warning"
+                )
+
+                return redirect(
+                    url_for(
+                        "edit_user",
+                        id=user.id
+                    )
+                )
+
+            user.password = generate_password_hash(
+                new_password
+            )
+
+        try:
+
+            db.session.commit()
+
+            flash(
+                "User account updated successfully.",
+                "success"
+            )
+
+        except Exception:
+
+            db.session.rollback()
+
+            flash(
+                "Unable to update the user account.",
+                "danger"
+            )
+
+            return redirect(
+                url_for(
+                    "edit_user",
+                    id=user.id
+                )
+            )
+
+        return redirect(url_for("users"))
+
+    return render_template(
+        "user_edit.html",
+        user=user
     )
 # ==========================================================
 # Delete User
@@ -851,14 +1128,104 @@ def delete_user(id):
 # ==========================================================
 @app.route("/patients", methods=["GET", "POST"])
 @login_required
+@role_required("Admin", "Reception")
 def patients():
 
     if request.method == "POST":
 
-        username = request.form["username"].strip()
+        name = request.form.get(
+            "name",
+            ""
+        ).strip()
 
-        # Check username already exists
-        existing = User.query.filter_by(username=username).first()
+        username = request.form.get(
+            "username",
+            ""
+        ).strip().lower()
+
+        password = request.form.get(
+            "password",
+            ""
+        )
+
+        age_text = request.form.get(
+            "age",
+            ""
+        ).strip()
+
+        gender = request.form.get(
+            "gender",
+            ""
+        ).strip()
+
+        phone = request.form.get(
+            "phone",
+            ""
+        ).strip()
+
+        if len(name) < 2:
+
+            flash(
+                "Patient name must contain at least 2 characters.",
+                "warning"
+            )
+
+            return redirect(url_for("patients"))
+
+        if len(username) < 3:
+
+            flash(
+                "Username must contain at least 3 characters.",
+                "warning"
+            )
+
+            return redirect(url_for("patients"))
+
+        if len(password) < 6:
+
+            flash(
+                "Password must contain at least 6 characters.",
+                "warning"
+            )
+
+            return redirect(url_for("patients"))
+
+        try:
+
+            age = int(age_text)
+
+        except (TypeError, ValueError):
+
+            flash(
+                "Please enter a valid age.",
+                "warning"
+            )
+
+            return redirect(url_for("patients"))
+
+        if age < 0 or age > 120:
+
+            flash(
+                "Age must be between 0 and 120.",
+                "warning"
+            )
+
+            return redirect(url_for("patients"))
+
+        if not gender:
+
+            flash(
+                "Please select a gender.",
+                "warning"
+            )
+
+            return redirect(url_for("patients"))
+
+        # Check username already exists.
+        existing = User.query.filter(
+            db.func.lower(User.username)
+            == username.lower()
+        ).first()
 
         if existing:
             flash("Username already exists!", "danger")
@@ -866,9 +1233,9 @@ def patients():
 
         # Create login account
         user = User(
-            fullname=request.form["name"].strip(),
+            fullname=name,
             username=username,
-            password=generate_password_hash(request.form["password"]),
+            password=generate_password_hash(password),
             role="Patient"
         )
 
@@ -877,10 +1244,10 @@ def patients():
 
         # Create patient
         patient = Patient(
-            name=request.form["name"].strip(),
-            age=int(request.form["age"]),
-            gender=request.form["gender"],
-            phone=request.form["phone"].strip(),
+            name=name,
+            age=age,
+            gender=gender,
+            phone=phone,
             username=username,
             user_id=user.id,
             address=request.form.get("address", ""),
@@ -925,6 +1292,7 @@ def patients():
 
 @app.route("/edit_patient/<int:id>", methods=["GET", "POST"])
 @login_required
+@role_required("Admin", "Reception")
 def edit_patient(id):
 
     patient = Patient.query.get_or_404(id)
@@ -959,6 +1327,7 @@ def edit_patient(id):
 
 @app.route("/delete_patient/<int:id>")
 @login_required
+@role_required("Admin")
 def delete_patient(id):
 
     patient = Patient.query.get_or_404(id)
@@ -993,6 +1362,7 @@ def delete_patient(id):
 
 @app.route("/patient/<int:id>")
 @login_required
+@role_required("Admin", "Reception")
 def patient_details(id):
 
     patient = Patient.query.get_or_404(id)
@@ -1028,6 +1398,7 @@ def patient_details(id):
         reports=reports,
         tokens=tokens
     )
+
 # ==========================================================
 # Doctor Management
 # ==========================================================
@@ -1039,10 +1410,72 @@ def doctors():
 
     if request.method == "POST":
 
-        username = request.form["username"].strip()
+        name = request.form.get(
+            "name",
+            ""
+        ).strip()
 
-        # Check if username already exists
-        existing = User.query.filter_by(username=username).first()
+        specialization = request.form.get(
+            "specialization",
+            ""
+        ).strip()
+
+        phone = request.form.get(
+            "phone",
+            ""
+        ).strip()
+
+        username = request.form.get(
+            "username",
+            ""
+        ).strip().lower()
+
+        password = request.form.get(
+            "password",
+            ""
+        )
+
+        if len(name) < 2:
+
+            flash(
+                "Doctor name must contain at least 2 characters.",
+                "warning"
+            )
+
+            return redirect(url_for("doctors"))
+
+        if not specialization:
+
+            flash(
+                "Specialization is required.",
+                "warning"
+            )
+
+            return redirect(url_for("doctors"))
+
+        if len(username) < 3:
+
+            flash(
+                "Username must contain at least 3 characters.",
+                "warning"
+            )
+
+            return redirect(url_for("doctors"))
+
+        if len(password) < 6:
+
+            flash(
+                "Password must contain at least 6 characters.",
+                "warning"
+            )
+
+            return redirect(url_for("doctors"))
+
+        # Check if username already exists.
+        existing = User.query.filter(
+            db.func.lower(User.username)
+            == username.lower()
+        ).first()
 
         if existing:
             flash("Username already exists!", "danger")
@@ -1050,9 +1483,9 @@ def doctors():
 
         # Create User Login
         user = User(
-            fullname=request.form["name"].strip(),
+            fullname=name,
             username=username,
-            password=generate_password_hash(request.form["password"]),
+            password=generate_password_hash(password),
             role="Doctor"
         )
 
@@ -1061,9 +1494,9 @@ def doctors():
 
         # Create Doctor
         doctor = Doctor(
-            name=request.form["name"].strip(),
-            specialization=request.form["specialization"].strip(),
-            phone=request.form["phone"].strip(),
+            name=name,
+            specialization=specialization,
+            phone=phone,
             username=username,
             user_id=user.id,
             email=request.form.get("email", "").strip(),
@@ -1175,31 +1608,75 @@ def delete_doctor(id):
 
 @app.route("/doctor/<int:id>")
 @login_required
+@role_required("Admin", "Reception")
 def doctor_details(id):
 
     doctor = Doctor.query.get_or_404(id)
 
     appointments = Appointment.query.filter_by(
-        doctor_id=id
+        doctor_id=doctor.id
+    ).order_by(
+        Appointment.id.desc()
     ).all()
 
-    waiting_tokens = Token.query.filter_by(
-        doctor_id=id,
-        status="Waiting"
+    active_tokens = Token.query.filter(
+        Token.doctor_id == doctor.id,
+        Token.status.in_(
+            [
+                "Waiting",
+                "Called",
+                "In Consultation"
+            ]
+        )
+    ).order_by(
+        Token.queue_position.asc()
     ).all()
+
+    total_appointments = len(appointments)
+
+    pending_appointments = sum(
+        1
+        for appointment in appointments
+        if appointment.status == "Pending"
+    )
+
+    approved_appointments = sum(
+        1
+        for appointment in appointments
+        if appointment.status == "Approved"
+    )
+
+    consultation_appointments = sum(
+        1
+        for appointment in appointments
+        if appointment.status == "In Consultation"
+    )
+
+    completed_appointments = sum(
+        1
+        for appointment in appointments
+        if appointment.status == "Completed"
+    )
 
     completed_tokens = Token.query.filter_by(
-        doctor_id=id,
+        doctor_id=doctor.id,
         status="Completed"
     ).count()
 
     return render_template(
-        "doctor_dashboard.html",
+        "doctor_details.html",
         doctor=doctor,
         appointments=appointments,
-        waiting_tokens=waiting_tokens,
+        active_tokens=active_tokens,
+        total_appointments=total_appointments,
+        pending_appointments=pending_appointments,
+        approved_appointments=approved_appointments,
+        consultation_appointments=consultation_appointments,
+        completed_appointments=completed_appointments,
         completed_tokens=completed_tokens
     )
+
+
 # ==========================================================
 # Appointment Management
 # ==========================================================
@@ -2517,36 +2994,149 @@ def my_bills():
         "my_bills.html",
         bills=bills
     )
-#----------------------------------------------
-#change passsword
-# ---------------------------------------------
+# ==========================================================
+# Change Password
+# ==========================================================
+
 @app.route("/change_password", methods=["GET", "POST"])
 @login_required
 def change_password():
 
     if request.method == "POST":
 
-        old = request.form["old_password"]
-        new = request.form["new_password"]
-        confirm = request.form["confirm_password"]
+        old_password = request.form.get(
+            "old_password",
+            ""
+        )
 
-        if not check_password_hash(current_user.password, old):
-            flash("Old password is incorrect.", "danger")
-            return redirect(url_for("change_password"))
+        new_password = request.form.get(
+            "new_password",
+            ""
+        )
 
-        if new != confirm:
-            flash("Passwords do not match.", "danger")
-            return redirect(url_for("change_password"))
+        confirm_password = request.form.get(
+            "confirm_password",
+            ""
+        )
 
-        current_user.password = generate_password_hash(new)
+        stored_password = current_user.password or ""
 
-        db.session.commit()
+        if stored_password.startswith(
+            (
+                "scrypt:",
+                "pbkdf2:"
+            )
+        ):
 
-        flash("Password Changed Successfully!", "success")
+            old_password_correct = check_password_hash(
+                stored_password,
+                old_password
+            )
 
-        return redirect(url_for("patient_dashboard"))
+        else:
 
-    return render_template("change_password.html")
+            old_password_correct = (
+                stored_password == old_password
+            )
+
+        if not old_password_correct:
+
+            flash(
+                "Old password is incorrect.",
+                "danger"
+            )
+
+            return redirect(
+                url_for("change_password")
+            )
+
+        if len(new_password) < 6:
+
+            flash(
+                "New password must contain at least 6 characters.",
+                "warning"
+            )
+
+            return redirect(
+                url_for("change_password")
+            )
+
+        if new_password != confirm_password:
+
+            flash(
+                "Passwords do not match.",
+                "danger"
+            )
+
+            return redirect(
+                url_for("change_password")
+            )
+
+        current_user.password = generate_password_hash(
+            new_password
+        )
+
+        try:
+
+            db.session.commit()
+
+            flash(
+                "Password changed successfully.",
+                "success"
+            )
+
+        except Exception:
+
+            db.session.rollback()
+
+            flash(
+                "Unable to change the password.",
+                "danger"
+            )
+
+            return redirect(
+                url_for("change_password")
+            )
+
+        role = (
+            current_user.role or ""
+        ).strip().lower()
+
+        if role == "admin":
+
+            return redirect(
+                url_for("dashboard")
+            )
+
+        if role == "doctor":
+
+            return redirect(
+                url_for("doctor_dashboard")
+            )
+
+        if role in [
+            "reception",
+            "receptionist"
+        ]:
+
+            return redirect(
+                url_for("reception_dashboard")
+            )
+
+        if role == "patient":
+
+            return redirect(
+                url_for("patient_dashboard")
+            )
+
+        return redirect(
+            url_for("home")
+        )
+
+    return render_template(
+        "change_password.html"
+    )
+
 
 # ==========================================================
 # AI Hospital Chatbot
@@ -2926,83 +3516,14 @@ def ai():
         advice=advice
     )
 # ==========================================================
-# Create Default Users
-# ==========================================================
-
-def create_default_users():
-
-    # ----------------------------
-    # Admin
-    # ----------------------------
-
-    if not User.query.filter_by(username="admin").first():
-
-        admin = User(
-            fullname="Administrator",
-            username="admin",
-            password=generate_password_hash("admin123"),
-            role="Admin"
-        )
-
-        db.session.add(admin)
-
-    # ----------------------------
-    # Doctor
-    # ----------------------------
-
-    if not User.query.filter_by(username="doctor").first():
-
-        doctor = User(
-            fullname="Doctor",
-            username="doctor",
-            password=generate_password_hash("doctor123"),
-            role="Doctor"
-        )
-
-        db.session.add(doctor)
-
-    # ----------------------------
-    # Reception
-    # ----------------------------
-
-    if not User.query.filter_by(username="reception").first():
-
-        reception = User(
-            fullname="Receptionist",
-            username="reception",
-            password=generate_password_hash("reception123"),
-            role="Reception"
-        )
-
-        db.session.add(reception)
-
-    # ----------------------------
-    # Patient
-    # ----------------------------
-
-    if not User.query.filter_by(username="patient").first():
-
-        patient = User(
-            fullname="Patient",
-            username="patient",
-            password=generate_password_hash("patient123"),
-            role="Patient"
-        )
-
-        db.session.add(patient)
-
-    db.session.commit()
-
-
-# ==========================================================
 # Database Initialization
+# No hardcoded usernames or passwords are created.
 # ==========================================================
 
 with app.app_context():
 
     db.create_all()
 
-    create_default_users()
 
 # ===============================
 # About Page
