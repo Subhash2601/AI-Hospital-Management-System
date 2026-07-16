@@ -3828,3 +3828,38 @@
     }
 
 }
+
+/* =========================================================
+   GLOBAL ACCOUNT FORM VALIDATION STYLES
+========================================================= */
+
+.global-password-rule {
+    margin-top: 7px;
+    color: #667085;
+    font-size: 0.84rem;
+}
+
+input[type="password"]:not(:placeholder-shown):valid {
+    border-color: #198754;
+    box-shadow: 0 0 0 0.12rem rgba(25, 135, 84, 0.08);
+}
+
+input[type="password"]:not(:placeholder-shown):invalid {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.12rem rgba(220, 53, 69, 0.08);
+}
+
+.was-validated .form-control:invalid,
+.was-validated .form-select:invalid {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.12);
+}
+
+.was-validated .form-control:valid,
+.was-validated .form-select:valid {
+    border-color: #198754;
+}
+
+.dark-mode .global-password-rule {
+    color: #cbd5e1;
+}

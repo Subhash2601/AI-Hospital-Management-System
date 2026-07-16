@@ -54,12 +54,36 @@ app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-app.config["SECRET_KEY"] = "hospital123"
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///hospital.db"
+
+# Local computer uses SQLite.
+# Render uses PostgreSQL through DATABASE_URL.
+
+database_url = os.environ.get(
+    "DATABASE_URL",
+    "sqlite:///hospital.db"
+)
+
+# Convert Render's older PostgreSQL URL format
+if database_url.startswith("postgres://"):
+
+    database_url = database_url.replace(
+        "postgres://",
+        "postgresql://",
+        1
+    )
+
+
+app.config["SECRET_KEY"] = os.environ.get(
+    "SECRET_KEY",
+    "hospital123"
+)
+
+app.config["SQLALCHEMY_DATABASE_URI"] = database_url
+
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-db.init_app(app)
 
+db.init_app(app)
 
 # ==========================================================
 # Flask Login

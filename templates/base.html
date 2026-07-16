@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -756,6 +757,275 @@ document.addEventListener("DOMContentLoaded", function () {
 <!-- Chart.js -->
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+<!-- GLOBAL ACCOUNT FORM VALIDATION -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const currentPath = window.location.pathname;
+    const isLoginPage = currentPath === "/login";
+
+    /* -----------------------------------------------------
+       Password validation for all account forms
+    ----------------------------------------------------- */
+
+    document.querySelectorAll('input[type="password"]').forEach(function (input) {
+
+        const fieldName = (input.name || "").toLowerCase();
+
+        // Login and old-password fields must accept the existing password.
+        if (isLoginPage || fieldName === "old_password") {
+            return;
+        }
+
+        input.minLength = 6;
+
+        if (!input.autocomplete) {
+            input.autocomplete = "new-password";
+        }
+
+        const validatePasswordLength = function () {
+
+            if (input.value.length > 0 && input.value.length < 6) {
+                input.setCustomValidity(
+                    "Password must contain at least 6 characters."
+                );
+            } else {
+                input.setCustomValidity("");
+            }
+
+        };
+
+        input.addEventListener("input", validatePasswordLength);
+        input.addEventListener("blur", validatePasswordLength);
+
+        // Add one clear rule below password fields.
+        if (
+            fieldName !== "confirm_password" &&
+            !input.parentElement.querySelector(".global-password-rule")
+        ) {
+            const helpText = document.createElement("div");
+            helpText.className = "form-text global-password-rule";
+            helpText.innerHTML =
+                '<i class="fa-solid fa-shield-halved me-1"></i>' +
+                "Use at least 6 characters.";
+            input.insertAdjacentElement("afterend", helpText);
+        }
+
+    });
+
+    /* -----------------------------------------------------
+       Confirm-password matching
+    ----------------------------------------------------- */
+
+    const newPassword = document.querySelector(
+        'input[name="new_password"]'
+    );
+
+    const confirmPassword = document.querySelector(
+        'input[name="confirm_password"]'
+    );
+
+    function validatePasswordMatch() {
+
+        if (!newPassword || !confirmPassword) {
+            return;
+        }
+
+        if (
+            confirmPassword.value.length > 0 &&
+            newPassword.value !== confirmPassword.value
+        ) {
+            confirmPassword.setCustomValidity(
+                "New password and confirm password must match."
+            );
+        } else {
+            confirmPassword.setCustomValidity("");
+        }
+
+    }
+
+    if (newPassword && confirmPassword) {
+        newPassword.addEventListener("input", validatePasswordMatch);
+        confirmPassword.addEventListener("input", validatePasswordMatch);
+    }
+
+    /* -----------------------------------------------------
+       Preserve non-password fields when the server returns
+       a validation error on Patient, Doctor or User forms.
+       Stored values automatically expire after 30 minutes.
+    ----------------------------------------------------- */
+
+    const accountCreationPaths = [
+        "/patients",
+        "/doctors",
+        "/users"
+    ];
+
+    if (accountCreationPaths.includes(currentPath)) {
+
+        const forms = Array.from(
+            document.querySelectorAll('form[method="POST"], form[method="post"]')
+        );
+
+        const successMessageVisible = Boolean(
+            document.querySelector(".alert-success")
+        );
+
+        forms.forEach(function (form, formIndex) {
+
+            const storageKey =
+                "ai-hospital-form:" + currentPath + ":" + formIndex;
+
+            if (successMessageVisible) {
+                sessionStorage.removeItem(storageKey);
+                return;
+            }
+
+            try {
+                const savedState = JSON.parse(
+                    sessionStorage.getItem(storageKey) || "null"
+                );
+
+                const isFresh = savedState &&
+                    Date.now() - savedState.savedAt < 30 * 60 * 1000;
+
+                if (isFresh && savedState.values) {
+
+                    Object.entries(savedState.values).forEach(function (entry) {
+
+                        const fieldName = entry[0];
+                        const savedValue = entry[1];
+                        const field = form.elements.namedItem(fieldName);
+
+                        if (!field) {
+                            return;
+                        }
+
+                        if (field instanceof RadioNodeList) {
+                            Array.from(field).forEach(function (option) {
+                                option.checked = option.value === savedValue;
+                            });
+                        } else if (field.type === "checkbox") {
+                            field.checked = Boolean(savedValue);
+                        } else {
+                            field.value = savedValue;
+                        }
+
+                    });
+
+                } else {
+                    sessionStorage.removeItem(storageKey);
+                }
+            } catch (error) {
+                sessionStorage.removeItem(storageKey);
+            }
+
+            const saveFormState = function () {
+
+                const values = {};
+
+                Array.from(form.elements).forEach(function (field) {
+
+                    if (!field.name || field.disabled) {
+                        return;
+                    }
+
+                    const type = (field.type || "").toLowerCase();
+
+                    // Never store passwords, files or hidden security values.
+                    if ([
+                        "password",
+                        "file",
+                        "hidden",
+                        "submit",
+                        "button",
+                        "reset"
+                    ].includes(type)) {
+                        return;
+                    }
+
+                    if (type === "radio") {
+                        if (field.checked) {
+                            values[field.name] = field.value;
+                        }
+                    } else if (type === "checkbox") {
+                        values[field.name] = field.checked;
+                    } else {
+                        values[field.name] = field.value;
+                    }
+
+                });
+
+                sessionStorage.setItem(
+                    storageKey,
+                    JSON.stringify({
+                        savedAt: Date.now(),
+                        values: values
+                    })
+                );
+
+            };
+
+            form.addEventListener("input", saveFormState);
+            form.addEventListener("change", saveFormState);
+            form.addEventListener("reset", function () {
+                sessionStorage.removeItem(storageKey);
+            });
+
+            form.addEventListener("submit", function (event) {
+
+                validatePasswordMatch();
+
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    form.classList.add("was-validated");
+
+                    const invalidField = form.querySelector(":invalid");
+
+                    if (invalidField) {
+                        invalidField.reportValidity();
+                        invalidField.focus();
+                    }
+                } else {
+                    saveFormState();
+                }
+
+            });
+
+        });
+
+    } else {
+
+        document.querySelectorAll("form").forEach(function (form) {
+
+            form.addEventListener("submit", function (event) {
+
+                validatePasswordMatch();
+
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    form.classList.add("was-validated");
+
+                    const invalidField = form.querySelector(":invalid");
+
+                    if (invalidField) {
+                        invalidField.reportValidity();
+                        invalidField.focus();
+                    }
+                }
+
+            });
+
+        });
+
+    }
+
+});
+</script>
 
 </body>
 

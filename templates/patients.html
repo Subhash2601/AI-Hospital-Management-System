@@ -1,3 +1,4 @@
+
 {% extends 'base.html' %}
 
 {% block content %}
@@ -37,7 +38,8 @@ type="text"
 name="name"
 class="form-control"
 placeholder="Enter Patient Name"
-required>
+required
+minlength="2">
 
 </div>
 
@@ -50,7 +52,9 @@ type="number"
 name="age"
 class="form-control"
 placeholder="Age"
-required>
+required
+min="0"
+max="120">
 
 </div>
 
@@ -60,7 +64,8 @@ required>
 
 <select
 name="gender"
-class="form-control">
+class="form-control"
+required>
 
 <option value="Male">Male</option>
 <option value="Female">Female</option>
@@ -127,7 +132,8 @@ type="text"
 name="username"
 class="form-control"
 placeholder="Enter Username"
-required>
+required
+minlength="3">
 
 </div>
 
@@ -140,7 +146,9 @@ type="password"
 name="password"
 class="form-control"
 placeholder="Enter Password"
-required>
+required
+minlength="6"
+autocomplete="new-password">
 
 </div>
 </div>

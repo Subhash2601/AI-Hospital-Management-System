@@ -1,3 +1,4 @@
+
 {% extends 'base.html' %}
 
 {% block content %}
@@ -34,7 +35,8 @@ type="text"
 name="name"
 class="form-control"
 placeholder="Enter Doctor Name"
-required>
+required
+minlength="2">
 
 </div>
 
@@ -101,7 +103,8 @@ type="text"
 name="username"
 class="form-control"
 placeholder="Enter Username"
-required>
+required
+minlength="3">
 
 </div>
 
@@ -114,7 +117,9 @@ type="password"
 name="password"
 class="form-control"
 placeholder="Enter Password"
-required>
+required
+minlength="6"
+autocomplete="new-password">
 
 </div>
 
