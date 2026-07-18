@@ -1,0 +1,267 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+    .setup-page {
+        min-height: 88vh;
+        display: flex;
+        align-items: center;
+        padding: 40px 0;
+        background:
+            radial-gradient(
+                circle at top left,
+                rgba(13, 110, 253, 0.15),
+                transparent 35%
+            ),
+            #f5f7fb;
+    }
+
+    .setup-card {
+        overflow: hidden;
+        border: 0;
+        border-radius: 24px;
+        box-shadow: 0 22px 55px rgba(16, 24, 40, 0.14);
+    }
+
+    .setup-header {
+        padding: 32px;
+        color: white;
+        background: linear-gradient(
+            135deg,
+            #063970,
+            #0d6efd,
+            #20c997
+        );
+    }
+
+    .setup-icon {
+        width: 75px;
+        height: 75px;
+        display: grid;
+        place-items: center;
+        margin-bottom: 18px;
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.18);
+        font-size: 34px;
+    }
+
+    .setup-control {
+        min-height: 50px;
+        border-radius: 13px;
+    }
+</style>
+
+<div class="setup-page">
+
+    <div class="container">
+
+        <div class="row justify-content-center">
+
+            <div class="col-lg-7 col-xl-6">
+
+                <div class="card setup-card">
+
+                    <div class="setup-header">
+
+                        <div class="setup-icon">
+                            <i class="fa-solid fa-user-shield"></i>
+                        </div>
+
+                        <h2 class="fw-bold mb-2">
+                            Hospital Admin Setup
+                        </h2>
+
+                        <p class="mb-0 opacity-75">
+                            Create the first administrator account for
+                            this hospital system.
+                        </p>
+
+                    </div>
+
+                    <div class="card-body p-4 p-md-5">
+
+                        {% if setup_disabled %}
+
+                        <div class="alert alert-danger mb-0">
+
+                            <h5 class="fw-bold">
+
+                                <i class="fa-solid fa-triangle-exclamation me-2"></i>
+                                Setup is disabled
+
+                            </h5>
+
+                            <p class="mb-0">
+                                The ADMIN_SETUP_KEY environment variable
+                                has not been configured.
+                            </p>
+
+                        </div>
+
+                        {% else %}
+
+                        <div class="alert alert-info">
+
+                            <i class="fa-solid fa-circle-info me-1"></i>
+
+                            This page works only until the first Admin
+                            account is created.
+                        </div>
+
+                        <form method="POST"
+                              action="{{ url_for('setup_admin') }}">
+
+                            <div class="mb-3">
+
+                                <label for="fullname"
+                                       class="form-label fw-semibold">
+                                    Full Name
+                                </label>
+
+                                <input type="text"
+                                       id="fullname"
+                                       name="fullname"
+                                       class="form-control setup-control"
+                                       value="{{ form_data.get('fullname', '') }}"
+                                       minlength="2"
+                                       maxlength="100"
+                                       required>
+
+                            </div>
+
+                            <div class="mb-3">
+
+                                <label for="username"
+                                       class="form-label fw-semibold">
+                                    Admin Username
+                                </label>
+
+                                <input type="text"
+                                       id="username"
+                                       name="username"
+                                       class="form-control setup-control"
+                                       value="{{ form_data.get('username', '') }}"
+                                       minlength="3"
+                                       maxlength="50"
+                                       autocomplete="username"
+                                       required>
+
+                            </div>
+
+                            <div class="mb-3">
+
+                                <label for="password"
+                                       class="form-label fw-semibold">
+                                    Password
+                                </label>
+
+                                <input type="password"
+                                       id="password"
+                                       name="password"
+                                       class="form-control setup-control"
+                                       minlength="6"
+                                       autocomplete="new-password"
+                                       required>
+
+                            </div>
+
+                            <div class="mb-3">
+
+                                <label for="confirm_password"
+                                       class="form-label fw-semibold">
+                                    Confirm Password
+                                </label>
+
+                                <input type="password"
+                                       id="confirm_password"
+                                       name="confirm_password"
+                                       class="form-control setup-control"
+                                       minlength="6"
+                                       autocomplete="new-password"
+                                       required>
+
+                            </div>
+
+                            <div class="mb-4">
+
+                                <label for="setup_key"
+                                       class="form-label fw-semibold">
+                                    Admin Setup Key
+                                </label>
+
+                                <input type="password"
+                                       id="setup_key"
+                                       name="setup_key"
+                                       class="form-control setup-control"
+                                       autocomplete="off"
+                                       required>
+
+                                <div class="form-text">
+                                    Enter the secret setup key configured
+                                    in Render.
+                                </div>
+
+                            </div>
+
+                            <button type="submit"
+                                    class="btn btn-primary btn-lg w-100">
+
+                                <i class="fa-solid fa-user-shield me-2"></i>
+                                Create First Admin
+
+                            </button>
+
+                        </form>
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+    const password =
+        document.getElementById("password");
+
+    const confirmPassword =
+        document.getElementById("confirm_password");
+
+    function validatePasswords() {
+
+        if (
+            password &&
+            confirmPassword &&
+            confirmPassword.value &&
+            password.value !== confirmPassword.value
+        ) {
+            confirmPassword.setCustomValidity(
+                "Passwords do not match."
+            );
+        } else if (confirmPassword) {
+            confirmPassword.setCustomValidity("");
+        }
+    }
+
+    if (password && confirmPassword) {
+        password.addEventListener(
+            "input",
+            validatePasswords
+        );
+
+        confirmPassword.addEventListener(
+            "input",
+            validatePasswords
+        );
+    }
+</script>
+
+{% endblock %}

@@ -9,6 +9,7 @@ from flask import (
 )
 
 import os
+import hmac
 from werkzeug.utils import secure_filename
 
 from flask_login import (
@@ -63,7 +64,6 @@ database_url = os.environ.get(
     "sqlite:///hospital.db"
 )
 
-# Convert Render's older PostgreSQL URL format
 if database_url.startswith("postgres://"):
 
     database_url = database_url.replace(
@@ -76,6 +76,11 @@ if database_url.startswith("postgres://"):
 app.config["SECRET_KEY"] = os.environ.get(
     "SECRET_KEY",
     "hospital123"
+)
+
+app.config["ADMIN_SETUP_KEY"] = os.environ.get(
+    "ADMIN_SETUP_KEY",
+    ""
 )
 
 app.config["SQLALCHEMY_DATABASE_URI"] = database_url
@@ -173,6 +178,172 @@ def role_required(*allowed_roles):
 @app.route("/")
 def home():
     return render_template("home.html")
+
+# ==========================================================
+# One-Time Admin Setup
+# ==========================================================
+
+@app.route("/setup_admin", methods=["GET", "POST"])
+def setup_admin():
+
+    existing_admin = User.query.filter(
+        db.func.lower(User.role) == "admin"
+    ).first()
+
+    # Disable this page after the first Admin is created
+    if existing_admin:
+
+        flash(
+            "Admin setup has already been completed.",
+            "info"
+        )
+
+        return redirect(
+            url_for("login")
+        )
+
+    configured_setup_key = app.config.get(
+        "ADMIN_SETUP_KEY",
+        ""
+    )
+
+    # Prevent insecure setup when the environment key is missing
+    if not configured_setup_key:
+
+        return render_template(
+            "setup_admin.html",
+            setup_disabled=True
+        ), 503
+
+    form_data = {}
+
+    if request.method == "POST":
+
+        form_data = request.form
+
+        fullname = request.form.get(
+            "fullname",
+            ""
+        ).strip()
+
+        username = request.form.get(
+            "username",
+            ""
+        ).strip().lower()
+
+        password = request.form.get(
+            "password",
+            ""
+        )
+
+        confirm_password = request.form.get(
+            "confirm_password",
+            ""
+        )
+
+        submitted_setup_key = request.form.get(
+            "setup_key",
+            ""
+        )
+
+        if not hmac.compare_digest(
+            submitted_setup_key,
+            configured_setup_key
+        ):
+
+            flash(
+                "Invalid Admin setup key.",
+                "danger"
+            )
+
+        elif len(fullname) < 2:
+
+            flash(
+                "Full name must contain at least 2 characters.",
+                "warning"
+            )
+
+        elif len(username) < 3:
+
+            flash(
+                "Username must contain at least 3 characters.",
+                "warning"
+            )
+
+        elif len(password) < 6:
+
+            flash(
+                "Password must contain at least 6 characters.",
+                "warning"
+            )
+
+        elif password != confirm_password:
+
+            flash(
+                "Password and confirm password do not match.",
+                "warning"
+            )
+
+        else:
+
+            existing_username = User.query.filter(
+                db.func.lower(User.username)
+                == username.lower()
+            ).first()
+
+            if existing_username:
+
+                flash(
+                    "This username is already being used.",
+                    "danger"
+                )
+
+            else:
+
+                admin = User(
+                    fullname=fullname,
+                    username=username,
+                    password=generate_password_hash(
+                        password
+                    ),
+                    role="Admin"
+                )
+
+                db.session.add(admin)
+
+                try:
+
+                    db.session.commit()
+
+                    flash(
+                        "Admin account created successfully. "
+                        "You can now log in.",
+                        "success"
+                    )
+
+                    return redirect(
+                        url_for("login")
+                    )
+
+                except Exception as error:
+
+                    db.session.rollback()
+
+                    print(
+                        "Admin setup error:",
+                        error
+                    )
+
+                    flash(
+                        "Unable to create the Admin account.",
+                        "danger"
+                    )
+
+    return render_template(
+        "setup_admin.html",
+        setup_disabled=False,
+        form_data=form_data
+    )
 
 
 # ==========================================================
